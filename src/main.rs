@@ -1,7 +1,7 @@
 use reqwest::header::AUTHORIZATION;
 use serde::{Deserialize, Serialize};
 use serde_json::{self, to_writer_pretty, Map};
-use std::{env, io::BufWriter, fs::File};
+use std::{env, io::BufWriter, fs::File, collections::HashMap};
 use dotenv;
 
 #[allow(dead_code)]
@@ -26,31 +26,24 @@ struct Language {
 #[allow(dead_code)]
 #[derive(Deserialize, Serialize, Debug)]
 struct Campus {
-        id: Option<i32>,
-        name: Option<String>,
-        time_zone: Option<String>,
-        language: Option<Language>,
-        users_count: Option<i32>,
-        vogsphere_id: Option<i32>,
-        country: Option<String>,
-        address: Option<String>,
-        zip: Option<String>,
-        city: Option<String>,
-        website: Option<String>,
-        facebook: Option<String>,
-        twitter: Option<String>,
-        active: Option<bool>,
-        email_extension: Option<String>,
-        default_hidden_phone: Option<bool>,
-        endpoint: Option<i32>,
+        id: serde_json::Value,
+        name: serde_json::Value,
+        time_zone: serde_json::Value,
+        language: serde_json::Value,
+        users_count: serde_json::Value,
+        vogsphere_id: serde_json::Value,
+        country: serde_json::Value,
+        address: serde_json::Value,
+        zip: serde_json::Value,
+        city: serde_json::Value,
+        website: serde_json::Value,
+        facebook: serde_json::Value,
+        twitter: serde_json::Value,
+        active: serde_json::Value,
+        email_extension: serde_json::Value,
+        default_hidden_phone: serde_json::Value,
+        endpoint: serde_json::Value,
 }
-
-#[allow(dead_code)]
-#[derive(Deserialize, Debug)]
-struct CampusInfo {
-    items: Vec<Campus>,
-}
-
 
 async fn init_session() -> Result<AccessToken, reqwest::Error> {
     dotenv::dotenv().expect("Failed to read .env file");
@@ -84,8 +77,9 @@ async fn init_session() -> Result<AccessToken, reqwest::Error> {
     Ok(token)
 }
 
-fn jsonize(text: &str) -> Result<CampusInfo, serde_json::Error> {
-    let camp: CampusInfo = serde_json::from_str::<CampusInfo>(text)?;
+fn jsonize(text: &str) -> Result<Vec<Campus>, serde_json::Error> {
+    // let camp: CampusInfo = serde_json::from_str(text).unwrap();
+    let camp: Vec<Campus> = serde_json::from_str(text)?;
     Ok(camp)
 }
 
@@ -113,42 +107,11 @@ async fn main() -> Result<(), reqwest::Error> {
         }
     };
 
-    // let tmp = response.text().await?;
-    // let camp: CampusInfo = jsonize(tmp.as_str()).unwrap();
-    // println!("{:?}", camp);
-
-    /*
-   let john =  r#"
-   {
-       "id":55,
-       "name":"Tétouan",
-       "time_zone":"Africa/Casablanca",
-       "language":
-       {
-           "id":1,
-           "name":"Français",
-           "identifier":"fr"
-        },
-        "users_count":1,
-        "vogsphere_id":null,
-        "country":"Morocco",
-        "address":"Parc Tétouan Shore, CP93150 , Martil, Tétouan",
-        "zip":"93000",
-        "city":"Tétouan",
-        "website":"https://1337.ma",
-        "facebook":"",
-        "twitter":"https://twitter.com/1337FIL",
-        "active":true,
-        "email_extension":"1337.ma",
-        "default_hidden_phone":false,
-        "endpoint":null
-    }"#;
-
-    let tmp: Campus = serde_json::from_str(john).unwrap();
+    let tmp = response.text().await?;
+    let camp: Vec<Campus> = jsonize(tmp.as_str()).unwrap();
     let writer = BufWriter::new(File::create("res.json").unwrap());
-    serde_json::to_writer_pretty(writer, &tmp).unwrap();
-    println!("{:?}", tmp);
-    */
+    serde_json::to_writer_pretty(writer, &camp[0]).unwrap();
+    // println!("{:?}", camp);
 
     Ok(())
 }
