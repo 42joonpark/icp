@@ -77,9 +77,10 @@ async fn init_session() -> Result<AccessToken, reqwest::Error> {
     Ok(token)
 }
 
-fn jsonize(text: &str) -> Result<Vec<Campus>, serde_json::Error> {
-    // let camp: CampusInfo = serde_json::from_str(text).unwrap();
-    let camp: Vec<Campus> = serde_json::from_str(text)?;
+fn jsonize<'a, T>(text: &'a str) -> Result<Vec<T>, serde_json::Error> 
+    where T: Deserialize<'a>
+{
+    let camp: Vec<T> = serde_json::from_str(text)?;
     Ok(camp)
 }
 
@@ -110,7 +111,7 @@ async fn main() -> Result<(), reqwest::Error> {
     let tmp = response.text().await?;
     let camp: Vec<Campus> = jsonize(tmp.as_str()).unwrap();
     let writer = BufWriter::new(File::create("res.json").unwrap());
-    serde_json::to_writer_pretty(writer, &camp[0]).unwrap();
+    serde_json::to_writer_pretty(writer, &camp).unwrap();
     // println!("{:?}", camp);
 
     Ok(())
