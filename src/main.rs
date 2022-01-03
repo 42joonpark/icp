@@ -7,42 +7,41 @@ use dotenv;
 #[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 struct AccessToken {
-    access_token: String,
-    token_type: String,
-    expires_in: i32,
-    scope: String,
-    created_at: i64,
+    access_token:   String,
+    token_type:     String,
+    expires_in:     i32,
+    scope:          String,
+    created_at:     i64,
 }
-
 
 #[allow(dead_code)]
 #[derive(Deserialize, Serialize, Debug)]
 struct Language {
-    id: u32,
-    name: String,
+    id:         u32,
+    name:       String,
     identifier: String,
 }
 
 #[allow(dead_code)]
 #[derive(Deserialize, Serialize, Debug)]
 struct Campus {
-        id: serde_json::Value,
-        name: serde_json::Value,
-        time_zone: serde_json::Value,
-        language: serde_json::Value,
-        users_count: serde_json::Value,
-        vogsphere_id: serde_json::Value,
-        country: serde_json::Value,
-        address: serde_json::Value,
-        zip: serde_json::Value,
-        city: serde_json::Value,
-        website: serde_json::Value,
-        facebook: serde_json::Value,
-        twitter: serde_json::Value,
-        active: serde_json::Value,
-        email_extension: serde_json::Value,
-        default_hidden_phone: serde_json::Value,
-        endpoint: serde_json::Value,
+        id:                     serde_json::Value,
+        name:                   serde_json::Value,
+        time_zone:              serde_json::Value,
+        language:               serde_json::Value,
+        users_count:            serde_json::Value,
+        vogsphere_id:           serde_json::Value,
+        country:                serde_json::Value,
+        address:                serde_json::Value,
+        zip:                    serde_json::Value,
+        city:                   serde_json::Value,
+        website:                serde_json::Value,
+        facebook:               serde_json::Value,
+        twitter:                serde_json::Value,
+        active:                 serde_json::Value,
+        email_extension:        serde_json::Value,
+        default_hidden_phone:   serde_json::Value,
+        endpoint:               serde_json::Value,
 }
 
 async fn init_session() -> Result<AccessToken, reqwest::Error> {
@@ -74,6 +73,7 @@ async fn init_session() -> Result<AccessToken, reqwest::Error> {
         }
     };
     let token = response.json::<AccessToken>().await?;
+    println!("ACCESSTOKEN: {}", token.access_token);
     Ok(token)
 }
 
@@ -112,7 +112,6 @@ async fn main() -> Result<(), reqwest::Error> {
     let camp: Vec<Campus> = jsonize(tmp.as_str()).unwrap();
     let writer = BufWriter::new(File::create("res.json").unwrap());
     serde_json::to_writer_pretty(writer, &camp).unwrap();
-    // println!("{:?}", camp);
 
     Ok(())
 }
