@@ -1,8 +1,5 @@
-use core::panic;
-use std::env;
 use std::io::{BufReader, BufRead};
 use std::fs::File;
-use serde::de::value::Error;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
@@ -14,14 +11,14 @@ struct Cli {
 	path: std::path::PathBuf,
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let args = Cli::from_args();
-	let f = File::open(&args.path).unwrap();
-	let mut reader = BufReader::new(f);
+	let f = File::open(&args.path)?;
 
+	let mut reader = BufReader::new(f);
 	loop {
 		let mut line = String::new();
-		let len = reader.read_line(&mut line).unwrap();
+		let len = reader.read_line(&mut line)?;
 		if len == 0 {
 			break;
 		}
@@ -29,4 +26,5 @@ fn main() {
 			println!("{}", line);
 		}
 	}
+	Ok(())
 }
