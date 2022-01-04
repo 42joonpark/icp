@@ -2,7 +2,7 @@
 CLI which prints 42 personal info
 
 ## How to use
-1. Generate client_id and client_secret at intra.
+1. Generate client_id and client_secret at intra.\
 https://profile.intra.42.fr/oauth/applications/new 
 2. make .env file at "cli_42_info" directory
 3. enter your client_id and client_secret as below. \
