@@ -1,4 +1,8 @@
+use core::panic;
 use std::env;
+use std::io::{BufReader, BufRead};
+use std::fs::File;
+use serde::de::value::Error;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
@@ -12,9 +16,15 @@ struct Cli {
 
 fn main() {
 	let args = Cli::from_args();
-	let content = std::fs::read_to_string(&args.path).expect("could not read file");
+	let f = File::open(&args.path).unwrap();
+	let mut reader = BufReader::new(f);
 
-	for line in content.lines() {
+	loop {
+		let mut line = String::new();
+		let len = reader.read_line(&mut line).unwrap();
+		if len == 0 {
+			break;
+		}
 		if line.contains(&args.pattern) {
 			println!("{}", line);
 		}
