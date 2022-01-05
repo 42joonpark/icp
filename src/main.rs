@@ -2,6 +2,7 @@ use reqwest::header::{AUTHORIZATION};
 use serde::{Deserialize};
 use std::{env, error};
 use log::{warn, debug, info};
+use anyhow::{Context, Result, Error};
 use dotenv;
 
 #[derive(Deserialize, Debug)]
@@ -16,28 +17,10 @@ struct AccessToken {
 async fn init_session() -> Result<AccessToken, Box<dyn error::Error>> {
 	dotenv::dotenv().expect("Failed to read .env file!!");
 	let client = reqwest::Client::new();
-	let client_id = env::var("client_id");
-	let client_id = match client_id {
-		Err(error) => {
-			warn!("init_session(): Failed to read `client_id`.");
-			return Err(Box::new(error));
-		}
-		Ok(content) => {
-			debug!("init_session(): Successfully read `client_id`.");
-			content
-		}
-	};
-	let client_secret = env::var("client_secret");
-	let client_secret = match client_secret {
-		Err(error) => {
-			warn!("init_session(): Failed to read `client_secret`.");
-			return Err(Box::new(error));
-		}
-		Ok(content) => { 
-			debug!("init_session(): Successfully read `client_secret`.");
-			content
-		}
-	};
+	let client_id = env::var("client_id")
+			.with_context(|| format!("Failed to read `client_id`."))?;
+	let client_secret = env::var("client_secret")
+			.with_context(|| format!("Failed to read `client_secret`."))?;
 	let params = [
         ("grant_type", "client_credentials"),
         ("client_id", client_id.as_str()),
@@ -61,7 +44,8 @@ async fn init_session() -> Result<AccessToken, Box<dyn error::Error>> {
 			panic!("Uh Oh! Something unexpected happened.");
 		}
 	};
-	let token = response.json::<AccessToken>().await?;
+	let token = response.json::<AccessToken>().await
+			.with_context(|| format!("Failed to jsonize access token."))?;
 	Ok(token)
 }
 
@@ -70,7 +54,8 @@ async fn check_login() -> Result<AccessToken, Box<dyn error::Error>> {
 	let at = init_session().await;
 	match at {
 		Err(error) => {
-			warn!("check .env file");
+			warn!("check_login(): check .env file.");
+			// Err(Error::new(error))
 			Err(error)
 		}
 		Ok(content) => {
