@@ -1,6 +1,6 @@
-use reqwest::header::{AUTHORIZATION};
 use serde::{Deserialize};
-use std::{env, error};
+use std::{env, error, fmt};
+use std::io::{self, Write};
 use log::{warn, debug, info};
 use anyhow::{Context, Result, Error};
 use dotenv;
@@ -12,6 +12,12 @@ struct AccessToken {
 	expires_in:		i32,
 	scope:			String,
 	created_at:		i64,
+}
+
+impl fmt::Display for AccessToken {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[\n\tAccess Token:\t{}\n\tToken Type:\t{}\n\tExpires In:\t{}\n\tScope:\t\t{}\n\tCreated At:\t{}\n]", self.access_token, self.token_type, self.expires_in, self.scope, self.created_at)
+    }
 }
 
 async fn init_session() -> Result<AccessToken, Box<dyn error::Error>> {
@@ -37,25 +43,22 @@ async fn init_session() -> Result<AccessToken, Box<dyn error::Error>> {
 			debug!("init_session(): oauth token generated.!");
 		}
 		reqwest::StatusCode::UNAUTHORIZED => {
-			warn!("init_session(): oauth token generat failed.");
-			println!("Unauthorized");
+			warn!("Unauthorized client info.");
 		}
 		_ => {
 			panic!("Uh Oh! Something unexpected happened.");
 		}
 	};
 	let token = response.json::<AccessToken>().await
-			.with_context(|| format!("Failed to jsonize access token."))?;
+			.with_context(|| format!("Failed to json access token."))?;
 	Ok(token)
 }
 
-// async fn check_login() -> Result<AccessToken, Box<dyn std::error::Error>> {
 async fn check_login() -> Result<AccessToken, Box<dyn error::Error>> {
 	let at = init_session().await;
 	match at {
 		Err(error) => {
 			warn!("check_login(): check .env file.");
-			// Err(Error::new(error))
 			Err(error)
 		}
 		Ok(content) => {
@@ -65,11 +68,35 @@ async fn check_login() -> Result<AccessToken, Box<dyn error::Error>> {
 	}
 }
 
+async fn run() -> Result<(), Box<dyn error::Error>> {
+	// TODO:
+	// get input from user
+	// parse the input
+	// check if matching command exist
+	// if exist execute that command.
+
+	let reader = io::stdin();
+	loop {
+		let mut line = String::new();
+		print!("42_cli > ");
+		io::stdout().flush()?;
+		let bytes = reader.read_line(&mut line)?;
+		if bytes == 0 || line.contains("quit") {
+			println!("bye!");
+			break ;
+		}
+		println!("{}", line);
+	}
+
+	Ok(())
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn error::Error>> {
 	env_logger::init();
 	let ac_token = check_login().await?;
+	info!("{}", format!("AccessToken: {}", ac_token));
+	run().await?;
 
-	info!("{}", format!("AccessToken: {}", ac_token.access_token));
 	Ok(())
 }
