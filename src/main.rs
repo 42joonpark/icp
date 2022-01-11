@@ -30,6 +30,18 @@ struct AccessToken {
 	created_at:		i64,
 }
 
+impl AccessToken {
+    fn new() -> AccessToken {
+        AccessToken {
+            access_token: String::new(),
+            token_type: String::new(),
+            expires_in: 0,
+            scope: String::new(),
+            created_at: 0,
+        }
+    }
+}
+
 impl fmt::Display for AccessToken {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[\n\tAccess Token:\t{}\n\tToken Type:\t{}\n\tExpires In:\t{}\n\tScope:\t\t{}\n\tCreated At:\t{}\n]", self.access_token, self.token_type, self.expires_in, self.scope, self.created_at)
@@ -112,22 +124,21 @@ async fn run(ac_token: AccessToken) -> Result<(), Box<dyn error::Error>> {
 	Ok(())
 }
 
-async fn authorize() -> Result<(), Box<dyn error::Error>> {
+async fn authorize() -> Result<AccessToken, Box<dyn error::Error>> {
 	dotenv::dotenv().expect("Failed to read .env file!!");
 	let client_id = env::var("client_id")
 			.with_context(|| format!("Failed to read `client_id`."))?;
 	let client_secret = env::var("client_secret")
-			.with_context(|| format!("Failed to read `client_secret`."))?;
+		.with_context(|| format!("Failed to read `client_secret`."))?;
 	let client =
 	BasicClient::new(
-		ClientId::new(client_id),
-		Some(ClientSecret::new(client_secret)),
+		ClientId::new(client_id.to_owned()),
+	    Some(ClientSecret::new(client_secret)),
 		AuthUrl::new("https://api.intra.42.fr/oauth/authorize".to_string())?,
 		Some(TokenUrl::new("https://api.intra.42.fr/oauth/token".to_string())?)
 	)
 	.set_redirect_uri(RedirectUrl::new("http://localhost:8080".to_string())?);
 
-debug!("1....\n");
 	let (auth_url, csrf_token) = client
 	.authorize_url(CsrfToken::new_random)
 	.add_scope(Scope::new("public".to_string()))
@@ -135,6 +146,7 @@ debug!("1....\n");
 
 	println!("Browse to: {}", auth_url);
 
+	let mut ac_token = AccessToken::new();
 	let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
         if let Ok((mut stream, _)) = listener.accept().await {
@@ -180,11 +192,13 @@ debug!("1....\n");
             );
             stream.write_all(response.as_bytes()).await.unwrap();
 
+            /*
             println!("42API returned the following code:\n{}\n", code.secret());
             println!(
                 "42API returned the following state:\n{}\n",
                 state.secret(),
             );
+            */
 
             // Exchange the code with a token.
             let token_res = client
@@ -195,10 +209,6 @@ debug!("1....\n");
             println!("42API returned the following token:\n{:?}\n", token_res);
 
             if let Ok(token) = token_res {
-                // NB: 42API returns a single comma-separated "scope" parameter instead of multiple
-                // space-separated scopes. 42API-specific clients can parse this scope into
-                // multiple scopes by splitting at the commas. Note that it's not safe for the
-                // library to do this by default because RFC 6749 allows scopes to contain commas.
                 let scopes = if let Some(scopes_vec) = token.scopes() {
                     scopes_vec
                         .iter()
@@ -208,7 +218,8 @@ debug!("1....\n");
                 } else {
                     Vec::new()
                 };
-				info!("Access Token: {:?}", token.access_token().secret());
+				ac_token.access_token = token.access_token().secret().to_owned();
+				info!("Access Token: {:?}", ac_token.access_token);
                 println!("42API returned the following scopes:\n{:?}\n", scopes);
             }
 
@@ -216,7 +227,7 @@ debug!("1....\n");
             break;
         }
     }
-	Ok(())
+	Ok(ac_token)
 }
 
 #[tokio::main]
