@@ -200,12 +200,9 @@ fn write_to_file(filename: &str, content: String) {
 }
 
 fn update_file(token: String) {
-    // File hosts must exist in current path before this produces output
     if let Ok(lines) = read_lines(".env") {
-        // Consumes the iterator, returns an (Optional) String
         for line in lines {
             if let Ok(ip) = line {
-                // println!("{}", ip);
                 let mut content = String::new();
                 if ip.contains("access_token") {
                     content.push_str(format!("access_token={}", token).as_str());
