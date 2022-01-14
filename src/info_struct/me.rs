@@ -4,10 +4,10 @@ use serde::{Serialize, Deserialize};
 #[derive(Serialize, Deserialize)]
 pub struct Me {
     #[serde(rename = "id")]
-    id: i64,
+    pub id: i64,
 
     #[serde(rename = "email")]
-    email: String,
+    pub email: String,
 
     #[serde(rename = "login")]
     login: String,

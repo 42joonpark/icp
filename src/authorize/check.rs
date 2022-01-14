@@ -8,6 +8,26 @@ use std::{fs, fs::File};
 use super::my_authorize;
 use super::token::TokenInfo;
 
+pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
+	dotenv::dotenv().expect("Failed to read .env file!!");
+    let ac_token = env::var("access_token");
+    let ac_token = match ac_token {
+        Ok(content) =>  {
+            debug!("check_token_validity(): found token");
+            content
+        }
+        Err(_) => {
+            debug!("check_token_validity(): token not found in .env file");
+            let tok = my_authorize().await?;
+            // write to .env file
+            write_to_file(".env", format!("access_token={}", tok.access_token));
+            return Ok(())
+        }
+    };
+    check_now(ac_token).await?;
+    Ok(())
+}
+
 async fn check_now(ac_token: String) -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
     let response = client
@@ -38,26 +58,6 @@ async fn check_now(ac_token: String) -> Result<(), Box<dyn std::error::Error>> {
     // let tmp = response.text().await?;
     let token_info = response.json::<TokenInfo>().await?;
     println!("{:?}", token_info);
-    Ok(())
-}
-
-pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
-	dotenv::dotenv().expect("Failed to read .env file!!");
-    let ac_token = env::var("access_token");
-    let ac_token = match ac_token {
-        Ok(content) =>  {
-            debug!("check_token_validity(): found token");
-            content
-        }
-        Err(_) => {
-            debug!("check_token_validity(): token not found in .env file");
-            let tok = my_authorize().await?;
-            // write to .env file
-            write_to_file(".env", format!("access_token={}", tok.access_token));
-            return Ok(())
-        }
-    };
-    check_now(ac_token).await?;
     Ok(())
 }
 
