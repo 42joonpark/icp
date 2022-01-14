@@ -1,7 +1,7 @@
 extern crate serde_json;
 
+use serde::{Deserialize, Serialize};
 use std::fmt;
-use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct TokenInfo {
@@ -23,14 +23,17 @@ pub struct TokenInfo {
 
 impl fmt::Debug for TokenInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[\n\tresource_owner_id: {:?}\n\tscopes: {:?}\n\
+        write!(
+            f,
+            "[\n\tresource_owner_id: {:?}\n\tscopes: {:?}\n\
                 \texpires_in_secods: {:?}\n\
                 \tapplication: {:?}\n\tcreated_at: {:?}\n]",
             self.resource_owner_id,
             self.scopes,
             self.expires_in_seconds,
             self.application,
-            self.created_at)
+            self.created_at
+        )
     }
 }
 

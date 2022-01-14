@@ -1,31 +1,24 @@
-use serde::{Deserialize};
-use std::{env, error, fmt};
-use log::{debug};
 use anyhow::{Context, Result};
-use oauth2::{
-    AuthorizationCode,
-    AuthUrl,
-    ClientId,
-    ClientSecret,
-    CsrfToken,
-    RedirectUrl,
-    Scope,
-    TokenResponse,
-    TokenUrl
-};
+use log::debug;
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
+use oauth2::{
+    AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope,
+    TokenResponse, TokenUrl,
+};
+use serde::Deserialize;
+use std::{env, error, fmt};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
 
 #[derive(Deserialize, Debug)]
 pub struct AccessToken {
-	pub access_token:	String,
-	pub token_type:		String,
-	pub expires_in:		i32,
-	pub scope:			String,
-	pub created_at:		i64,
+    pub access_token: String,
+    pub token_type: String,
+    pub expires_in: i32,
+    pub scope: String,
+    pub created_at: i64,
 }
 
 impl AccessToken {
@@ -41,35 +34,36 @@ impl AccessToken {
 }
 
 impl fmt::Display for AccessToken {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[\n\tAccess Token:\t{}\n\tToken Type:\t{}\n\tExpires In:\t{}\n\tScope:\t\t{}\n\tCreated At:\t{}\n]", self.access_token, self.token_type, self.expires_in, self.scope, self.created_at)
     }
 }
 
 pub async fn my_authorize() -> Result<AccessToken, Box<dyn error::Error>> {
-	dotenv::dotenv().expect("Failed to read .env file!!");
-	let client_id = env::var("client_id")
-			.with_context(|| format!("Failed to read `client_id`."))?;
-	let client_secret = env::var("client_secret")
-		.with_context(|| format!("Failed to read `client_secret`."))?;
-	let client =
-	BasicClient::new(
-		ClientId::new(client_id.to_owned()),
-	    Some(ClientSecret::new(client_secret)),
-		AuthUrl::new("https://api.intra.42.fr/oauth/authorize".to_string())?,
-		Some(TokenUrl::new("https://api.intra.42.fr/oauth/token".to_string())?)
-	)
-	.set_redirect_uri(RedirectUrl::new("http://localhost:8080".to_string())?);
+    dotenv::dotenv().expect("Failed to read .env file!!");
+    let client_id =
+        env::var("client_id").with_context(|| format!("Failed to read `client_id`."))?;
+    let client_secret =
+        env::var("client_secret").with_context(|| format!("Failed to read `client_secret`."))?;
+    let client = BasicClient::new(
+        ClientId::new(client_id.to_owned()),
+        Some(ClientSecret::new(client_secret)),
+        AuthUrl::new("https://api.intra.42.fr/oauth/authorize".to_string())?,
+        Some(TokenUrl::new(
+            "https://api.intra.42.fr/oauth/token".to_string(),
+        )?),
+    )
+    .set_redirect_uri(RedirectUrl::new("http://localhost:8080".to_string())?);
 
-	let (auth_url, _) = client
-	.authorize_url(CsrfToken::new_random)
-	.add_scope(Scope::new("public".to_string()))
-	.url();
+    let (auth_url, _) = client
+        .authorize_url(CsrfToken::new_random)
+        .add_scope(Scope::new("public".to_string()))
+        .url();
 
-	println!("Browse to: {}", auth_url);
+    println!("Browse to: {}", auth_url);
 
-	let mut ac_token = AccessToken::new();
-	let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
+    let mut ac_token = AccessToken::new();
+    let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
         if let Ok((mut stream, _)) = listener.accept().await {
             let code;
@@ -135,8 +129,8 @@ pub async fn my_authorize() -> Result<AccessToken, Box<dyn error::Error>> {
                 } else {
                     Vec::new()
                 };
-				ac_token.access_token = token.access_token().secret().to_owned();
-				debug!("Access Token: {:?}", ac_token.access_token);
+                ac_token.access_token = token.access_token().secret().to_owned();
+                debug!("Access Token: {:?}", ac_token.access_token);
                 debug!("42API returned the following scopes:\n{:?}\n", scopes);
             }
 
@@ -144,7 +138,7 @@ pub async fn my_authorize() -> Result<AccessToken, Box<dyn error::Error>> {
             break;
         }
     }
-	Ok(ac_token)
+    Ok(ac_token)
 }
 
 pub mod check;

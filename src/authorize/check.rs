@@ -1,18 +1,18 @@
-use reqwest::header::AUTHORIZATION;
 use log::{debug, warn};
-use std::{env, error};
+use reqwest::header::AUTHORIZATION;
 use std::io::{self, BufRead};
 use std::path::Path;
+use std::{env, error};
 use std::{fs, fs::File};
 
 use super::my_authorize;
 use super::token::TokenInfo;
 
 pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
-	dotenv::dotenv().expect("Failed to read .env file!!");
+    dotenv::dotenv().expect("Failed to read .env file!!");
     let ac_token = env::var("access_token");
     let ac_token = match ac_token {
-        Ok(content) =>  {
+        Ok(content) => {
             debug!("check_token_validity(): found token");
             content
         }
@@ -21,7 +21,7 @@ pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
             let tok = my_authorize().await?;
             // write to .env file
             write_to_file(".env", format!("access_token={}", tok.access_token));
-            return Ok(())
+            return Ok(());
         }
     };
     check_now(ac_token).await?;
@@ -36,7 +36,7 @@ async fn check_now(ac_token: String) -> Result<(), Box<dyn std::error::Error>> {
         .send()
         .await
         .unwrap();
-    
+
     match response.status() {
         reqwest::StatusCode::OK => {
             debug!("check_now(): OK");
@@ -47,7 +47,7 @@ async fn check_now(ac_token: String) -> Result<(), Box<dyn std::error::Error>> {
             // get new token
             let new_token = my_authorize().await?;
             update_file(new_token.access_token);
-            return Ok(())
+            return Ok(());
         }
         _ => {
             warn!("check_now(): panic!");
@@ -70,7 +70,7 @@ fn write_to_file(filename: &str, content: String) {
         .append(true)
         .open(filename)
         .unwrap();
-          
+
     write!(file, "{}\n", content).unwrap();
 }
 
@@ -93,7 +93,9 @@ fn update_file(token: String) {
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>, {
+where
+    P: AsRef<Path>,
+{
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
