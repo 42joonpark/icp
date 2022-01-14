@@ -237,8 +237,8 @@ pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
         Err(_) => {
             debug!("check_token_validity(): token not found in .env file");
             let tok = my_authorize().await?;
+            // write to .env file
             write_to_file(".env", format!("access_token={}", tok.access_token));
-            // save to .env file
             return Ok(())
         }
     };
