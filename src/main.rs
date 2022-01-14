@@ -1,6 +1,6 @@
 use reqwest::header::AUTHORIZATION;
 use std::{error};
-use log::{debug, warn};
+use log::{info, debug, warn};
 use anyhow::{Context, Result};
 use dotenv;
 
@@ -88,9 +88,12 @@ async fn run(ac_token: AccessToken) -> Result<(), Box<dyn error::Error>> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn error::Error>>{
 	env_logger::init();
-	let ac_token = my_authorize().await?;
+	// let ac_token = my_authorize().await?;
 	// info!("{}", format!("AccessToken: {}", ac_token));
-	run(ac_token).await?;
+	// run(ac_token).await?;
+
+	let res = authorize::check_token_validity().await?;
+	println!("{:?}", res);
 
 	Ok(())
 }
