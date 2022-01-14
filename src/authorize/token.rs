@@ -2,7 +2,6 @@ extern crate serde_json;
 
 use std::fmt;
 use serde::{Serialize, Deserialize};
-use structopt::clap::App;
 
 #[derive(Serialize, Deserialize)]
 pub struct TokenInfo {
