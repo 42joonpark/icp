@@ -6,10 +6,10 @@ use std::io::{self, Write};
 use std::{env, error};
 
 pub mod authorize;
-pub mod info_struct;
+pub mod structs;
 pub mod make_json;
 use authorize::check;
-use info_struct::me::Me;
+use structs::me::Me;
 use make_json::*;
 
 async fn run() -> Result<(), Box<dyn error::Error>> {
