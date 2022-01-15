@@ -11,33 +11,6 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
 
-// #[derive(Deserialize, Debug)]
-// pub struct AccessToken {
-//     pub access_token: String,
-//     pub token_type: String,
-//     pub expires_in: i32,
-//     pub scope: String,
-//     pub created_at: i64,
-// }
-
-// impl AccessToken {
-//     pub fn new() -> AccessToken {
-//         AccessToken {
-//             access_token: String::new(),
-//             token_type: String::new(),
-//             expires_in: 0,
-//             scope: String::new(),
-//             created_at: 0,
-//         }
-//     }
-// }
-
-// impl fmt::Display for AccessToken {
-//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//         write!(f, "[\n\tAccess Token:\t{}\n\tToken Type:\t{}\n\tExpires In:\t{}\n\tScope:\t\t{}\n\tCreated At:\t{}\n]", self.access_token, self.token_type, self.expires_in, self.scope, self.created_at)
-//     }
-// }
-
 pub async fn my_authorize() -> Result<String, Box<dyn error::Error>> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let client_id =
