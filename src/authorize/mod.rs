@@ -6,40 +6,39 @@ use oauth2::{
     AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope,
     TokenResponse, TokenUrl,
 };
-use serde::Deserialize;
-use std::{env, error, fmt};
+use std::{env, error};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
 
-#[derive(Deserialize, Debug)]
-pub struct AccessToken {
-    pub access_token: String,
-    pub token_type: String,
-    pub expires_in: i32,
-    pub scope: String,
-    pub created_at: i64,
-}
+// #[derive(Deserialize, Debug)]
+// pub struct AccessToken {
+//     pub access_token: String,
+//     pub token_type: String,
+//     pub expires_in: i32,
+//     pub scope: String,
+//     pub created_at: i64,
+// }
 
-impl AccessToken {
-    pub fn new() -> AccessToken {
-        AccessToken {
-            access_token: String::new(),
-            token_type: String::new(),
-            expires_in: 0,
-            scope: String::new(),
-            created_at: 0,
-        }
-    }
-}
+// impl AccessToken {
+//     pub fn new() -> AccessToken {
+//         AccessToken {
+//             access_token: String::new(),
+//             token_type: String::new(),
+//             expires_in: 0,
+//             scope: String::new(),
+//             created_at: 0,
+//         }
+//     }
+// }
 
-impl fmt::Display for AccessToken {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[\n\tAccess Token:\t{}\n\tToken Type:\t{}\n\tExpires In:\t{}\n\tScope:\t\t{}\n\tCreated At:\t{}\n]", self.access_token, self.token_type, self.expires_in, self.scope, self.created_at)
-    }
-}
+// impl fmt::Display for AccessToken {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         write!(f, "[\n\tAccess Token:\t{}\n\tToken Type:\t{}\n\tExpires In:\t{}\n\tScope:\t\t{}\n\tCreated At:\t{}\n]", self.access_token, self.token_type, self.expires_in, self.scope, self.created_at)
+//     }
+// }
 
-pub async fn my_authorize() -> Result<AccessToken, Box<dyn error::Error>> {
+pub async fn my_authorize() -> Result<String, Box<dyn error::Error>> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let client_id =
         env::var("client_id").with_context(|| format!("Failed to read `client_id`."))?;
@@ -62,7 +61,7 @@ pub async fn my_authorize() -> Result<AccessToken, Box<dyn error::Error>> {
 
     println!("Browse to: {}", auth_url);
 
-    let mut ac_token = AccessToken::new();
+    let mut ac_token = String::new();
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
         if let Ok((mut stream, _)) = listener.accept().await {
@@ -129,11 +128,10 @@ pub async fn my_authorize() -> Result<AccessToken, Box<dyn error::Error>> {
                 } else {
                     Vec::new()
                 };
-                ac_token.access_token = token.access_token().secret().to_owned();
-                debug!("Access Token: {:?}", ac_token.access_token);
+                ac_token = token.access_token().secret().to_owned();
+                debug!("Access Token: {:?}", ac_token);
                 debug!("42API returned the following scopes:\n{:?}\n", scopes);
             }
-
             // The server will terminate itself after collecting the first code.
             break;
         }

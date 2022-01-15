@@ -8,11 +8,11 @@ use std::{env, error};
 pub mod authorize;
 pub mod structs;
 pub mod make_json;
-use authorize::check;
+use structs::program::Program;
 use structs::me::Me;
 use make_json::*;
 
-async fn run() -> Result<(), Box<dyn error::Error>> {
+async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     let reader = io::stdin();
     loop {
         let mut line = String::new();
@@ -36,7 +36,7 @@ async fn run() -> Result<(), Box<dyn error::Error>> {
         debug!("COMMAND: {}", command);
         match command.as_str() {
             "ME" => {
-                my_info().await?;
+                my_info(prog).await?;
             }
             "HELP" | "COMMAND" => {}
             "QUIT" => {
@@ -50,7 +50,7 @@ async fn run() -> Result<(), Box<dyn error::Error>> {
     Ok(())
 }
 
-async fn my_info() -> Result<(), Box<dyn error::Error>> {
+async fn my_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     dotenv::dotenv().expect("Failed to read .env file");
     let client = reqwest::Client::new();
     let client_id = env::var("client_id").unwrap();
@@ -58,7 +58,8 @@ async fn my_info() -> Result<(), Box<dyn error::Error>> {
         ("grant_type", "client_credentials"),
         ("client_id", client_id.as_str()),
     ];
-    let access_token = env::var("access_token").unwrap();
+    // let access_token = env::var("access_token").unwrap();
+    let access_token = prog.access_token.to_owned();
     let response = client
         .get("https://api.intra.42.fr/v2/me")
         .header(AUTHORIZATION, format!("Bearer {}", access_token))
@@ -88,9 +89,12 @@ async fn my_info() -> Result<(), Box<dyn error::Error>> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn error::Error>> {
     env_logger::init();
-    let res = check::check_token_validity().await?;
-    println!("{:?}", res);
+    let mut program = Program::new();
+    program.init_program().await?;
 
-    run().await?;
+    // let res = check::check_token_validity().await?;
+    // println!("{:?}", res);
+
+    run(&mut program).await?;
     Ok(())
 }

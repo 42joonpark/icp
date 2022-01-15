@@ -21,6 +21,18 @@ pub struct TokenInfo {
     created_at: i64,
 }
 
+impl TokenInfo {
+    pub fn new() -> TokenInfo {
+        TokenInfo {
+            resource_owner_id: -1,
+            scopes: Vec::new(),
+            expires_in_seconds: 0,
+            application: Application::new(),
+            created_at: 0,
+        }
+    }
+}
+
 impl fmt::Debug for TokenInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -43,8 +55,17 @@ pub struct Application {
     uid: String,
 }
 
+impl Application {
+    fn new() -> Application {
+        Application {
+            uid: String::from(""),
+        }
+    }
+}
+
 impl fmt::Debug for Application {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self.uid)
     }
 }
+

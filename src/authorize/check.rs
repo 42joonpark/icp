@@ -1,14 +1,16 @@
 use log::{debug, warn};
+use reqwest::Response;
 use reqwest::header::AUTHORIZATION;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::{env, error};
 use std::{fs, fs::File};
 
-use super::my_authorize;
-use super::token::TokenInfo;
+use crate::authorize::my_authorize;
+use crate::authorize::token::TokenInfo;
+use crate::structs::program::Program;
 
-pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
+pub async fn check_token_exist(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let ac_token = env::var("access_token");
     let ac_token = match ac_token {
@@ -18,17 +20,18 @@ pub async fn check_token_validity() -> Result<(), Box<dyn error::Error>> {
         }
         Err(_) => {
             debug!("check_token_validity(): token not found in .env file");
-            let tok = my_authorize().await?;
+            prog.access_token = my_authorize().await?;
             // write to .env file
-            write_to_file(".env", format!("access_token={}", tok.access_token));
-            return Ok(());
+            write_to_file(".env", format!("access_token={}", prog.access_token.to_owned()));
+            prog.access_token.to_owned()
         }
     };
-    check_now(ac_token).await?;
+    prog.access_token = ac_token;
+    // check_token(prog.access_token.to_owned(), prog).await?;
     Ok(())
 }
 
-async fn check_now(ac_token: String) -> Result<(), Box<dyn std::error::Error>> {
+async fn make_token_request(ac_token: String) -> Result<Response, Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
     let response = client
         .get("https://api.intra.42.fr/oauth/token/info")
@@ -36,28 +39,35 @@ async fn check_now(ac_token: String) -> Result<(), Box<dyn std::error::Error>> {
         .send()
         .await
         .unwrap();
+    Ok(response)
+}
 
+pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Result<(), Box<dyn std::error::Error>> {
+    let mut response = make_token_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {
-            debug!("check_now(): OK");
+            debug!("check_token(): OK");
         }
         reqwest::StatusCode::UNAUTHORIZED => {
-            warn!("check_now(): UNAUTHORIZED");
-            // token expired or wrong access token
-            // get new token
-            let new_token = my_authorize().await?;
-            update_file(new_token.access_token);
-            return Ok(());
+            warn!("check_token(): UNAUTHORIZED");
+            // token expired or wrong access token -> get new token
+            prog.access_token = my_authorize().await?;
+            update_file(prog.access_token.to_owned());
+            response = make_token_request(prog.access_token.to_owned()).await?;
+            match response.status() {
+                reqwest::StatusCode::UNAUTHORIZED => panic!("Token validity check failed more than once"),
+                reqwest::StatusCode::OK => (),
+                _ => panic!("Uh oh! something unexpected happened."),
+            }
         }
         _ => {
-            warn!("check_now(): panic!");
+            warn!("check_token(): panic!");
             panic!("Uh oh! something unexpected happened.");
         }
     }
 
-    // let tmp = response.text().await?;
-    let token_info = response.json::<TokenInfo>().await?;
-    println!("{:?}", token_info);
+    prog.token = response.json::<TokenInfo>().await?;
+    println!("{:?}", prog.token);
     Ok(())
 }
 
