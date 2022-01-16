@@ -1,13 +1,15 @@
 use std::{env, error};
+use anyhow::{Context, Result};
 use reqwest::header::AUTHORIZATION;
 use crate::structs::{program::Program, me::Me};
 use crate::authorize::check::check_token_validity;
 use crate::make_json::jsonize;
 
-pub async fn my_info(prog: &mut Program) -> Result<Me, Box<dyn error::Error>> {
+pub async fn my_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     dotenv::dotenv().expect("Failed to read .env file");
     let client = reqwest::Client::new();
-    let client_id = env::var("client_id").unwrap();
+    let client_id =
+        env::var("client_id").with_context(|| format!("Failed to read `client_id`."))?;
     let params = [
         ("grant_type", "client_credentials"),
         ("client_id", client_id.as_str()),
@@ -35,7 +37,9 @@ pub async fn my_info(prog: &mut Program) -> Result<Me, Box<dyn error::Error>> {
     };
 
     let tmp = response.text().await?;
-    let my_info: Me = jsonize(tmp.as_str()).unwrap();
-    println!("{}", my_info.email);
-    Ok(my_info)
+    // let my_info: Me = jsonize(tmp.as_str()).unwrap();
+    // println!("{}", my_info.email);
+    prog.me = jsonize(tmp.as_str()).unwrap();
+    println!("{:#?}", prog.me);
+    Ok(())
 }
