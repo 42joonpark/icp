@@ -19,7 +19,6 @@ async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
         io::stdout().flush()?;
         let bytes = reader.read_line(&mut line);
         match bytes {
-            // unwrap Result<>
             Err(error) => {
                 eprintln!("{}", error);
                 continue;
