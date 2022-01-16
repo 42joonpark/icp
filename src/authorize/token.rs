@@ -3,7 +3,7 @@ extern crate serde_json;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct TokenInfo {
     #[serde(rename = "resource_owner_id")]
     resource_owner_id: i64,
@@ -49,7 +49,7 @@ impl fmt::Debug for TokenInfo {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Application {
     #[serde(rename = "uid")]
     uid: String,

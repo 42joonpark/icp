@@ -1,7 +1,13 @@
 extern crate serde_json;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+impl Me {
+    fn new() -> Me {
+        Me::default()
+    }
+}
+
+#[derive(Default, Serialize, Deserialize)]
 pub struct Me {
     #[serde(rename = "id")]
     pub id: i64,
@@ -112,7 +118,7 @@ pub struct Me {
     campus_users: Vec<CampusUser>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Achievement {
     #[serde(rename = "id")]
     id: i64,
@@ -142,7 +148,7 @@ pub struct Achievement {
     users_url: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Campus {
     #[serde(rename = "id")]
     id: i64,
@@ -193,7 +199,7 @@ pub struct Campus {
     default_hidden_phone: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Language {
     #[serde(rename = "id")]
     id: i64,
@@ -211,7 +217,7 @@ pub struct Language {
     updated_at: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct CampusUser {
     #[serde(rename = "id")]
     id: i64,
@@ -232,7 +238,7 @@ pub struct CampusUser {
     updated_at: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct CursusUser {
     #[serde(rename = "grade")]
     grade: Option<String>,
@@ -274,7 +280,7 @@ pub struct CursusUser {
     cursus: Cursus,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Cursus {
     #[serde(rename = "id")]
     id: i64,
@@ -292,7 +298,7 @@ pub struct Cursus {
     parent_id: Option<serde_json::Value>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Skill {
     #[serde(rename = "id")]
     id: i64,
@@ -304,7 +310,7 @@ pub struct Skill {
     level: f64,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct User {
     #[serde(rename = "id")]
     id: i64,
@@ -373,7 +379,7 @@ pub struct User {
     is_launched: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ExpertisesUser {
     #[serde(rename = "id")]
     id: i64,
@@ -397,7 +403,7 @@ pub struct ExpertisesUser {
     user_id: i64,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct LanguagesUser {
     #[serde(rename = "id")]
     id: i64,
@@ -415,7 +421,7 @@ pub struct LanguagesUser {
     created_at: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ProjectsUser {
     #[serde(rename = "id")]
     id: i64,
@@ -457,7 +463,7 @@ pub struct ProjectsUser {
     updated_at: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Title {
     #[serde(rename = "id")]
     id: i64,
@@ -466,7 +472,7 @@ pub struct Title {
     name: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct TitlesUser {
     #[serde(rename = "id")]
     id: i64,
@@ -502,6 +508,12 @@ pub enum Kind {
     Social,
 }
 
+impl Default for Kind {
+    fn default() -> Self {
+        Kind::Pedagogy
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub enum Tier {
     #[serde(rename = "easy")]
@@ -517,6 +529,12 @@ pub enum Tier {
     None,
 }
 
+impl Default for Tier {
+    fn default() -> Self {
+        Tier::None
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub enum Status {
     #[serde(rename = "finished")]
@@ -527,4 +545,10 @@ pub enum Status {
 
     #[serde(rename = "waiting_for_correction")]
     WaitingForCorrection,
+}
+
+impl Default for Status {
+    fn default() -> Self {
+        Status::WaitingForCorrection
+    }
 }

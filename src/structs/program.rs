@@ -1,28 +1,30 @@
-use crate::authorize::token::TokenInfo;
+use std::env;
+use anyhow::{Result, Context};
+use crate::authorize::token;
 use crate::authorize::check;
+use crate::structs::me;
 
+#[derive(Default)]
 pub struct Program {
 	pub client_id: String,
 	pub client_secret: String,
 	pub access_token: String,
-	pub token: TokenInfo,
+	pub token: token::TokenInfo,
+	pub me: me::Me,
 	pub check_cnt: u8,
 }
 
 impl Program {
 	pub fn new() -> Program {
-		Program {
-			client_id: String::from(""),
-			client_secret: String::from(""),
-			access_token: String::from(""),
-			token: TokenInfo::new(),
-			check_cnt: 0,
-		}
+		Program::default()
 	}
+
 	pub async fn init_program(&mut self) -> Result<(), Box<dyn std::error::Error>> {
     	dotenv::dotenv().expect("Failed to read .env file!!");
-		let client_id = std::env::var("client_id").unwrap();
-		let client_secret = std::env::var("client_secret").unwrap();
+    	let client_id =
+        		env::var("client_id").with_context(|| format!("Failed to read `client_id`."))?;
+    	let client_secret =
+        		env::var("client_secret").with_context(|| format!("Failed to read `client_id`."))?;
 		self.client_id = client_id;
 		self.client_secret = client_secret;
 		check::check_token_exist(self).await?;
