@@ -5,11 +5,11 @@ CLI which prints 42 personal info
 ### General usage
 1. Generate client_id and client_secret at intra.\
 https://profile.intra.42.fr/oauth/applications/new 
-2. make .env file at "cli_42_info" directory
-3. enter your client_id and client_secret as below. \
+2. create .env file inside "42_cli" directory
+3. put your client_id and client_secret as below. \
 	client_id="your client_id" \
 	client_secret="your client_secret"
-4. enter "help" or "commands" to see commands
+4. enter "help" or "command" to see list of commands
 
 ### Log
 RUST_LOG=info cargo run
@@ -18,12 +18,14 @@ RUST_LOG=info cargo run
 2. debug
 3. warn
 
-## Commands (Not implemented yet)
-### blackhole
-prints remaining blackhole
-### commands
-prints available commands
+## Commands
+### email
+prints user email
+### id
+prints user id
+### login
+prints user intra id
 ### help
 prints help
-### set
-change setting. ex) client_id
+### reload
+reload personal data.
