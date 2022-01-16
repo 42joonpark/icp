@@ -10,7 +10,7 @@ pub struct Me {
     pub email: String,
 
     #[serde(rename = "login")]
-    login: String,
+    pub login: String,
 
     #[serde(rename = "first_name")]
     first_name: String,
@@ -40,7 +40,7 @@ pub struct Me {
     staff: bool,
 
     #[serde(rename = "correction_point")]
-    correction_point: i64,
+    pub correction_point: i64,
 
     #[serde(rename = "pool_month")]
     pool_month: String,
@@ -52,7 +52,7 @@ pub struct Me {
     location: Option<serde_json::Value>,
 
     #[serde(rename = "wallet")]
-    wallet: i64,
+    pub wallet: i64,
 
     #[serde(rename = "anonymize_date")]
     anonymize_date: String,
@@ -85,7 +85,7 @@ pub struct Me {
     achievements: Vec<Achievement>,
 
     #[serde(rename = "titles")]
-    titles: Vec<Title>,
+    pub titles: Vec<Title>,
 
     #[serde(rename = "titles_users")]
     titles_users: Vec<TitlesUser>,
@@ -463,7 +463,7 @@ pub struct Title {
     id: i64,
 
     #[serde(rename = "name")]
-    name: String,
+    pub name: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]

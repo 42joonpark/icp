@@ -1,7 +1,8 @@
 use std::{env, error};
+use log::{debug, warn};
 use anyhow::{Context, Result};
 use reqwest::header::AUTHORIZATION;
-use crate::structs::{program::Program, me::Me};
+use crate::structs::{program::Program};
 use crate::authorize::check::check_token_validity;
 use crate::make_json::jsonize;
 
@@ -26,10 +27,10 @@ pub async fn my_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
 
     match response.status() {
         reqwest::StatusCode::OK => {
-            println!("ok~~");
+            debug!("my_info: reqwest OK");
         }
         reqwest::StatusCode::UNAUTHORIZED => {
-            println!("unauthorized!!");
+            warn!("my_info: unauthorized!!");
         }
         _ => {
             panic!("uh oh! something unexpected happened.");
@@ -37,9 +38,7 @@ pub async fn my_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     };
 
     let tmp = response.text().await?;
-    // let my_info: Me = jsonize(tmp.as_str()).unwrap();
-    // println!("{}", my_info.email);
     prog.me = jsonize(tmp.as_str()).unwrap();
-    println!("{:#?}", prog.me);
+    debug!("{:#?}", prog.me);
     Ok(())
 }

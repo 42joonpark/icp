@@ -8,10 +8,11 @@ pub mod structs;
 pub mod make_json;
 pub mod command;
 use structs::program::Program;
-use command::me::my_info;
+use command::me;
 
 async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     let reader = io::stdin();
+    command::welcome_msg(prog).await?;
     loop {
         let mut line = String::new();
         print!("42_cli > ");
@@ -33,12 +34,16 @@ async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
         let command = line.trim().to_uppercase();
         debug!("COMMAND: {}", command);
         match command.as_str() {
-            "ME" => {
-                my_info(prog).await?;
-            }
-            "HELP" | "COMMAND" => {}
+            "ME" => me::my_info(prog).await?,
+            "EMAIL" => command::email(prog),
+            "ID" => command::id(prog),
+            "WALLET" => command::wallet(prog),
+            "LOGIN" => command::login(prog),
+            "POINT" => command::correction_point(prog),
+            "RELOAD" => command::reload_me(prog).await?,
+            "HELP" | "COMMAND" => command::help(),
             "QUIT" => {
-                println!("bye!!!");
+                println!("bye!!!👋👋👋👋");
                 break;
             }
             _ => {}
