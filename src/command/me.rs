@@ -4,9 +4,9 @@ use anyhow::{Context, Result};
 use reqwest::header::AUTHORIZATION;
 use crate::structs::{program::Program};
 use crate::authorize::check::check_token_validity;
-use crate::make_json::jsonize;
+use crate::json::jsonize;
 
-pub async fn my_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
+pub async fn load_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
     dotenv::dotenv().expect("Failed to read .env file");
     let client = reqwest::Client::new();
     let client_id =
@@ -27,10 +27,10 @@ pub async fn my_info(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
 
     match response.status() {
         reqwest::StatusCode::OK => {
-            debug!("my_info: reqwest OK");
+            debug!("load_info: reqwest OK");
         }
         reqwest::StatusCode::UNAUTHORIZED => {
-            warn!("my_info: unauthorized!!");
+            warn!("load_info: unauthorized!!");
         }
         _ => {
             panic!("uh oh! something unexpected happened.");

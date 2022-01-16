@@ -18,7 +18,7 @@ pub fn help() {
 }
 
 pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
-	me::my_info(prog).await?;
+	me::load_info(prog).await?;
 	println!("Welcome {}!", prog.me.login.to_owned());
 	Ok(())
 }
@@ -45,7 +45,7 @@ pub fn correction_point(prog: &mut program::Program) {
 
 pub async fn reload_me(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
 	println!("Reloading My Info");
-	me::my_info(prog).await?;
+	me::load_info(prog).await?;
 	println!("Reloaded My Info.");
 	Ok(())
 }

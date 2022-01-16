@@ -5,7 +5,7 @@ use std::{error};
 
 pub mod authorize;
 pub mod structs;
-pub mod make_json;
+pub mod json;
 pub mod command;
 use structs::program::Program;
 use command::me;
@@ -34,7 +34,7 @@ async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
         let command = line.trim().to_uppercase();
         debug!("COMMAND: {}", command);
         match command.as_str() {
-            "ME" => me::my_info(prog).await?,
+            "ME" => me::load_info(prog).await?,
             "EMAIL" => command::email(prog),
             "ID" => command::id(prog),
             "WALLET" => command::wallet(prog),
