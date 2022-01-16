@@ -21,11 +21,15 @@ RUST_LOG=info cargo run
 ## Commands
 ### email
 prints user email
+### help
+prints help
 ### id
 prints user id
 ### login
 prints user intra id
-### help
-prints help
+### point
+prints user correction point
 ### reload
-reload personal data.
+reload personal data
+### wallet
+prints user wallet
