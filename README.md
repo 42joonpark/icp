@@ -12,7 +12,7 @@ https://profile.intra.42.fr/oauth/applications/new
 4. enter "help" or "command" to see list of commands
 
 ### Log
-RUST_LOG=info cargo run
+RUST_LOG=info
 
 1. info
 2. debug
