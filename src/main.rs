@@ -46,9 +46,8 @@ async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
                 println!("bye!!!👋👋👋👋");
                 break;
             }
-            _ => {}
+            _ => println!("42cli: command not found: {}", line.trim()),
         }
-        println!("{}", line);
     }
     Ok(())
 }

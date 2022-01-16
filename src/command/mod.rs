@@ -19,7 +19,7 @@ pub fn help() {
 
 pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
 	me::load_info(prog).await?;
-	println!("Welcome {}!", prog.me.login.to_owned());
+	println!("\n\nWelcome {}!", prog.me.login.to_owned());
 	Ok(())
 }
 
