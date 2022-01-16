@@ -23,6 +23,10 @@ pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn erro
 	Ok(())
 }
 
+pub fn clear() {
+	print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+}
+
 pub fn email(prog: &mut program::Program) {
 	println!("Email: {}", prog.me.email);
 }

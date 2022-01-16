@@ -33,6 +33,7 @@ async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
         let command = line.trim().to_uppercase();
         debug!("COMMAND: {}", command);
         match command.as_str() {
+            "CLEAR" => command::clear(),
             "ME" => me::load_info(prog).await?,
             "EMAIL" => command::email(prog),
             "ID" => command::id(prog),
