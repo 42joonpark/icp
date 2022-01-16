@@ -1,0 +1,824 @@
+[
+    {
+        "id": 55,
+        "name": "Tétouan",
+        "time_zone": "Africa/Casablanca",
+        "language": {
+            "id": 1,
+            "name": "Français",
+            "identifier": "fr"
+        },
+        "users_count": 4,
+        "vogsphere_id": null,
+        "country": "Morocco",
+        "address": "Parc Tétouan Shore, CP93150 , Martil, Tétouan",
+        "zip": "93000",
+        "city": "Tétouan",
+        "website": "https://1337.ma",
+        "facebook": "",
+        "twitter": "https://twitter.com/1337FIL",
+        "active": true,
+        "email_extension": "1337.ma",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 54,
+        "name": "42-test",
+        "time_zone": "Europe/Paris",
+        "language": {
+            "id": 1,
+            "name": "Français",
+            "identifier": "fr"
+        },
+        "users_count": 4,
+        "vogsphere_id": null,
+        "country": "France",
+        "address": "96 Bd Bessières",
+        "zip": "75017",
+        "city": "Paris",
+        "website": "http://42paris.fr",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42paris.fr",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 53,
+        "name": "Vienna",
+        "time_zone": "Europe/Vienna",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 1,
+        "vogsphere_id": null,
+        "country": "Austria",
+        "address": "- No address yet -",
+        "zip": "22180",
+        "city": "Vienna",
+        "website": "https://www.42vienna.com",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42vienna.com",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 52,
+        "name": "Florence",
+        "time_zone": "Europe/Rome",
+        "language": {
+            "id": 16,
+            "name": "Italian",
+            "identifier": "it"
+        },
+        "users_count": 1,
+        "vogsphere_id": null,
+        "country": "Italy",
+        "address": "unknown street",
+        "zip": "50100",
+        "city": "Firenze",
+        "website": "https://www.42firenze.it",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42firenze.it",
+        "default_hidden_phone": true,
+        "endpoint": null
+    },
+    {
+        "id": 51,
+        "name": "Berlin",
+        "time_zone": "Europe/Berlin",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 4,
+        "vogsphere_id": null,
+        "country": "Germany",
+        "address": "somewhere-Straße",
+        "zip": "10000",
+        "city": "Berlin",
+        "website": "http://42berlin.de/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42berlin.de",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 50,
+        "name": "Kocaeli",
+        "time_zone": "Europe/Istanbul",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 417,
+        "vogsphere_id": 37,
+        "country": "Turkey",
+        "address": "- No address yet -",
+        "zip": "41000",
+        "city": "Kocaeli",
+        "website": "http://www.42kocaeli.com.tr",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42kocaeli.com.tr",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 35,
+            "url": "https://endpoint.42kocaeli.com.tr:4000/",
+            "description": "endpoint 42 kocaeli",
+            "created_at": "2021-07-13T08:29:10.621Z",
+            "updated_at": "2021-07-13T08:29:10.621Z"
+        }
+    },
+    {
+        "id": 49,
+        "name": "Istanbul",
+        "time_zone": "Europe/Istanbul",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 747,
+        "vogsphere_id": 36,
+        "country": "Turkey",
+        "address": "- No address yet -",
+        "zip": "34000",
+        "city": "Istanbul",
+        "website": "http://www.42istanbul.com.tr",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42istanbul.com.tr",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 34,
+            "url": "https://endpoint.42istanbul.com.tr:4000/",
+            "description": "endpoint 42 Istanbul",
+            "created_at": "2021-06-29T06:12:23.256Z",
+            "updated_at": "2021-06-29T06:12:23.256Z"
+        }
+    },
+    {
+        "id": 48,
+        "name": "Mulhouse",
+        "time_zone": "Europe/Paris",
+        "language": {
+            "id": 1,
+            "name": "Français",
+            "identifier": "fr"
+        },
+        "users_count": 136,
+        "vogsphere_id": 39,
+        "country": "France",
+        "address": "30 Rue François Spoerry",
+        "zip": "68100",
+        "city": "Mulhouse",
+        "website": "https://42mulhouse.fr",
+        "facebook": "https://www.facebook.com/42Mulhouse",
+        "twitter": "https://twitter.com/42MulhouseGE",
+        "active": true,
+        "email_extension": "42mulhouse.fr",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 37,
+            "url": "https://endpoint.42mulhouse.fr:4000/",
+            "description": "endpoint 42 Mulhouse",
+            "created_at": "2021-10-18T12:00:40.803Z",
+            "updated_at": "2021-10-18T12:00:40.803Z"
+        }
+    },
+    {
+        "id": 47,
+        "name": "Lausanne",
+        "time_zone": "Europe/Zurich",
+        "language": {
+            "id": 1,
+            "name": "Français",
+            "identifier": "fr"
+        },
+        "users_count": 371,
+        "vogsphere_id": 35,
+        "country": "Switzerland",
+        "address": "64 Rue de Lausanne",
+        "zip": "1020",
+        "city": "Renens",
+        "website": "https://42lausanne.ch/",
+        "facebook": "https://www.facebook.com/42Lausanne",
+        "twitter": "https://twitter.com/42lausanne",
+        "active": true,
+        "email_extension": "42lausanne.ch",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 32,
+            "url": "https://endpoint.42lausanne.ch:4000",
+            "description": "Endpoint for 42 Lausanne campus",
+            "created_at": "2021-06-10T23:35:21.597Z",
+            "updated_at": "2021-06-11T02:09:16.422Z"
+        }
+    },
+    {
+        "id": 46,
+        "name": "Barcelona",
+        "time_zone": "Europe/Madrid",
+        "language": {
+            "id": 11,
+            "name": "Spanish",
+            "identifier": "es"
+        },
+        "users_count": 300,
+        "vogsphere_id": 38,
+        "country": "Spain",
+        "address": "Parc Tecnològic de Barcelona Activa, Carrer Albert Einstein",
+        "zip": "08042",
+        "city": "Barcelona",
+        "website": "www.42barcelona.com",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42barcelona.com",
+        "default_hidden_phone": true,
+        "endpoint": {
+            "id": 36,
+            "url": "https://endpoint.42barcelona.com:4000/",
+            "description": "endpoint 42 barcelona",
+            "created_at": "2021-09-13T20:46:17.418Z",
+            "updated_at": "2021-09-13T20:46:17.418Z"
+        }
+    },
+    {
+        "id": 45,
+        "name": "Alicante",
+        "time_zone": "Europe/Madrid",
+        "language": {
+            "id": 11,
+            "name": "Spanish",
+            "identifier": "es"
+        },
+        "users_count": 8,
+        "vogsphere_id": null,
+        "country": "Spain",
+        "address": "- No address yet -",
+        "zip": "03000",
+        "city": "Alicante",
+        "website": "https://42alicante.com/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42alicante.com",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 44,
+        "name": "Wolfsburg",
+        "time_zone": "Europe/Berlin",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 922,
+        "vogsphere_id": 29,
+        "country": "Germany",
+        "address": "Porschestraße 2c",
+        "zip": "38440",
+        "city": "Wolfsburg",
+        "website": "http://42wolfsburg.de/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42wolfsburg.de",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 27,
+            "url": "https://endpoint.42wolfsburg.de:4000/",
+            "description": "Endpoint 42 Wolfsburg",
+            "created_at": "2021-01-14T08:29:12.909Z",
+            "updated_at": "2021-01-14T08:29:12.909Z"
+        }
+    },
+    {
+        "id": 43,
+        "name": "Abu Dhabi",
+        "time_zone": "Asia/Dubai",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 705,
+        "vogsphere_id": 30,
+        "country": "United Arab Emirates",
+        "address": "Mina Zayed",
+        "zip": "00000",
+        "city": "Abu Dhabi",
+        "website": "https://42abudhabi.ae/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42abudhabi.ae",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 28,
+            "url": "https://endpoint.42abudhabi.ae:4000",
+            "description": "Endpoint 42 Abu Dhabi",
+            "created_at": "2021-02-02T10:35:48.428Z",
+            "updated_at": "2021-02-02T10:35:48.428Z"
+        }
+    },
+    {
+        "id": 42,
+        "name": "42Network",
+        "time_zone": "Europe/Paris",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 13,
+        "vogsphere_id": 43,
+        "country": "France",
+        "address": "96 boulevard Bessières",
+        "zip": "75017",
+        "city": "PARIS",
+        "website": "http://42network.org/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42network.org",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 33,
+            "url": "https://endpoint.42paris.fr",
+            "description": "42paris's new ldapkdc endpoint",
+            "created_at": "2021-06-14T07:49:14.872Z",
+            "updated_at": "2021-06-28T15:24:45.089Z"
+        }
+    },
+    {
+        "id": 41,
+        "name": "Nice",
+        "time_zone": "Europe/Paris",
+        "language": {
+            "id": 1,
+            "name": "Français",
+            "identifier": "fr"
+        },
+        "users_count": 412,
+        "vogsphere_id": 23,
+        "country": "France",
+        "address": "61 Avenue Simone Veil",
+        "zip": "06200",
+        "city": "Nice",
+        "website": "http://www.42nice.fr/",
+        "facebook": "https://www.facebook.com/42nice",
+        "twitter": "https://twitter.com/42nicesud",
+        "active": true,
+        "email_extension": "42nice.fr",
+        "default_hidden_phone": true,
+        "endpoint": {
+            "id": 21,
+            "url": "https://endpoint.42nice.fr:4000",
+            "description": "Endpoint 42 nice",
+            "created_at": "2020-09-18T00:02:27.612Z",
+            "updated_at": "2020-09-18T00:02:27.612Z"
+        }
+    },
+    {
+        "id": 40,
+        "name": "Urduliz",
+        "time_zone": "Europe/Madrid",
+        "language": {
+            "id": 11,
+            "name": "Spanish",
+            "identifier": "es"
+        },
+        "users_count": 308,
+        "vogsphere_id": 32,
+        "country": "Spain",
+        "address": "Aita Gotzon Kalea 37",
+        "zip": "48610",
+        "city": "Urduliz",
+        "website": "https://42urduliz.com/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42urduliz.com",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 30,
+            "url": "https://endpoint.42urduliz.com:4000",
+            "description": "endpoint 42 urduliz",
+            "created_at": "2021-04-08T08:40:47.113Z",
+            "updated_at": "2021-04-08T08:40:47.113Z"
+        }
+    },
+    {
+        "id": 39,
+        "name": "Heilbronn",
+        "time_zone": "Europe/Berlin",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 752,
+        "vogsphere_id": 28,
+        "country": "Germany",
+        "address": "Bildungscampus 9",
+        "zip": "74076",
+        "city": "Heilbronn",
+        "website": "https://42heilbronn.de/",
+        "facebook": "https://www.facebook.com/42heilbronn",
+        "twitter": "https://twitter.com/42Heilbronn",
+        "active": true,
+        "email_extension": "42heilbronn.de",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 26,
+            "url": "https://endpoint.42heilbronn.de:4000",
+            "description": "endpoint 42 heilbronn",
+            "created_at": "2021-01-11T15:12:29.365Z",
+            "updated_at": "2021-01-11T15:12:29.365Z"
+        }
+    },
+    {
+        "id": 38,
+        "name": "Lisboa",
+        "time_zone": "Europe/Lisbon",
+        "language": {
+            "id": 9,
+            "name": "Portuguese",
+            "identifier": "pt"
+        },
+        "users_count": 881,
+        "vogsphere_id": 25,
+        "country": "Portugal",
+        "address": "Rua Neves Ferreira, 13B",
+        "zip": "1170-273",
+        "city": "Lisboa",
+        "website": "http://www.42lisboa.com",
+        "facebook": "https://www.facebook.com/42-Lisboa-100970235020298/",
+        "twitter": "https://twitter.com/42lisboa",
+        "active": true,
+        "email_extension": "42lisboa.com",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 23,
+            "url": "https://endpoint.42lisboa.com:4000/",
+            "description": "Enpoint LDAP lisboa",
+            "created_at": "2020-09-30T20:54:43.067Z",
+            "updated_at": "2020-09-30T20:54:43.067Z"
+        }
+    },
+    {
+        "id": 37,
+        "name": "Malaga",
+        "time_zone": "Europe/Madrid",
+        "language": {
+            "id": 11,
+            "name": "Spanish",
+            "identifier": "es"
+        },
+        "users_count": 12,
+        "vogsphere_id": null,
+        "country": "Spain",
+        "address": "malaga street",
+        "zip": "29000",
+        "city": "Malaga",
+        "website": "http://www.42malaga.com",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42malaga.com",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 36,
+        "name": "Adelaide",
+        "time_zone": "Australia/Adelaide",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 397,
+        "vogsphere_id": 33,
+        "country": "Australia",
+        "address": "Level 2 and 3 - 24 Pitt St",
+        "zip": "5000",
+        "city": "Adelaide",
+        "website": "http://www.42adel.org.au",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42adel.org.au",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 31,
+            "url": "https://endpoint.42adel.org.au:4000",
+            "description": "endpoint 42 adelaide",
+            "created_at": "2021-06-04T07:55:56.262Z",
+            "updated_at": "2021-06-09T09:20:05.299Z"
+        }
+    },
+    {
+        "id": 35,
+        "name": "Amman",
+        "time_zone": "Asia/Jerusalem",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 0,
+        "vogsphere_id": null,
+        "country": "Jordan",
+        "address": "4242 street",
+        "zip": "11000",
+        "city": "Amman",
+        "website": "http://www.42amman.com",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42amman.com",
+        "default_hidden_phone": false,
+        "endpoint": null
+    },
+    {
+        "id": 34,
+        "name": "Kuala Lumpur",
+        "time_zone": "Asia/Kuala_Lumpur",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 421,
+        "vogsphere_id": 26,
+        "country": "Malaysia",
+        "address": "Sunway FutureX",
+        "zip": "47500",
+        "city": "Kuala Lumpur",
+        "website": "42kl.edu.my",
+        "facebook": "https://www.facebook.com/42kualalumpur/",
+        "twitter": "https://twitter.com/42kualalumpur",
+        "active": true,
+        "email_extension": "42kl.edu.my",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 24,
+            "url": "https://endpoint.42kl.edu.my:4000/",
+            "description": "endpoint Kuala Lumpur",
+            "created_at": "2020-12-07T08:26:21.129Z",
+            "updated_at": "2020-12-07T08:26:21.129Z"
+        }
+    },
+    {
+        "id": 33,
+        "name": "Bangkok",
+        "time_zone": "Asia/Bangkok",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 455,
+        "vogsphere_id": 31,
+        "country": "Thailand",
+        "address": "1 Thanon Chalong Krung, Lat Krabang",
+        "zip": "10520",
+        "city": "Bangkok",
+        "website": "https://www.42bangkok.com/",
+        "facebook": "https://www.facebook.com/42Bangkok/",
+        "twitter": "https://twitter.com/42bangkok",
+        "active": true,
+        "email_extension": "42bangkok.com",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 29,
+            "url": "https://endpoint.42bangkok.com:4000/",
+            "description": "endpoint 42 Bangkok",
+            "created_at": "2021-03-01T12:28:53.489Z",
+            "updated_at": "2021-03-01T12:28:53.489Z"
+        }
+    },
+    {
+        "id": 32,
+        "name": "Yerevan",
+        "time_zone": "Asia/Yerevan",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 1012,
+        "vogsphere_id": 22,
+        "country": "Armenia",
+        "address": "16 Halabyan St",
+        "zip": "0038",
+        "city": "Yerevan",
+        "website": "https://42yerevan.am/",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42yerevan.am",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 20,
+            "url": "https://endpoint.42yerevan.am:4000",
+            "description": "Endpoint for LDAP of 42 Yerevan",
+            "created_at": "2020-09-10T14:32:38.115Z",
+            "updated_at": "2020-09-10T14:32:38.115Z"
+        }
+    },
+    {
+        "id": 31,
+        "name": "Angouleme",
+        "time_zone": "Europe/Paris",
+        "language": {
+            "id": 1,
+            "name": "Français",
+            "identifier": "fr"
+        },
+        "users_count": 8,
+        "vogsphere_id": 41,
+        "country": "France",
+        "address": "49-51 Boulevard Besson-Ney",
+        "zip": "16000",
+        "city": "Angoulême",
+        "website": "42angouleme.fr",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42angouleme.fr",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 40,
+            "url": "https://ldap-endpoint.42angouleme.fr:4000/",
+            "description": "Endpoint 42 Angouleme",
+            "created_at": "2022-01-04T15:24:43.162Z",
+            "updated_at": "2022-01-04T15:24:43.162Z"
+        }
+    },
+    {
+        "id": 30,
+        "name": "Rome",
+        "time_zone": "Europe/Rome",
+        "language": {
+            "id": 16,
+            "name": "Italian",
+            "identifier": "it"
+        },
+        "users_count": 1289,
+        "vogsphere_id": 24,
+        "country": "Italy",
+        "address": "Via Marsala 29H Termini train station",
+        "zip": "00185",
+        "city": "Roma",
+        "website": "https://www.42roma.it",
+        "facebook": "",
+        "twitter": "",
+        "active": true,
+        "email_extension": "42roma.it",
+        "default_hidden_phone": true,
+        "endpoint": {
+            "id": 22,
+            "url": "https://endpoint.42roma.it:4000/",
+            "description": "42 Roma endpoint",
+            "created_at": "2020-09-27T12:29:31.464Z",
+            "updated_at": "2020-09-28T08:36:39.837Z"
+        }
+    },
+    {
+        "id": 29,
+        "name": "Seoul",
+        "time_zone": "Asia/Seoul",
+        "language": {
+            "id": 14,
+            "name": "Korean",
+            "identifier": "ko"
+        },
+        "users_count": 3264,
+        "vogsphere_id": 19,
+        "country": "Korea, Republic of",
+        "address": "Gaepo Digital Innovation Park, 416, Gaepo-ro, Gangnam-gu,",
+        "zip": "000000",
+        "city": "Seoul",
+        "website": "https://www.42seoul.kr",
+        "facebook": "https://www.facebook.com/inno.aca/  ",
+        "twitter": "https://twitter.com/inno_aca",
+        "active": true,
+        "email_extension": "42seoul.kr",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 17,
+            "url": "https://endpoint.42seoul.kr:4000",
+            "description": "LDAP ENDPOINT 42 Seoul",
+            "created_at": "2020-01-10T07:45:58.065Z",
+            "updated_at": "2020-01-10T08:37:58.570Z"
+        }
+    },
+    {
+        "id": 28,
+        "name": "Rio de Janeiro",
+        "time_zone": "America/Sao_Paulo",
+        "language": {
+            "id": 9,
+            "name": "Portuguese",
+            "identifier": "pt"
+        },
+        "users_count": 342,
+        "vogsphere_id": 40,
+        "country": "Brazil",
+        "address": "Via Binario do Porto, 299 / 4th floor",
+        "zip": "20000-000",
+        "city": "Rio de Janeiro",
+        "website": "https://42.rio",
+        "facebook": "",
+        "twitter": "@Escola42Rio",
+        "active": true,
+        "email_extension": "42.rio",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 38,
+            "url": "https://endpoint.42.rio:4000/",
+            "description": "42 Rio endpoint",
+            "created_at": "2021-10-26T19:23:55.571Z",
+            "updated_at": "2021-10-26T19:23:55.571Z"
+        }
+    },
+    {
+        "id": 27,
+        "name": "Hack High School - Fremont ",
+        "time_zone": "America/Los_Angeles",
+        "language": {
+            "id": 2,
+            "name": "English",
+            "identifier": "en"
+        },
+        "users_count": 16,
+        "vogsphere_id": 16,
+        "country": "United States",
+        "address": "6600 Dumbarton Cr.",
+        "zip": "94555",
+        "city": "Fremont",
+        "website": "https://www.42.us.org/",
+        "facebook": "https://www.facebook.com/42SiliconValley",
+        "twitter": "https://twitter.com/42SiliconValley",
+        "active": false,
+        "email_extension": "42.us.org",
+        "default_hidden_phone": false,
+        "endpoint": {
+            "id": 3,
+            "url": "https://bigbrother.42.us.org/ldap",
+            "description": "The bigbrother US endpoint",
+            "created_at": "2017-02-06T13:40:07.553Z",
+            "updated_at": "2017-02-06T14:05:49.771Z"
+        }
+    },
+    {
+        "id": 26,
+        "name": "Tokyo",
+        "time_zone": "Asia/Tokyo",
+        "language": {
+            "id": 13,
+            "name": "Japanese",
+            "identifier": "ja"
+        },
+        "users_count": 3395,
+        "vogsphere_id": 17,
+        "country": "Japan",
+        "address": "Sumitomo Fudosan Roppongi Grand Tower 3-2-1 Roppongi Minato-ku reception: 24F",
+        "zip": "106-6224",
+        "city": "Tokyo",
+        "website": "https://42tokyo.jp",
+        "facebook": "https://www.facebook.com/42tokyo/",
+        "twitter": "https://twitter.com/42_tokyo",
+        "active": true,
+        "email_extension": "42tokyo.jp",
+        "default_hidden_phone": true,
+        "endpoint": {
+            "id": 15,
+            "url": "https://endpoint.42tokyo.jp:8000",
+            "description": "Endpoint 42 Tokyo",
+            "created_at": "2019-11-06T05:15:24.270Z",
+            "updated_at": "2019-11-06T05:15:24.270Z"
+        }
+    }
+]

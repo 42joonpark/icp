@@ -1,0 +1,11 @@
+{
+    "resource_owner_id": 86792,
+    "scopes": [
+        "public"
+    ],
+    "expires_in_seconds": 7130,
+    "application": {
+        "uid": "37b03bd9f3fa8ba93bc2736ef348fec878949ae649543d8cf0ea15c6743da0e3"
+    },
+    "created_at": 1642069134
+}
