@@ -1,5 +1,5 @@
-# <span style="color: rgb(255, 111, 122)"> cli_42_info </span>
-CLI which prints 42 personal info
+# <span style="color: rgb(255, 111, 122)"> 42_cli </span>
+view your intra information on CLI
 
 ## How to use
 1. Generate client_id and client_secret at intra.\
@@ -18,16 +18,16 @@ RUST_LOG=info
 
 ## Commands
 ### email
-prints user email
+print user email
 ### help
-prints help
+print help
 ### id
-prints user id
+print user id
 ### login
-prints user intra id
+print user intra id
 ### point
-prints user correction point
+print user correction point
 ### reload
 reload personal data
 ### wallet
-prints user wallet
+print user wallet
