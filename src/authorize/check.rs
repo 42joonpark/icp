@@ -11,7 +11,7 @@ use crate::authorize::my_authorize;
 use crate::authorize::token::TokenInfo;
 use crate::structs::program::Program;
 
-// pub async fn check_token_exist(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
+// check if access_token exists inside .env file
 pub async fn check_token_exist(prog: &mut Program) -> Result<()> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let ac_token = env::var("access_token");
@@ -22,18 +22,19 @@ pub async fn check_token_exist(prog: &mut Program) -> Result<()> {
         }
         Err(_) => {
             debug!("check_token_validity(): token not found in .env file");
+            // if access_token does not exist, than generate access_token
             prog.access_token = my_authorize().await?;
             // write to .env file
             write_to_file(".env", format!("access_token={}", prog.access_token.to_owned()));
+            // duplicate ...
             prog.access_token.to_owned()
         }
     };
     prog.access_token = ac_token;
-    // check_token(prog.access_token.to_owned(), prog).await?;
     Ok(())
 }
 
-async fn make_token_request(ac_token: String) -> Result<Response, reqwest::Error> {
+async fn token_info_request(ac_token: String) -> Result<Response, reqwest::Error> {
     let client = reqwest::Client::new();
     let response = client
         .get("https://api.intra.42.fr/oauth/token/info")
@@ -43,18 +44,22 @@ async fn make_token_request(ac_token: String) -> Result<Response, reqwest::Error
     Ok(response)
 }
 
+// check if current access token is valide.
+// if not generate new access token
 pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Result<()> {
-    let mut response = make_token_request(ac_token.to_owned()).await?;
+    let mut response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {
             debug!("check_token(): OK");
         }
         reqwest::StatusCode::UNAUTHORIZED => {
             warn!("check_token(): UNAUTHORIZED");
-            // token expired or wrong access token -> get new token
+            // token expired or wrong access token -> generate new token
             prog.access_token = my_authorize().await?;
+            // update .env file with new access token
             update_file(prog.access_token.to_owned());
-            response = make_token_request(prog.access_token.to_owned()).await?;
+            // make request again to check if token is valide
+            response = token_info_request(prog.access_token.to_owned()).await?;
             match response.status() {
                 reqwest::StatusCode::UNAUTHORIZED => panic!("Token validity check failed more than once"),
                 reqwest::StatusCode::OK => (),
@@ -67,6 +72,7 @@ pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Resul
         }
     }
 
+    // get token info
     prog.token = response.json::<TokenInfo>().await?;
     debug!("{:?}", prog.token);
     debug!("{:?}", prog.client_id);

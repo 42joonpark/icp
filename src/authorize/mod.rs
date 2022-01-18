@@ -11,6 +11,7 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
 
+// authorize with 42 OAuth2
 pub async fn my_authorize() -> Result<String> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let client_id =
@@ -25,13 +26,17 @@ pub async fn my_authorize() -> Result<String> {
     )
     .set_redirect_uri(RedirectUrl::new("http://localhost:8080".to_string())?);
 
+    // generate OAuth2 url. set scope to public
     let (auth_url, _) = client
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("public".to_string()))
         .url();
 
+    // prints the authorize url
     println!("Browse to: {}", auth_url);
 
+    // localhost:8080 server
+    // wait until user authorize
     let mut ac_token = String::new();
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {

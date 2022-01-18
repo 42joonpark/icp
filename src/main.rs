@@ -10,6 +10,7 @@ use command::me;
 
 async fn run(prog: &mut Program) -> Result<()> {
     let reader = io::stdin();
+    // print welcome message
     command::welcome_msg(prog).await?;
     loop {
         let mut line = String::new();
