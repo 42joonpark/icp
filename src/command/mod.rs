@@ -1,7 +1,4 @@
-pub mod help;
-pub mod me;
-
-use std::{error};
+use anyhow::{Result};
 
 use crate::structs::program;
 
@@ -17,7 +14,8 @@ pub fn help() {
 	println!("\tquit: quit program");
 }
 
-pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
+// pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
+pub async fn welcome_msg(prog: &mut program::Program) -> Result<()> {
 	me::load_info(prog).await?;
 	println!("\n\nWelcome {}!", prog.me.login.to_owned());
 	Ok(())
@@ -47,9 +45,12 @@ pub fn correction_point(prog: &mut program::Program) {
 	println!("Correction Point: {}", prog.me.correction_point);
 }
 
-pub async fn reload_me(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
+pub async fn reload_me(prog: &mut program::Program) -> Result<()> {
 	println!("Reloading My Info");
 	me::load_info(prog).await?;
 	println!("Reloaded My Info.");
 	Ok(())
 }
+
+pub mod help;
+pub mod me;

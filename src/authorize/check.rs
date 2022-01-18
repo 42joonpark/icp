@@ -1,16 +1,18 @@
 use log::{debug, warn};
+use anyhow::{Result};
 use reqwest::Response;
 use reqwest::header::AUTHORIZATION;
 use std::io::{self, BufRead};
 use std::path::Path;
-use std::{env, error};
+use std::{env};
 use std::{fs, fs::File};
 
 use crate::authorize::my_authorize;
 use crate::authorize::token::TokenInfo;
 use crate::structs::program::Program;
 
-pub async fn check_token_exist(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
+// pub async fn check_token_exist(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
+pub async fn check_token_exist(prog: &mut Program) -> Result<()> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let ac_token = env::var("access_token");
     let ac_token = match ac_token {
@@ -31,18 +33,17 @@ pub async fn check_token_exist(prog: &mut Program) -> Result<(), Box<dyn error::
     Ok(())
 }
 
-async fn make_token_request(ac_token: String) -> Result<Response, Box<dyn std::error::Error>> {
+async fn make_token_request(ac_token: String) -> Result<Response, reqwest::Error> {
     let client = reqwest::Client::new();
     let response = client
         .get("https://api.intra.42.fr/oauth/token/info")
         .header(AUTHORIZATION, format!("Bearer {}", ac_token))
         .send()
-        .await
-        .unwrap();
+        .await?;
     Ok(response)
 }
 
-pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Result<()> {
     let mut response = make_token_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {

@@ -19,7 +19,8 @@ impl Program {
 		Program::default()
 	}
 
-	pub async fn init_program(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+	// pub async fn init_program(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+	pub async fn init_program(&mut self) -> Result<()> {
     	dotenv::dotenv().expect("Failed to read .env file!!");
     	let client_id =
         		env::var("client_id").with_context(|| format!("Failed to read `client_id`."))?;

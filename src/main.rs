@@ -1,8 +1,6 @@
 use anyhow::Result;
 use log::debug;
 use std::io::{self, Write};
-use std::{error};
-
 pub mod authorize;
 pub mod structs;
 pub mod json;
@@ -10,7 +8,7 @@ pub mod command;
 use structs::program::Program;
 use command::me;
 
-async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
+async fn run(prog: &mut Program) -> Result<()> {
     let reader = io::stdin();
     command::welcome_msg(prog).await?;
     loop {
@@ -53,7 +51,8 @@ async fn run(prog: &mut Program) -> Result<(), Box<dyn error::Error>> {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn error::Error>> {
+// async fn main() -> Result<(), Box<dyn error::Error>> {
+async fn main() -> Result<()> {
     env_logger::init();
     let mut program = Program::new();
     program.init_program().await?;

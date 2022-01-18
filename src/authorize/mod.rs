@@ -6,12 +6,12 @@ use oauth2::{
     AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope,
     TokenResponse, TokenUrl,
 };
-use std::{env, error};
+use std::{env};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
 
-pub async fn my_authorize() -> Result<String, Box<dyn error::Error>> {
+pub async fn my_authorize() -> Result<String> {
     dotenv::dotenv().expect("Failed to read .env file!!");
     let client_id =
         env::var("client_id").with_context(|| format!("Failed to read `client_id`."))?;
@@ -21,9 +21,7 @@ pub async fn my_authorize() -> Result<String, Box<dyn error::Error>> {
         ClientId::new(client_id.to_owned()),
         Some(ClientSecret::new(client_secret)),
         AuthUrl::new("https://api.intra.42.fr/oauth/authorize".to_string())?,
-        Some(TokenUrl::new(
-            "https://api.intra.42.fr/oauth/token".to_string(),
-        )?),
+        Some(TokenUrl::new("https://api.intra.42.fr/oauth/token".to_string())?),
     )
     .set_redirect_uri(RedirectUrl::new("http://localhost:8080".to_string())?);
 
