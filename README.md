@@ -1,12 +1,10 @@
-# <span style="color: rgb(255, 111, 122)"> cli_42_info </span>
-CLI which prints 42 personal info
+# <span style="color: rgb(255, 111, 122)"> 42_cli </span>
+view your intra information on CLI
 
 ## How to use
-### General usage
 1. Generate client_id and client_secret at intra.\
 https://profile.intra.42.fr/oauth/applications/new 
-2. create .env file inside "42_cli" directory
-3. put your client_id and client_secret as below. \
+2. create .env file inside "42_cli" directory and put your client_id and client_secret.\
 	client_id="your client_id" \
 	client_secret="your client_secret"
 4. enter "help" or "command" to see list of commands
@@ -20,16 +18,16 @@ RUST_LOG=info
 
 ## Commands
 ### email
-prints user email
+print user email
 ### help
-prints help
+print help
 ### id
-prints user id
+print user id
 ### login
-prints user intra id
+print user intra id
 ### point
-prints user correction point
+print user correction point
 ### reload
 reload personal data
 ### wallet
-prints user wallet
+print user wallet
