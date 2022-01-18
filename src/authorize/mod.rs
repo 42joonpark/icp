@@ -42,10 +42,19 @@ pub async fn my_authorize() -> Result<String> {
                 let mut reader = BufReader::new(&mut stream);
 
                 let mut request_line = String::new();
-                reader.read_line(&mut request_line).await.unwrap();
+                // reader.read_line(&mut request_line).await.unwrap();
+                reader.read_line(&mut request_line)
+                        .await
+                        .with_context(|| format!("Failed to read line"))?;
 
-                let redirect_url = request_line.split_whitespace().nth(1).unwrap();
-                let url = Url::parse(&("http://localhost".to_string() + redirect_url)).unwrap();
+                let redirect_url = request_line
+                                        .split_whitespace()
+                                        .nth(1)
+                                        .with_context(|| "Failed to parse request redirect url.")
+                                        .unwrap();
+                let url = Url::parse(&("http://localhost".to_string() + redirect_url))
+                                .with_context(|| "Failed to make redirect url")
+                                .unwrap();
 
                 let code_pair = url
                     .query_pairs()
@@ -53,6 +62,7 @@ pub async fn my_authorize() -> Result<String> {
                         let &(ref key, _) = pair;
                         key == "code"
                     })
+                    .with_context(|| "Failed to find code")
                     .unwrap();
 
                 let (_, value) = code_pair;
@@ -64,6 +74,7 @@ pub async fn my_authorize() -> Result<String> {
                         let &(ref key, _) = pair;
                         key == "state"
                     })
+                    .with_context(|| "Failed to find state")
                     .unwrap();
 
                 let (_, value) = state_pair;
@@ -76,7 +87,10 @@ pub async fn my_authorize() -> Result<String> {
                 message.len(),
                 message
             );
-            stream.write_all(response.as_bytes()).await.unwrap();
+            stream.write_all(response.as_bytes())
+                    .await
+                    .with_context(|| "Failed to write HTTP response")
+                    .unwrap();
 
             debug!("42API returned the following code:\n{}\n", code.secret());
             debug!("42API returned the following state:\n{}\n", state.secret());

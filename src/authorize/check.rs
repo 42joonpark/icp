@@ -1,5 +1,5 @@
 use log::{debug, warn};
-use anyhow::{Result};
+use anyhow::{Context, Result};
 use reqwest::Response;
 use reqwest::header::AUTHORIZATION;
 use std::io::{self, BufRead};
@@ -102,8 +102,8 @@ fn update_file(token: String) {
             }
         }
     }
-    fs::remove_file(".env").unwrap();
-    fs::rename(".temp", ".env").unwrap();
+    fs::remove_file(".env").with_context(|| "Failed to remove .env file").unwrap();
+    fs::rename(".temp", ".env").with_context(|| "Failed to rename .temp to .env").unwrap();
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
