@@ -22,8 +22,8 @@ async fn run(prog: &mut Program) -> Result<()> {
                 eprintln!("{}", error);
                 continue;
             }
-            Ok(size) => {
-                if size == 0 {
+            Ok(bytes) => {
+                if bytes == 0 {
                     println!("bye!");
                     break;
                 }
@@ -52,7 +52,6 @@ async fn run(prog: &mut Program) -> Result<()> {
 }
 
 #[tokio::main]
-// async fn main() -> Result<(), Box<dyn error::Error>> {
 async fn main() -> Result<()> {
     env_logger::init();
     let mut program = Program::new();

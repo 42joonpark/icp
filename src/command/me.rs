@@ -40,6 +40,6 @@ pub async fn load_info(prog: &mut Program) -> Result<()> {
 
     let tmp = response.text().await?;
     prog.me = jsonize(tmp.as_str()).unwrap();
-    debug!("{:#?}", prog.me);
+    // debug!("{:#?}", prog.me);
     Ok(())
 }
