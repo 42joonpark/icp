@@ -36,7 +36,12 @@ pub async fn my_authorize() -> Result<String> {
     println!("Browse to: {}", auth_url);
 
     // localhost:8080 server
-    // wait until user authorize
+    let ac_token = local_server(client).await?;
+    Ok(ac_token)
+}
+
+// make local server localhost:8080 and waits for request and exchange access_token
+async fn local_server(client: BasicClient) -> Result<String> {
     let mut ac_token = String::new();
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
