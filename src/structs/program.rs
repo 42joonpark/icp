@@ -28,7 +28,9 @@ impl Program {
 		self.client_id = client_id;
 		self.client_secret = client_secret;
 		check::check_token_exist(self).await?;
-		check::check_token_validity(self.access_token.to_owned(), self).await?;
+		// check_token_validity not needed here.
+		// main() -> welcome_msg() -> load_info() -> check_token_validity()
+		// check::check_token_validity(self.access_token.to_owned(), self).await?;
 		Ok(())
 	}
 }
