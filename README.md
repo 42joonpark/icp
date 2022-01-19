@@ -3,7 +3,8 @@ view your intra information on CLI
 
 ## How to use
 1. Generate client_id and client_secret at intra.\
-https://profile.intra.42.fr/oauth/applications/new 
+https://profile.intra.42.fr/oauth/applications/new  \
+set redirect_url to "http://localhost:8080"
 2. create .env file inside "42_cli" directory and put your client_id and client_secret.\
 	client_id="your client_id" \
 	client_secret="your client_secret"
