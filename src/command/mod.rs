@@ -17,7 +17,8 @@ pub fn help() {
 // pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
 pub async fn welcome_msg(prog: &mut program::Program) -> Result<()> {
 	me::load_info(prog).await.with_context(|| format!("Failed to load info"))?;
-	println!("\n\nWelcome {}!", prog.me.login.to_owned());
+	clear();
+	println!("Welcome {}!", prog.me.login.to_owned());
 	Ok(())
 }
 
