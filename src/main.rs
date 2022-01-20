@@ -60,22 +60,12 @@ async fn main() -> Result<()> {
     App::new("42_cli")
                 .author("joonpark, 42.4.joonpark@gmail.com")
                 .about("Simple 42 intra cli")
-                .arg(
-                    Arg::new("quit")
-                    .help("quit program")
-                )
-                .arg(
-                    Arg::new("email")
-                    .help("print my email")
-                )
-                .arg(
-                    Arg::new("id")
-                    .help("print my user id")
-                )
-                .arg(
-                    Arg::new("login")
-                    .help("print my intra login id")
-                )
+                .args(&[
+                    Arg::new("quit").help("quit program"),
+                    Arg::new("email").help("print my email"),
+                    Arg::new("id").help("print my user id"),
+                    Arg::new("login").help("print my intra login id"),
+                ])
                 .get_matches();
 
     let mut program = Program::new();
