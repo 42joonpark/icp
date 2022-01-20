@@ -1,6 +1,8 @@
 use anyhow::Result;
 use log::debug;
 use std::io::{self, Write};
+use clap::{App, Arg};
+
 pub mod authorize;
 pub mod structs;
 pub mod json;
@@ -54,6 +56,28 @@ async fn run(prog: &mut Program) -> Result<()> {
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::init();
+
+    App::new("42_cli")
+                .author("joonpark, 42.4.joonpark@gmail.com")
+                .about("Simple 42 intra cli")
+                .arg(
+                    Arg::new("quit")
+                    .help("quit program")
+                )
+                .arg(
+                    Arg::new("email")
+                    .help("print my email")
+                )
+                .arg(
+                    Arg::new("id")
+                    .help("print my user id")
+                )
+                .arg(
+                    Arg::new("login")
+                    .help("print my intra login id")
+                )
+                .get_matches();
+
     let mut program = Program::new();
     program.init_program().await?;
 
