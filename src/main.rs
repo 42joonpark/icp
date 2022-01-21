@@ -56,18 +56,7 @@ async fn run(prog: &mut Program) -> Result<()> {
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::init();
-
-    App::new("42_cli")
-                .author("joonpark, 42.4.joonpark@gmail.com")
-                .about("Simple 42 intra cli")
-                .args(&[
-                    Arg::new("quit").help("quit program"),
-                    Arg::new("email").help("print my email"),
-                    Arg::new("id").help("print my user id"),
-                    Arg::new("login").help("print my intra login id"),
-                ])
-                .get_matches();
-
+         
     let mut program = Program::new();
     program.init_program().await?;
 
