@@ -1,11 +1,13 @@
-use log::{debug, warn};
 use anyhow::{Context, Result};
-use reqwest::Response;
+use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
-use std::io::{self, BufRead};
-use std::path::Path;
-use std::{env};
-use std::{fs, fs::File};
+use reqwest::Response;
+use std::env;
+use std::{
+    io::{self, BufRead},
+    path::Path,
+    {fs, fs::File},
+};
 
 use crate::authorize::my_authorize;
 use crate::authorize::token::TokenInfo;
@@ -25,7 +27,10 @@ pub async fn check_token_exist(prog: &mut Program) -> Result<()> {
             // if access_token does not exist, than generate access_token
             prog.access_token = my_authorize().await?;
             // write to .env file
-            write_to_file(".env", format!("access_token={}", prog.access_token.to_owned()));
+            write_to_file(
+                ".env",
+                format!("access_token={}", prog.access_token.to_owned()),
+            );
             // duplicate ...
             prog.access_token.to_owned()
         }
@@ -61,7 +66,9 @@ pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Resul
             // make request again to check if token is valide
             response = token_info_request(prog.access_token.to_owned()).await?;
             match response.status() {
-                reqwest::StatusCode::UNAUTHORIZED => panic!("Token validity check failed more than once"),
+                reqwest::StatusCode::UNAUTHORIZED => {
+                    panic!("Token validity check failed more than once")
+                }
                 reqwest::StatusCode::OK => (),
                 _ => panic!("Uh oh! something unexpected happened."),
             }
@@ -91,25 +98,27 @@ fn write_to_file(filename: &str, content: String) {
         .open(filename)
         .unwrap();
 
-    write!(file, "{}\n", content).unwrap();
+    writeln!(file, "{}", content).unwrap();
 }
 
 fn update_file(token: String) {
     if let Ok(lines) = read_lines(".env") {
-        for line in lines {
-            if let Ok(ip) = line {
-                let mut content = String::new();
-                if ip.contains("access_token") {
-                    content.push_str(format!("access_token={}", token).as_str());
-                } else {
-                    content.push_str(ip.as_str());
-                }
-                write_to_file(".temp", content);
+        for line in lines.flatten() {
+            let mut content = String::new();
+            if line.contains("access_token") {
+                content.push_str(format!("access_token={}", token).as_str());
+            } else {
+                content.push_str(line.as_str());
             }
+            write_to_file(".temp", content);
         }
     }
-    fs::remove_file(".env").with_context(|| "Failed to remove .env file").unwrap();
-    fs::rename(".temp", ".env").with_context(|| "Failed to rename .temp to .env").unwrap();
+    fs::remove_file(".env")
+        .with_context(|| "Failed to remove .env file")
+        .unwrap();
+    fs::rename(".temp", ".env")
+        .with_context(|| "Failed to rename .temp to .env")
+        .unwrap();
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>

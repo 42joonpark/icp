@@ -1,7 +1,6 @@
 extern crate serde_json;
 
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct TokenInfo {
