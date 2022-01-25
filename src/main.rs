@@ -1,14 +1,13 @@
 use anyhow::Result;
 use log::debug;
 use std::io::{self, Write};
-use clap::{App, Arg};
 
 pub mod authorize;
-pub mod structs;
-pub mod json;
 pub mod command;
-use structs::program::Program;
+pub mod json;
+pub mod structs;
 use command::me;
+use structs::program::Program;
 
 async fn run(prog: &mut Program) -> Result<()> {
     let reader = io::stdin();
@@ -56,7 +55,7 @@ async fn run(prog: &mut Program) -> Result<()> {
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::init();
-         
+
     let mut program = Program::new();
     program.init_program().await?;
 
