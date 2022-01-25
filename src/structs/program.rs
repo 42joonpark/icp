@@ -9,7 +9,7 @@ pub struct Program {
 	pub client_id: String,
 	pub client_secret: String,
 	pub access_token: String,
-	pub token: token::TokenInfo,
+	pub token: Option<token::TokenInfo>,
 	pub me: me::Me,
 	pub check_cnt: u8,
 }

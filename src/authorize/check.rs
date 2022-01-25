@@ -73,7 +73,7 @@ pub async fn check_token_validity(ac_token: String, prog: &mut Program) -> Resul
     }
 
     // get token info
-    prog.token = response.json::<TokenInfo>().await?;
+    prog.token = Some(response.json::<TokenInfo>().await?);
     debug!("{:?}", prog.token);
     debug!("{:?}", prog.client_id);
     debug!("{:?}", prog.client_secret);
