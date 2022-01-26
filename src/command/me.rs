@@ -7,6 +7,7 @@ use reqwest::header::AUTHORIZATION;
 use std::env;
 
 // request /v2/me
+/*
 pub async fn load_info(prog: &mut Program) -> Result<()> {
     dotenv::dotenv().expect("Failed to read .env file");
     let client = reqwest::Client::new();
@@ -46,3 +47,4 @@ pub async fn load_info(prog: &mut Program) -> Result<()> {
     // debug!("{:#?}", prog.me);
     Ok(())
 }
+*/

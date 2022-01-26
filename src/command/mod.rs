@@ -15,19 +15,20 @@ pub fn help() {
 }
 
 // pub async fn welcome_msg(prog: &mut program::Program) -> Result<(), Box<dyn error::Error>> {
-pub async fn welcome_msg(prog: &mut program::Program) -> Result<()> {
-    me::load_info(prog)
-        .await
-        .with_context(|| "Failed to load info".to_string())?;
-    clear();
-    println!("Welcome {}!", prog.me.login.to_owned());
-    Ok(())
-}
+// pub async fn welcome_msg(prog: &mut program::Program) -> Result<()> {
+//     me::load_info(prog)
+//         .await
+//         .with_context(|| "Failed to load info".to_string())?;
+//     clear();
+//     println!("Welcome {}!", prog.me.login.to_owned());
+//     Ok(())
+// }
 
 pub fn clear() {
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
 }
 
+/*
 pub fn email(prog: &mut program::Program) {
     println!("Email: {}", prog.me.email);
 }
@@ -56,6 +57,7 @@ pub async fn reload_me(prog: &mut program::Program) -> Result<()> {
     println!("Reloaded My Info.");
     Ok(())
 }
+*/
 
 pub mod help;
 pub mod me;

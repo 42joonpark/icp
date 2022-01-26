@@ -13,11 +13,11 @@ use url::Url;
 
 // authorize with 42 OAuth2
 pub async fn my_authorize() -> Result<String> {
-    dotenv::dotenv().expect("Failed to read .env file!!");
+    dotenv::dotenv()?;
     let client_id =
-        env::var("client_id").with_context(|| "Failed to read `client_id`.".to_string())?;
+        env::var("CLIENT_ID").with_context(|| "Failed to read `client_id`.".to_string())?;
     let client_secret =
-        env::var("client_secret").with_context(|| "Failed to read `client_secret`.".to_string())?;
+        env::var("CLIENT_SECRET").with_context(|| "Failed to read `client_secret`.".to_string())?;
     let client = BasicClient::new(
         ClientId::new(client_id.to_owned()),
         Some(ClientSecret::new(client_secret)),

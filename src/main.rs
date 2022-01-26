@@ -12,7 +12,7 @@ use structs::program::Program;
 async fn run(prog: &mut Program) -> Result<()> {
     let reader = io::stdin();
     // print welcome message
-    command::welcome_msg(prog).await?;
+    // command::welcome_msg(prog).await?;
     loop {
         let mut line = String::new();
         print!("42_cli > ");
@@ -32,16 +32,40 @@ async fn run(prog: &mut Program) -> Result<()> {
         }
         let command = line.trim().to_uppercase();
         debug!("COMMAND: {}", command);
+        // match command.as_str() {
+        //     "CLEAR" => command::clear(),
+        //     "ME" => me::load_info(prog).await?,
+        //     "EMAIL" => command::email(prog),
+        //     "ID" => command::id(prog),
+        //     "WALLET" => command::wallet(prog),
+        //     "LOGIN" => command::login(prog),
+        //     "POINT" => command::correction_point(prog),
+        //     "RELOAD" => command::reload_me(prog).await?,
+        //     "HELP" | "COMMAND" => command::help(),
+        //     "QUIT" => {
+        //         println!("bye!!!👋👋👋👋");
+        //         break;
+        //     }
+        //     _ => println!("42cli: command not found: {}", line.trim()),
+        // }
         match command.as_str() {
             "CLEAR" => command::clear(),
-            "ME" => me::load_info(prog).await?,
-            "EMAIL" => command::email(prog),
-            "ID" => command::id(prog),
-            "WALLET" => command::wallet(prog),
-            "LOGIN" => command::login(prog),
-            "POINT" => command::correction_point(prog),
-            "RELOAD" => command::reload_me(prog).await?,
-            "HELP" | "COMMAND" => command::help(),
+            // "ME" => me::load_info(prog).await?,
+            "EMAIL" => {
+                println!("Email: {}", prog.email().await?);
+            },
+            "ID" => {
+                println!("ID: {}", prog.id().await?);
+            },
+            "WALLET" => {
+                println!("Wallet: {}", prog.wallet().await?);
+            },
+            "POINT" => {
+                println!("Correction Point: {}", prog.correction_point().await?);
+            },
+            "LOGIN" => {
+                println!("Login: {}", prog.login().await?);
+            },
             "QUIT" => {
                 println!("bye!!!👋👋👋👋");
                 break;
@@ -58,6 +82,7 @@ async fn main() -> Result<()> {
 
     let mut program = Program::new();
     program.init_program().await?;
+    println!("{:#?}", program);
 
     run(&mut program).await?;
     Ok(())
