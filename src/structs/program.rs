@@ -65,8 +65,8 @@ impl Program {
         dotenv::dotenv()?;
         self.session.client_id =
             env::var("CLIENT_ID").with_context(|| "Failed to read `client_id`.".to_string())?;
-        self.session.client_secret =
-            env::var("CLIENT_SECRET").with_context(|| "Failed to read `client_secret`.".to_string())?;
+        self.session.client_secret = env::var("CLIENT_SECRET")
+            .with_context(|| "Failed to read `client_secret`.".to_string())?;
         self.session.access_token = check::check_token_exist().await?;
         Ok(())
     }
