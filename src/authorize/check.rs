@@ -65,8 +65,7 @@ pub async fn check_token_validity(mut ac_token: String) -> Result<(String, token
                     // panic!("Token validity check failed more than once")
                 }
                 reqwest::StatusCode::OK => (),
-                _ => todo!("try not to panic here")
-                // _ => panic!("Uh oh! something unexpected happened."),
+                _ => todo!("try not to panic here"), // _ => panic!("Uh oh! something unexpected happened."),
             }
         }
         _ => {
