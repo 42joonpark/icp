@@ -1,5 +1,6 @@
-use anyhow::{Context, Result};
 use crate::authorize::my_authorize;
+use crate::authorize::token;
+use anyhow::{Context, Result};
 use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
 use reqwest::Response;
@@ -25,7 +26,7 @@ pub async fn check_token_exist() -> Result<String> {
             // if access_token does not exist, than generate access_token
             let tmp = my_authorize().await?;
             // write to .env file
-            write_to_file(".env", format!("ACCESS_TOKEN={}", tmp.to_owned()));
+            write_to_file(".env", format!("ACCESS_TOKEN={}", tmp));
             tmp
         }
     };
@@ -44,7 +45,7 @@ async fn token_info_request(ac_token: String) -> Result<Response, reqwest::Error
 
 // check if current access token is valide.
 // if not generate new access token
-pub async fn check_token_validity(mut ac_token: String) -> Result<String> {
+pub async fn check_token_validity(mut ac_token: String) -> Result<(String, token::TokenInfo)> {
     let mut response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {
@@ -60,26 +61,23 @@ pub async fn check_token_validity(mut ac_token: String) -> Result<String> {
             response = token_info_request(ac_token.to_owned()).await?;
             match response.status() {
                 reqwest::StatusCode::UNAUTHORIZED => {
-                    panic!("Token validity check failed more than once")
+                    todo!("try not to panic here");
+                    // panic!("Token validity check failed more than once")
                 }
                 reqwest::StatusCode::OK => (),
-                _ => panic!("Uh oh! something unexpected happened."),
+                _ => todo!("try not to panic here")
+                // _ => panic!("Uh oh! something unexpected happened."),
             }
         }
         _ => {
             warn!("check_token(): panic!");
-            panic!("Uh oh! something unexpected happened.");
+            todo!("try not to panic here");
+            // panic!("Uh oh! something unexpected happened.");
         }
     }
-    Ok(ac_token)
-
-    // get token info
-    // prog.token = Some(response.json::<TokenInfo>().await?);
-    // debug!("{:?}", prog.token);
-    // debug!("{:?}", prog.client_id);
-    // debug!("{:?}", prog.client_secret);
-    // debug!("{:?}", prog.access_token);
-    // Ok(())
+    let res = response.text().await?;
+    let tok: token::TokenInfo = serde_json::from_str(res.as_str())?;
+    Ok((ac_token, tok))
 }
 
 fn write_to_file(filename: &str, content: String) {

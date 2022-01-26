@@ -1,3 +1,4 @@
+/*
 use crate::authorize::check::check_token_validity;
 use crate::json::jsonize;
 use crate::structs::program::Program;
@@ -7,7 +8,6 @@ use reqwest::header::AUTHORIZATION;
 use std::env;
 
 // request /v2/me
-/*
 pub async fn load_info(prog: &mut Program) -> Result<()> {
     dotenv::dotenv().expect("Failed to read .env file");
     let client = reqwest::Client::new();
