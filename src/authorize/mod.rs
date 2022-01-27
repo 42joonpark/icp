@@ -1,3 +1,4 @@
+use crate::structs::program::{Session};
 use anyhow::{Context, Result};
 use log::debug;
 use oauth2::basic::BasicClient;
@@ -6,18 +7,20 @@ use oauth2::{
     AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope,
     TokenResponse, TokenUrl,
 };
-use std::env;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
 
 // authorize with 42 OAuth2
-pub async fn my_authorize() -> Result<String> {
-    dotenv::dotenv()?;
-    let client_id =
-        env::var("CLIENT_ID").with_context(|| "Failed to read `client_id`.".to_string())?;
-    let client_secret =
-        env::var("CLIENT_SECRET").with_context(|| "Failed to read `client_secret`.".to_string())?;
+pub async fn my_authorize(session: Session) -> Result<String> {
+    let client_id = match session.client_id {
+        Some(x) => x,
+        None => String::new(),
+    };
+    let client_secret = match session.client_secret {
+        Some(secret) => secret,
+        None => String::new(),
+    };
     let client = BasicClient::new(
         ClientId::new(client_id.to_owned()),
         Some(ClientSecret::new(client_secret)),

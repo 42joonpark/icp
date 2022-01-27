@@ -1,5 +1,6 @@
 use crate::authorize::my_authorize;
 use crate::authorize::token;
+use crate::structs::program::{Session};
 use anyhow::{Context, Result};
 use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
@@ -13,8 +14,7 @@ use std::{
 
 // teturn access_token
 // if not exist in .env then create new access_token
-pub async fn check_token_exist() -> Result<String> {
-    dotenv::dotenv().expect("Failed to read .env file!!");
+pub async fn check_token_exist(session: Session) -> Result<String> {
     let ac_token = env::var("ACCESS_TOKEN");
     let ac_token = match ac_token {
         Ok(content) => {
@@ -24,7 +24,7 @@ pub async fn check_token_exist() -> Result<String> {
         Err(_) => {
             debug!("check_token_validity(): token not found in .env file");
             // if access_token does not exist, than generate access_token
-            let tmp = my_authorize().await?;
+            let tmp = my_authorize(session).await?;
             // write to .env file
             write_to_file(".env", format!("ACCESS_TOKEN={}", tmp));
             tmp
@@ -45,7 +45,14 @@ async fn token_info_request(ac_token: String) -> Result<Response, reqwest::Error
 
 // check if current access token is valide.
 // if not generate new access token
-pub async fn check_token_validity(mut ac_token: String) -> Result<(String, token::TokenInfo)> {
+pub async fn check_token_validity(session: Session) -> Result<(String, token::TokenInfo)> {
+    // let mut response = token_info_request(ac_token.to_owned()).await?;
+
+    // let mut ac_token = session.access_token.to_owned();
+    let mut ac_token = match &session.access_token {
+        Some(x) => x.to_owned(),
+        None => String::new()
+    };
     let mut response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {
@@ -54,7 +61,7 @@ pub async fn check_token_validity(mut ac_token: String) -> Result<(String, token
         reqwest::StatusCode::UNAUTHORIZED => {
             warn!("check_token(): UNAUTHORIZED");
             // token expired or wrong access token -> generate new token
-            ac_token = my_authorize().await?;
+            ac_token = my_authorize(session).await?;
             // update .env file with new access token
             update_file(ac_token.to_owned());
             // make request again to check if token is valide
