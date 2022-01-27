@@ -1,6 +1,6 @@
 use crate::authorize::my_authorize;
 use crate::authorize::token;
-use crate::structs::program::{Session};
+use crate::structs::program::Session;
 use anyhow::{Context, Result};
 use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
@@ -51,7 +51,7 @@ pub async fn check_token_validity(session: Session) -> Result<(String, token::To
     // let mut ac_token = session.access_token.to_owned();
     let mut ac_token = match &session.access_token {
         Some(x) => x.to_owned(),
-        None => String::new()
+        None => String::new(),
     };
     let mut response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {

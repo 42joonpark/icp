@@ -15,7 +15,7 @@ pub struct Session {
 }
 
 impl Session {
-    async fn check_token(&mut self) -> Result<(String, String)>{
+    async fn check_token(&mut self) -> Result<(String, String)> {
         let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
         let client_id = self.client_id.as_ref().unwrap();
         self.access_token = Some(ac_token.to_owned());
@@ -68,10 +68,13 @@ impl Program {
 
     pub async fn init_program(&mut self) -> Result<()> {
         self.session = Some(Session {
-            client_id: Some(env::var("CLIENT_ID")
-                .with_context(|| "Failed to read `client_id`.".to_string())?),
-            client_secret: Some(env::var("CLIENT_SECRET")
-                .with_context(|| "Failed to read `client_secret`.".to_string())?),
+            client_id: Some(
+                env::var("CLIENT_ID").with_context(|| "Failed to read `client_id`.".to_string())?,
+            ),
+            client_secret: Some(
+                env::var("CLIENT_SECRET")
+                    .with_context(|| "Failed to read `client_secret`.".to_string())?,
+            ),
             access_token: None,
             token: None,
         });

@@ -1,4 +1,4 @@
-use crate::structs::program::{Session};
+use crate::structs::program::Session;
 use anyhow::{Context, Result};
 use log::debug;
 use oauth2::basic::BasicClient;
