@@ -2,7 +2,7 @@ extern crate serde_json;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct TokenInfo {
     #[serde(rename = "resource_owner_id")]
     resource_owner_id: Option<i64>,
@@ -26,7 +26,7 @@ impl TokenInfo {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Application {
     #[serde(rename = "uid")]
     uid: Option<String>,

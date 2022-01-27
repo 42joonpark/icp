@@ -6,29 +6,34 @@ use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
 use std::env;
 
-#[derive(Default, Debug)]
-struct Session {
-    client_id: String,
-    client_secret: String,
-    access_token: String,
+#[derive(Clone, Default, Debug)]
+pub struct Session {
+    pub client_id: Option<String>,
+    pub client_secret: Option<String>,
+    pub access_token: Option<String>,
     token: Option<token::TokenInfo>,
 }
 
 impl Session {
-    async fn call(&mut self, uri: &str) -> Result<String> {
-        debug!("OLD ACCESS_TOKEN: {}", self.access_token);
-        let (ac_token, tok) = check::check_token_validity(self.access_token.to_owned()).await?;
-        self.access_token = ac_token;
+    async fn check_token(&mut self) -> Result<(String, String)> {
+        let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
+        let client_id = self.client_id.as_ref().unwrap();
+        self.access_token = Some(ac_token.to_owned());
         self.token = Some(tok);
-        debug!("NEW ACCESS_TOKEN: {}", self.access_token);
+        Ok((client_id.to_owned(), ac_token))
+    }
+    async fn call(&mut self, uri: &str) -> Result<String> {
+        let (client_id, ac_token) = self.check_token().await?;
         let client = reqwest::Client::new();
         let params = [
             ("grant_type", "client_credentials"),
-            ("client_id", self.client_id.as_str()),
+            // ("client_id", self.client_id.as_str()),
+            ("client_id", client_id.as_str()),
         ];
         let response = client
             .get(format!("https://api.intra.42.fr/{}", uri))
-            .header(AUTHORIZATION, format!("Bearer {}", self.access_token))
+            // .header(AUTHORIZATION, format!("Bearer {}", self.access_token))
+            .header(AUTHORIZATION, format!("Bearer {}", ac_token))
             .form(&params)
             .send()
             .await?;
@@ -52,7 +57,7 @@ impl Session {
 
 #[derive(Default, Debug)]
 pub struct Program {
-    session: Session,
+    session: Option<Session>,
     pub check_cnt: u8,
 }
 
@@ -62,17 +67,33 @@ impl Program {
     }
 
     pub async fn init_program(&mut self) -> Result<()> {
-        dotenv::dotenv()?;
-        self.session.client_id =
-            env::var("CLIENT_ID").with_context(|| "Failed to read `client_id`.".to_string())?;
-        self.session.client_secret = env::var("CLIENT_SECRET")
-            .with_context(|| "Failed to read `client_secret`.".to_string())?;
-        self.session.access_token = check::check_token_exist().await?;
+        self.session = Some(Session {
+            client_id: Some(
+                env::var("CLIENT_ID").with_context(|| "Failed to read `client_id`.".to_string())?,
+            ),
+            client_secret: Some(
+                env::var("CLIENT_SECRET")
+                    .with_context(|| "Failed to read `client_secret`.".to_string())?,
+            ),
+            access_token: None,
+            token: None,
+        });
         Ok(())
     }
 
     pub async fn with_session(&mut self, url: &str) -> Result<String> {
-        let res = self.session.call(url).await?;
+        let res = match &mut self.session {
+            Some(session) => {
+                let tmp = session.call(url).await?;
+                tmp
+            }
+            None => {
+                // TODO
+                // any better way?
+                return Err(Error::msg("")).with_context(|| "hafds");
+            }
+        };
+        // let res = self.session.call(url).await?;
         Ok(res)
     }
 }
