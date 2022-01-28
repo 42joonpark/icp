@@ -1,7 +1,7 @@
 use crate::authorize::my_authorize;
 use crate::authorize::token;
 use crate::structs::program::Session;
-use anyhow::{Context, Result};
+use crate::CliError;
 use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
 use reqwest::Response;
@@ -14,7 +14,7 @@ use std::{
 
 // teturn access_token
 // if not exist in .env then create new access_token
-pub async fn check_token_exist(session: Session) -> Result<String> {
+pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
     let ac_token = env::var("ACCESS_TOKEN");
     let ac_token = match ac_token {
         Ok(content) => {
@@ -33,7 +33,7 @@ pub async fn check_token_exist(session: Session) -> Result<String> {
     Ok(ac_token)
 }
 
-async fn token_info_request(ac_token: String) -> Result<Response, reqwest::Error> {
+async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
     let client = reqwest::Client::new();
     let response = client
         .get("https://api.intra.42.fr/oauth/token/info")
@@ -45,10 +45,9 @@ async fn token_info_request(ac_token: String) -> Result<Response, reqwest::Error
 
 // check if current access token is valide.
 // if not generate new access token
-pub async fn check_token_validity(session: Session) -> Result<(String, token::TokenInfo)> {
-    // let mut response = token_info_request(ac_token.to_owned()).await?;
-
-    // let mut ac_token = session.access_token.to_owned();
+pub async fn check_token_validity(
+    session: Session,
+) -> Result<(String, token::TokenInfo), CliError> {
     let mut ac_token = match &session.access_token {
         Some(x) => x.to_owned(),
         None => String::new(),
@@ -63,12 +62,12 @@ pub async fn check_token_validity(session: Session) -> Result<(String, token::To
             // token expired or wrong access token -> generate new token
             ac_token = my_authorize(session).await?;
             // update .env file with new access token
-            update_file(ac_token.to_owned());
+            update_file(ac_token.to_owned())?;
             // make request again to check if token is valide
             response = token_info_request(ac_token.to_owned()).await?;
             match response.status() {
                 reqwest::StatusCode::UNAUTHORIZED => {
-                    todo!("try not to panic here");
+                    todo!("try not to panic here. When with wrong client_secret this happens");
                     // panic!("Token validity check failed more than once")
                 }
                 reqwest::StatusCode::OK => (),
@@ -99,7 +98,7 @@ fn write_to_file(filename: &str, content: String) {
     writeln!(file, "{}", content).unwrap();
 }
 
-fn update_file(token: String) {
+fn update_file(token: String) -> Result<(), CliError> {
     if let Ok(lines) = read_lines(".env") {
         for line in lines.flatten() {
             let mut content = String::new();
@@ -111,12 +110,9 @@ fn update_file(token: String) {
             write_to_file(".temp", content);
         }
     }
-    fs::remove_file(".env")
-        .with_context(|| "Failed to remove .env file")
-        .unwrap();
-    fs::rename(".temp", ".env")
-        .with_context(|| "Failed to rename .temp to .env")
-        .unwrap();
+    fs::remove_file(".env")?;
+    fs::rename(".temp", ".env")?;
+    Ok(())
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
