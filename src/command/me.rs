@@ -2,7 +2,6 @@
 use crate::authorize::check::check_token_validity;
 use crate::json::jsonize;
 use crate::structs::program::Program;
-use anyhow::{Context, Result};
 use log::{debug, warn};
 use reqwest::header::AUTHORIZATION;
 use std::env;

@@ -1,5 +1,5 @@
 use crate::structs::program::Session;
-use anyhow::{Context, Result};
+use crate::CliError;
 use log::debug;
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
@@ -12,7 +12,7 @@ use tokio::net::TcpListener;
 use url::Url;
 
 // authorize with 42 OAuth2
-pub async fn my_authorize(session: Session) -> Result<String> {
+pub async fn my_authorize(session: Session) -> Result<String, CliError> {
     let client_id = match session.client_id {
         Some(x) => x,
         None => String::new(),
@@ -46,7 +46,7 @@ pub async fn my_authorize(session: Session) -> Result<String> {
 }
 
 // make local server localhost:8080 and waits for request and exchange access_token
-async fn local_server(client: BasicClient) -> Result<String> {
+async fn local_server(client: BasicClient) -> Result<String, CliError> {
     let mut ac_token = String::new();
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
@@ -57,41 +57,31 @@ async fn local_server(client: BasicClient) -> Result<String> {
                 let mut reader = BufReader::new(&mut stream);
 
                 let mut request_line = String::new();
-                // reader.read_line(&mut request_line).await.unwrap();
-                reader
-                    .read_line(&mut request_line)
-                    .await
-                    .with_context(|| "Failed to read line".to_string())?;
+                reader.read_line(&mut request_line).await?;
+                let redirect_url = match request_line.split_whitespace().nth(1) {
+                    Some(url) => url,
+                    None => return Err(CliError::NoneError),
+                };
+                let url = Url::parse(&("http://localhost".to_string() + redirect_url))?;
 
-                let redirect_url = request_line
-                    .split_whitespace()
-                    .nth(1)
-                    .with_context(|| "Failed to parse request redirect url.")
-                    .unwrap();
-                let url = Url::parse(&("http://localhost".to_string() + redirect_url))
-                    .with_context(|| "Failed to make redirect url")
-                    .unwrap();
-
-                let code_pair = url
-                    .query_pairs()
-                    .find(|pair| {
-                        let &(ref key, _) = pair;
-                        key == "code"
-                    })
-                    .with_context(|| "Failed to find code")
-                    .unwrap();
+                let code_pair = match url.query_pairs().find(|pair| {
+                    let &(ref key, _) = pair;
+                    key == "code"
+                }) {
+                    Some(code) => code,
+                    None => return Err(CliError::NoneError),
+                };
 
                 let (_, value) = code_pair;
                 code = AuthorizationCode::new(value.into_owned());
 
-                let state_pair = url
-                    .query_pairs()
-                    .find(|pair| {
-                        let &(ref key, _) = pair;
-                        key == "state"
-                    })
-                    .with_context(|| "Failed to find state")
-                    .unwrap();
+                let state_pair = match url.query_pairs().find(|pair| {
+                    let &(ref key, _) = pair;
+                    key == "state"
+                }) {
+                    Some(state) => state,
+                    None => return Err(CliError::NoneError),
+                };
 
                 let (_, value) = state_pair;
                 state = CsrfToken::new(value.into_owned());
@@ -103,11 +93,7 @@ async fn local_server(client: BasicClient) -> Result<String> {
                 message.len(),
                 message
             );
-            stream
-                .write_all(response.as_bytes())
-                .await
-                .with_context(|| "Failed to write HTTP response")
-                .unwrap();
+            stream.write_all(response.as_bytes()).await?;
 
             debug!("42API returned the following code:\n{}\n", code.secret());
             debug!("42API returned the following state:\n{}\n", state.secret());
