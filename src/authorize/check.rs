@@ -26,7 +26,7 @@ pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
             // if access_token does not exist, than generate access_token
             let tmp = my_authorize(session).await?;
             // write to .env file
-            write_to_file(".env", format!("ACCESS_TOKEN={}", tmp));
+            write_to_file(".env", format!("ACCESS_TOKEN={}", tmp))?;
             tmp
         }
     };
@@ -85,17 +85,16 @@ pub async fn check_token_validity(
     Ok((ac_token, tok))
 }
 
-fn write_to_file(filename: &str, content: String) {
+fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
     use std::io::Write;
 
     let mut file = fs::OpenOptions::new()
         .create(true)
         .write(true)
         .append(true)
-        .open(filename)
-        .unwrap();
-
+        .open(filename)?;
     writeln!(file, "{}", content).unwrap();
+    Ok(())
 }
 
 fn update_file(token: String) -> Result<(), CliError> {
@@ -107,7 +106,7 @@ fn update_file(token: String) -> Result<(), CliError> {
             } else {
                 content.push_str(line.as_str());
             }
-            write_to_file(".temp", content);
+            write_to_file(".temp", content)?;
         }
     }
     fs::remove_file(".env")?;
