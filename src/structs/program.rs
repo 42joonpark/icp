@@ -126,3 +126,16 @@ impl Program {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_email() {
+        let contents = fs::read_to_string("./return_value/me.json").unwrap();
+        let my_info: me::Me = serde_json::from_str(contents.as_str()).unwrap();
+        assert_eq!(my_info.email, "joonpark@student.42seoul.kr");
+    }
+}
