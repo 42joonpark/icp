@@ -76,7 +76,10 @@ impl Program {
         self.session = Some(Session {
             client_id: env::var("CLIENT_ID")?,
             client_secret: env::var("CLIENT_SECRET")?,
-            access_token: None,
+            access_token: match env::var("ACCESS_TOKEN") {
+                Ok(result) => Some(result),
+                Err(_) => None,
+            },
             token: None,
         });
         Ok(())
