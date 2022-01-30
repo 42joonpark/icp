@@ -76,6 +76,14 @@ pub async fn check_token_validity(
                 _ => todo!("try not to panic here"), // _ => panic!("Uh oh! something unexpected happened."),
             }
         }
+        reqwest::StatusCode::FORBIDDEN => {
+            warn!("check_token_validity(): 402 FORBIDDEN ACCESS");
+            return Err(CliError::Fobidden);
+        }
+        reqwest::StatusCode::NOT_FOUND => {
+            warn!("check_token_validity(): 404 NOT FOUND");
+            return Err(CliError::NotFound);
+        }
         _ => {
             warn!("check_token(): panic!");
             todo!("try not to panic here");

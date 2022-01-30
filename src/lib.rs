@@ -18,8 +18,12 @@ pub enum CliError {
     DotenvError(#[from] dotenv::Error),
     #[error(transparent)]
     VarError(#[from] std::env::VarError),
-    #[error("Error: Unauthorized Result")]
+    #[error("Error: 401 Unauthorized Result")]
     UnauthorizedResult,
+    #[error("Error: 403 Fobidden Access")]
+    Fobidden,
+    #[error("Error: 404 Page or resource is not found")]
+    NotFound,
     #[error("Error: None found.")]
     NoneError,
     #[error("Error: Session Not exist")]

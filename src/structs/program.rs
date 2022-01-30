@@ -52,6 +52,14 @@ impl Session {
                 warn!("call(): unauthorized");
                 return Err(CliError::UnauthorizedResult);
             }
+            reqwest::StatusCode::FORBIDDEN => {
+                warn!("call(): 402 FORBIDDEN ACCESS");
+                return Err(CliError::Fobidden);
+            }
+            reqwest::StatusCode::NOT_FOUND => {
+                warn!("404 NOT FOUND");
+                return Err(CliError::NotFound);
+            }
             _ => {
                 panic!("uh oh! something unexpected happened");
             }
