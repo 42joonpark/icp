@@ -8,22 +8,30 @@ use std::env;
 
 #[derive(Clone, Default, Debug)]
 pub struct Session {
-    pub client_id: Option<String>,
-    pub client_secret: Option<String>,
+    pub client_id: String,
+    pub client_secret: String,
     pub access_token: Option<String>,
     token: Option<token::TokenInfo>,
 }
 
 impl Session {
-    async fn check_token(&mut self) -> Result<(String, String), CliError> {
+    // token을 check하는 건데 굳이 client_id까지 같이 줄 필요는 없지???
+    // async fn check_token(&mut self) -> Result<(String, String), CliError> {
+    //     let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
+    //     let client_id = self.client_id.to_owned();
+    //     self.access_token = ac_token.to_owned();
+    //     self.token = Some(tok);
+    //     Ok((client_id.to_owned(), ac_token))
+    // }
+    async fn check_token(&mut self) -> Result<String, CliError> {
         let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
-        let client_id = self.client_id.as_ref().unwrap();
-        self.access_token = Some(ac_token.to_owned());
         self.token = Some(tok);
-        Ok((client_id.to_owned(), ac_token))
+        self.access_token = ac_token;
+        self.access_token.to_owned().ok_or(CliError::NoneError)
     }
     async fn call(&mut self, uri: &str) -> Result<String, CliError> {
-        let (client_id, ac_token) = self.check_token().await?;
+        let ac_token = self.check_token().await?;
+        let client_id = self.client_id.to_owned();
         let client = reqwest::Client::new();
         let params = [
             ("grant_type", "client_credentials"),
@@ -66,8 +74,8 @@ impl Program {
 
     pub async fn init_program(&mut self) -> Result<(), CliError> {
         self.session = Some(Session {
-            client_id: Some(env::var("CLIENT_ID")?),
-            client_secret: Some(env::var("CLIENT_SECRET")?),
+            client_id: env::var("CLIENT_ID")?,
+            client_secret: env::var("CLIENT_SECRET")?,
             access_token: None,
             token: None,
         });
