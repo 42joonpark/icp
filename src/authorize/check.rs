@@ -33,6 +33,7 @@ pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
     Ok(ac_token)
 }
 
+// 여기서는 ac_token이 항상 필요하기 때문에 Option으로 들어오면 안되
 async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
     let client = reqwest::Client::new();
     let response = client
@@ -47,12 +48,11 @@ async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
 // if not generate new access token
 pub async fn check_token_validity(
     session: Session,
-) -> Result<(String, token::TokenInfo), CliError> {
-    let mut ac_token = match &session.access_token {
-        Some(x) => x.to_owned(),
-        None => String::new(),
-    };
-    let mut response = token_info_request(ac_token.to_owned()).await?;
+) -> Result<(Option<String>, token::TokenInfo), CliError> {
+    // ac_token은 만약에 첫 호출이라면 None이 올 수 있다.
+    let mut ac_token: Option<String> = session.access_token.as_ref().map(|x| x.to_owned());
+    let mut response =
+        token_info_request(ac_token.as_ref().map(|x| x.to_owned()).unwrap_or_default()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {
             debug!("check_token(): OK");
@@ -60,11 +60,13 @@ pub async fn check_token_validity(
         reqwest::StatusCode::UNAUTHORIZED => {
             warn!("check_token(): UNAUTHORIZED");
             // token expired or wrong access token -> generate new token
-            ac_token = my_authorize(session).await?;
+            ac_token = Some(my_authorize(session).await?);
             // update .env file with new access token
-            update_file(ac_token.to_owned())?;
+            update_file(ac_token.as_ref().map(|x| x.to_owned()).unwrap_or_default())?;
             // make request again to check if token is valide
-            response = token_info_request(ac_token.to_owned()).await?;
+            response =
+                token_info_request(ac_token.as_ref().map(|x| x.to_owned()).unwrap_or_default())
+                    .await?;
             match response.status() {
                 reqwest::StatusCode::UNAUTHORIZED => {
                     todo!("try not to panic here. When with wrong client_secret this happens");
