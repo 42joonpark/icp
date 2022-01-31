@@ -5,7 +5,6 @@ use crate::CliError;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use reqwest::Response;
-use std::env;
 use std::{
     io::{self, BufRead},
     path::Path,
@@ -15,19 +14,19 @@ use std::{
 // teturn access_token
 // if not exist in .env then create new access_token
 pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
-    info!("check_token_exit()");
-    let ac_token = env::var("ACCESS_TOKEN");
-    let ac_token = match ac_token {
-        Ok(content) => {
-            debug!("check_token_validity(): found token");
-            content
+    info!("check_token_exist()");
+    // 이미 session에는 access_token이 None이거나 암튼 뭐가 들어있으니까 이 값이 None일 때 새로 생성하는 일만 하면 되는거자나
+    let ac_token = match session.access_token {
+        Some(token) => {
+            info!("check_token_validity(): found token");
+            token
         }
-        Err(_) => {
-            debug!("check_token_validity(): token not found in .env file");
+        None => {
+            debug!("check_token_validity(): token not found in ./config.toml file");
             // if access_token does not exist, than generate access_token
             let tmp = my_authorize(session).await?;
             // write to .env file
-            write_to_file(".env", format!("ACCESS_TOKEN={}", tmp))?;
+            write_to_file("config.toml", format!("\naccess_token=\"{}\"", tmp))?;
             tmp
         }
     };
@@ -95,19 +94,19 @@ fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
 
 pub fn update_file(token: String) -> Result<(), CliError> {
     info!("update_file()");
-    if let Ok(lines) = read_lines(".env") {
+    if let Ok(lines) = read_lines("config.toml") {
         for line in lines.flatten() {
             let mut content = String::new();
-            if line.contains("ACCESS_TOKEN") {
-                content.push_str(format!("ACCESS_TOKEN={}", token).as_str());
+            if line.contains("access_token") {
+                content.push_str(format!("access_token=\"{}\"", token).as_str());
             } else {
                 content.push_str(line.as_str());
             }
             write_to_file(".temp", content)?;
         }
     }
-    fs::remove_file(".env")?;
-    fs::rename(".temp", ".env")?;
+    fs::remove_file("config.toml")?;
+    fs::rename(".temp", "config.toml")?;
     Ok(())
 }
 

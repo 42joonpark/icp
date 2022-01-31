@@ -5,9 +5,10 @@ use crate::structs::{campus, me};
 use crate::CliError;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
-use std::env;
+use serde::Deserialize;
+use std::fs;
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, Deserialize)]
 pub struct Session {
     pub client_id: String,
     pub client_secret: String,
@@ -17,7 +18,6 @@ pub struct Session {
 
 impl Session {
     async fn get_access_token(&mut self) -> Result<(), CliError> {
-        // self.access_token = Some(my_authorize(self.clone()).await?);
         self.access_token = Some(check::check_token_exist(self.clone()).await?);
         Ok(())
     }
@@ -105,13 +105,10 @@ impl Program {
     // 지금은 check_token_validity()에서 하는데 이걸 나눠준다.
     // 하는 역할을 분명하게 나누기.
     pub async fn init_program(&mut self) -> Result<(), CliError> {
+        let client_info = fs::read_to_string("config.toml").unwrap();
+        let client: Session = toml::from_str(client_info.as_str()).unwrap();
         info!("init_program()");
-        self.session = Some(Session {
-            client_id: env::var("CLIENT_ID")?,
-            client_secret: env::var("CLIENT_SECRET")?,
-            access_token: None,
-            token: None,
-        });
+        self.session = Some(client);
         if let Some(session) = self.session.as_mut() {
             session.get_access_token().await?
         }

@@ -15,8 +15,6 @@ pub enum CliError {
     #[error(transparent)]
     JsonError(#[from] serde_json::Error),
     #[error(transparent)]
-    DotenvError(#[from] dotenv::Error),
-    #[error(transparent)]
     VarError(#[from] std::env::VarError),
     #[error("Error: 401 Unauthorized Result")]
     Unauthorized,
