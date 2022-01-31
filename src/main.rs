@@ -1,4 +1,4 @@
-use log::debug;
+use log::{debug, info};
 use std::io::{self, Write};
 
 pub mod authorize;
@@ -27,13 +27,18 @@ async fn run(prog: &mut Program) -> Result<(), CliError> {
             }
         }
         let command = line.trim().to_uppercase();
-        debug!("COMMAND: {}", command);
+        info!("COMMAND: {}", command);
         match command.as_str() {
             "CLEAR" => command::clear(),
             "HELP" => command::help(),
-            "EMAIL" => {
-                println!("Email: {}", prog.email().await?);
-            }
+            "EMAIL" => match prog.email().await {
+                Ok(content) => {
+                    println!("Email: {}", content);
+                }
+                Err(error) => {
+                    println!("Error... {}", error);
+                }
+            },
             "ID" => {
                 println!("ID: {}", prog.id().await?);
             }

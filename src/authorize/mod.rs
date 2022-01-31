@@ -13,14 +13,8 @@ use url::Url;
 
 // authorize with 42 OAuth2
 pub async fn my_authorize(session: Session) -> Result<String, CliError> {
-    let client_id = match session.client_id {
-        Some(x) => x,
-        None => String::new(),
-    };
-    let client_secret = match session.client_secret {
-        Some(secret) => secret,
-        None => String::new(),
-    };
+    let client_id = session.client_id.to_owned();
+    let client_secret = session.client_secret.to_owned();
     let client = BasicClient::new(
         ClientId::new(client_id.to_owned()),
         Some(ClientSecret::new(client_secret)),

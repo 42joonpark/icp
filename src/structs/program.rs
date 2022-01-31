@@ -1,29 +1,55 @@
 use crate::authorize::check;
+use crate::authorize::my_authorize;
 use crate::authorize::token;
 use crate::structs::{campus, me};
 use crate::CliError;
-use log::{debug, warn};
+use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use std::env;
 
 #[derive(Clone, Default, Debug)]
 pub struct Session {
-    pub client_id: Option<String>,
-    pub client_secret: Option<String>,
+    pub client_id: String,
+    pub client_secret: String,
     pub access_token: Option<String>,
     token: Option<token::TokenInfo>,
 }
 
 impl Session {
-    async fn check_token(&mut self) -> Result<(String, String), CliError> {
-        let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
-        let client_id = self.client_id.as_ref().unwrap();
-        self.access_token = Some(ac_token.to_owned());
+    async fn get_access_token(&mut self) -> Result<(), CliError> {
+        // self.access_token = Some(my_authorize(self.clone()).await?);
+        self.access_token = Some(check::check_token_exist(self.clone()).await?);
+        Ok(())
+    }
+    async fn check_token(&mut self) -> Result<String, CliError> {
+        info!("check_token()");
+        let mut update = false;
+        let tok =
+            check::check_token_validity(self.access_token.to_owned().unwrap_or_default()).await;
+        // check_token_validity()ㅇ에서 현재 토큰이 유효한지만 체크하고, 만약에 인증되지 않은 상태면 다시 발급 받아야되.
+        let tok = match tok {
+            Ok(tok) => tok,
+            Err(CliError::Unauthorized) => {
+                self.access_token = Some(my_authorize(self.clone()).await?);
+                update = true;
+                check::check_token_validity(self.access_token.to_owned().unwrap_or_default())
+                    .await?
+            }
+            Err(error) => {
+                return Err(error);
+            }
+        };
+        if update {
+            info!("check_token(): update file");
+            check::update_file(self.access_token.to_owned().unwrap_or_default())?;
+        }
         self.token = Some(tok);
-        Ok((client_id.to_owned(), ac_token))
+        self.access_token.to_owned().ok_or(CliError::NoneError)
     }
     async fn call(&mut self, uri: &str) -> Result<String, CliError> {
-        let (client_id, ac_token) = self.check_token().await?;
+        info!("call()");
+        let ac_token = self.check_token().await?;
+        let client_id = self.client_id.to_owned();
         let client = reqwest::Client::new();
         let params = [
             ("grant_type", "client_credentials"),
@@ -42,7 +68,15 @@ impl Session {
             }
             reqwest::StatusCode::UNAUTHORIZED => {
                 warn!("call(): unauthorized");
-                return Err(CliError::UnauthorizedResult);
+                return Err(CliError::Unauthorized);
+            }
+            reqwest::StatusCode::FORBIDDEN => {
+                warn!("call(): 402 FORBIDDEN ACCESS");
+                return Err(CliError::Fobidden);
+            }
+            reqwest::StatusCode::NOT_FOUND => {
+                warn!("404 NOT FOUND");
+                return Err(CliError::NotFound);
             }
             _ => {
                 panic!("uh oh! something unexpected happened");
@@ -64,17 +98,28 @@ impl Program {
         Program::default()
     }
 
+    // 매번 check_token_validity() 할 필요 없이 init() 할 떄 다 하는거야.
+    // 1. ACCESS_TOKEN이 있으면 check_token_validity()로 유효한지 확인할 수 있고,
+    // 2. ACCESS_TOKEN이 없으면 새로 만들 수 있지
+    // 그러면 access_token을 얻는 함수를 따로 만들어야되.
+    // 지금은 check_token_validity()에서 하는데 이걸 나눠준다.
+    // 하는 역할을 분명하게 나누기.
     pub async fn init_program(&mut self) -> Result<(), CliError> {
+        info!("init_program()");
         self.session = Some(Session {
-            client_id: Some(env::var("CLIENT_ID")?),
-            client_secret: Some(env::var("CLIENT_SECRET")?),
+            client_id: env::var("CLIENT_ID")?,
+            client_secret: env::var("CLIENT_SECRET")?,
             access_token: None,
             token: None,
         });
+        if let Some(session) = self.session.as_mut() {
+            session.get_access_token().await?
+        }
         Ok(())
     }
 
     pub async fn with_session(&mut self, url: &str) -> Result<String, CliError> {
+        info!("with_session()");
         let res = match &mut self.session {
             Some(session) => {
                 let tmp = session.call(url).await?;
@@ -124,5 +169,18 @@ impl Program {
             println!("{:#?}", camp);
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_email() {
+        let contents = fs::read_to_string("./return_value/me.json").unwrap();
+        let my_info: me::Me = serde_json::from_str(contents.as_str()).unwrap();
+        assert_eq!(my_info.email, "joonpark@student.42seoul.kr");
     }
 }
