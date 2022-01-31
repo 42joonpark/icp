@@ -39,7 +39,7 @@ impl Session {
                 return Err(error);
             }
         };
-        if update == true {
+        if update {
             info!("check_token(): update file");
             check::update_file(self.access_token.to_owned().unwrap_or_default())?;
         }
@@ -112,10 +112,8 @@ impl Program {
             access_token: None,
             token: None,
         });
-        // self.session.get_access_token().await?;
-        match self.session.as_mut() {
-            Some(session) => session.get_access_token().await?,
-            _ => (),
+        if let Some(session) = self.session.as_mut() {
+            session.get_access_token().await?
         }
         Ok(())
     }
