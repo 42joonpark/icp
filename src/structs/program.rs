@@ -21,12 +21,13 @@ impl Session {
         self.access_token = Some(check::check_token_exist(self.clone()).await?);
         Ok(())
     }
+    /// check if token is valide.
+    /// if not generate one.
     async fn check_token(&mut self) -> Result<String, CliError> {
         info!("check_token()");
         let mut update = false;
         let tok =
             check::check_token_validity(self.access_token.to_owned().unwrap_or_default()).await;
-        // check_token_validity()ㅇ에서 현재 토큰이 유효한지만 체크하고, 만약에 인증되지 않은 상태면 다시 발급 받아야되.
         let tok = match tok {
             Ok(tok) => tok,
             Err(CliError::Unauthorized) => {
@@ -97,13 +98,7 @@ impl Program {
     pub fn new() -> Program {
         Program::default()
     }
-
-    // 매번 check_token_validity() 할 필요 없이 init() 할 떄 다 하는거야.
-    // 1. ACCESS_TOKEN이 있으면 check_token_validity()로 유효한지 확인할 수 있고,
-    // 2. ACCESS_TOKEN이 없으면 새로 만들 수 있지
-    // 그러면 access_token을 얻는 함수를 따로 만들어야되.
-    // 지금은 check_token_validity()에서 하는데 이걸 나눠준다.
-    // 하는 역할을 분명하게 나누기.
+    
     pub async fn init_program(&mut self) -> Result<(), CliError> {
         let client_info = fs::read_to_string("config.toml").unwrap();
         let client: Session = toml::from_str(client_info.as_str()).unwrap();
