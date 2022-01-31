@@ -1,8 +1,9 @@
 use crate::authorize::check;
+use crate::authorize::my_authorize;
 use crate::authorize::token;
 use crate::structs::{campus, me};
 use crate::CliError;
-use log::{debug, warn};
+use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use std::env;
 
@@ -15,21 +16,27 @@ pub struct Session {
 }
 
 impl Session {
-    // token을 check하는 건데 굳이 client_id까지 같이 줄 필요는 없지???
-    // async fn check_token(&mut self) -> Result<(String, String), CliError> {
-    //     let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
-    //     let client_id = self.client_id.to_owned();
-    //     self.access_token = ac_token.to_owned();
-    //     self.token = Some(tok);
-    //     Ok((client_id.to_owned(), ac_token))
-    // }
     async fn check_token(&mut self) -> Result<String, CliError> {
-        let (ac_token, tok) = check::check_token_validity(self.clone()).await?;
+        info!("check_token()");
+        let tok =
+            check::check_token_validity(self.access_token.to_owned().unwrap_or_default()).await;
+        // check_token_validity()ㅇ에서 현재 토큰이 유효한지만 체크하고, 만약에 인증되지 않은 상태면 다시 발급 받아야되.
+        let tok = match tok {
+            Ok(tok) => tok,
+            Err(CliError::Unauthorized) => {
+                self.access_token = Some(my_authorize(self.clone()).await?);
+                check::check_token_validity(self.access_token.to_owned().unwrap_or_default())
+                    .await?
+            }
+            Err(error) => {
+                return Err(error);
+            }
+        };
         self.token = Some(tok);
-        self.access_token = ac_token;
         self.access_token.to_owned().ok_or(CliError::NoneError)
     }
     async fn call(&mut self, uri: &str) -> Result<String, CliError> {
+        info!("call()");
         let ac_token = self.check_token().await?;
         let client_id = self.client_id.to_owned();
         let client = reqwest::Client::new();
@@ -38,7 +45,7 @@ impl Session {
             ("client_id", client_id.as_str()),
         ];
         let response = client
-            .get(format!("https://api.intra.42.fr/{}", uri))
+            .get(format!("https://api.intra.4.fr/{}", uri))
             .header(AUTHORIZATION, format!("Bearer {}", ac_token))
             .form(&params)
             .send()
@@ -50,7 +57,7 @@ impl Session {
             }
             reqwest::StatusCode::UNAUTHORIZED => {
                 warn!("call(): unauthorized");
-                return Err(CliError::UnauthorizedResult);
+                return Err(CliError::Unauthorized);
             }
             reqwest::StatusCode::FORBIDDEN => {
                 warn!("call(): 402 FORBIDDEN ACCESS");
@@ -80,20 +87,38 @@ impl Program {
         Program::default()
     }
 
+    // 매번 check_token_validity() 할 필요 없이 init() 할 떄 다 하는거야.
+    // 1. ACCESS_TOKEN이 있으면 check_token_validity()로 유효한지 확인할 수 있고,
+    // 2. ACCESS_TOKEN이 없으면 새로 만들 수 있지
+    // 그러면 access_token을 얻는 함수를 따로 만들어야되.
+    // 지금은 check_token_validity()에서 하는데 이걸 나눠준다.
+    // 하는 역할을 분명하게 나누기.
     pub async fn init_program(&mut self) -> Result<(), CliError> {
+        info!("init_program()");
+        let mut renew: bool = false;
         self.session = Some(Session {
             client_id: env::var("CLIENT_ID")?,
             client_secret: env::var("CLIENT_SECRET")?,
             access_token: match env::var("ACCESS_TOKEN") {
                 Ok(result) => Some(result),
-                Err(_) => None,
+                Err(_) => {
+                    renew = true;
+                    None
+                }
             },
             token: None,
         });
+        if renew == true {
+            let session = self.session.clone().ok_or(CliError::SessionExistError)?;
+            // 여기서 새로 만든 access_token을 이제 다시 넣어줘야되는데
+            // let ac_token = Some(my_authorize(session).await?);
+            my_authorize(session).await?;
+        }
         Ok(())
     }
 
     pub async fn with_session(&mut self, url: &str) -> Result<String, CliError> {
+        info!("with_session()");
         let res = match &mut self.session {
             Some(session) => {
                 let tmp = session.call(url).await?;
