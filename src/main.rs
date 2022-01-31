@@ -67,7 +67,6 @@ async fn run(prog: &mut Program) -> Result<(), CliError> {
 #[tokio::main]
 async fn main() -> Result<(), CliError> {
     env_logger::init();
-    dotenv::dotenv()?;
 
     let mut program = Program::new();
     program.init_program().await?;
