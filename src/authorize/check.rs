@@ -93,7 +93,8 @@ fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
     Ok(())
 }
 
-fn update_file(token: String) -> Result<(), CliError> {
+pub fn update_file(token: String) -> Result<(), CliError> {
+    info!("update_file()");
     if let Ok(lines) = read_lines(".env") {
         for line in lines.flatten() {
             let mut content = String::new();

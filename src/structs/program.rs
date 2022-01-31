@@ -16,8 +16,14 @@ pub struct Session {
 }
 
 impl Session {
+    async fn get_access_token(&mut self) -> Result<(), CliError> {
+        // self.access_token = Some(my_authorize(self.clone()).await?);
+        self.access_token = Some(check::check_token_exist(self.clone()).await?);
+        Ok(())
+    }
     async fn check_token(&mut self) -> Result<String, CliError> {
         info!("check_token()");
+        let mut update = false;
         let tok =
             check::check_token_validity(self.access_token.to_owned().unwrap_or_default()).await;
         // check_token_validity()ㅇ에서 현재 토큰이 유효한지만 체크하고, 만약에 인증되지 않은 상태면 다시 발급 받아야되.
@@ -25,6 +31,7 @@ impl Session {
             Ok(tok) => tok,
             Err(CliError::Unauthorized) => {
                 self.access_token = Some(my_authorize(self.clone()).await?);
+                update = true;
                 check::check_token_validity(self.access_token.to_owned().unwrap_or_default())
                     .await?
             }
@@ -32,6 +39,10 @@ impl Session {
                 return Err(error);
             }
         };
+        if update == true {
+            info!("check_token(): update file");
+            check::update_file(self.access_token.to_owned().unwrap_or_default())?;
+        }
         self.token = Some(tok);
         self.access_token.to_owned().ok_or(CliError::NoneError)
     }
@@ -45,7 +56,7 @@ impl Session {
             ("client_id", client_id.as_str()),
         ];
         let response = client
-            .get(format!("https://api.intra.4.fr/{}", uri))
+            .get(format!("https://api.intra.42.fr/{}", uri))
             .header(AUTHORIZATION, format!("Bearer {}", ac_token))
             .form(&params)
             .send()
@@ -95,24 +106,16 @@ impl Program {
     // 하는 역할을 분명하게 나누기.
     pub async fn init_program(&mut self) -> Result<(), CliError> {
         info!("init_program()");
-        let mut renew: bool = false;
         self.session = Some(Session {
             client_id: env::var("CLIENT_ID")?,
             client_secret: env::var("CLIENT_SECRET")?,
-            access_token: match env::var("ACCESS_TOKEN") {
-                Ok(result) => Some(result),
-                Err(_) => {
-                    renew = true;
-                    None
-                }
-            },
+            access_token: None,
             token: None,
         });
-        if renew == true {
-            let session = self.session.clone().ok_or(CliError::SessionExistError)?;
-            // 여기서 새로 만든 access_token을 이제 다시 넣어줘야되는데
-            // let ac_token = Some(my_authorize(session).await?);
-            my_authorize(session).await?;
+        // self.session.get_access_token().await?;
+        match self.session.as_mut() {
+            Some(session) => session.get_access_token().await?,
+            _ => (),
         }
         Ok(())
     }
