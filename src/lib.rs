@@ -18,6 +18,8 @@ pub enum CliError {
     VarError(#[from] std::env::VarError),
     #[error("Error: 401 Unauthorized Result")]
     Unauthorized,
+    #[error("Error: Server Unauthorized")]
+    ServerUnauthorized,
     #[error("Error: 403 Fobidden Access")]
     Fobidden,
     #[error("Error: 404 Page or resource is not found")]
