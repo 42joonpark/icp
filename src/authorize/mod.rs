@@ -14,6 +14,7 @@ use url::Url;
 /// Create OAuth2 authentication url.
 /// set scope to public
 pub async fn my_authorize(session: Session) -> Result<String, CliError> {
+    info!("my_authorize() Begin");
     let client_id = session.client_id.to_owned();
     let client_secret = session.client_secret.to_owned();
     let client = BasicClient::new(
@@ -33,12 +34,14 @@ pub async fn my_authorize(session: Session) -> Result<String, CliError> {
     println!("Browse to: {}", auth_url);
 
     let ac_token = local_server(client).await?;
+    info!("my_authorize() End");
     Ok(ac_token)
 }
 
 /// Create local server with port number 8000 and waits for user to finish authorize.
 async fn local_server(client: BasicClient) -> Result<String, CliError> {
-    let mut ac_token = String::new();
+    info!("local_server() Begin");
+    let ac_token;
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
         if let Ok((mut stream, _)) = listener.accept().await {
@@ -84,34 +87,36 @@ async fn local_server(client: BasicClient) -> Result<String, CliError> {
             );
             stream.write_all(response.as_bytes()).await?;
 
-            info!("42API returned the following code:\n{}\n", code.secret());
-            info!("42API returned the following state:\n{}\n", state.secret());
+            debug!("42API returned the following code:\n{}\n", code.secret());
+            debug!("42API returned the following state:\n{}\n", state.secret());
 
             // Exchange the code with a token.
             let token_res = client
                 .exchange_code(code)
                 .request_async(async_http_client)
                 .await;
+            let token = match token_res {
+                Err(_) => return Err(CliError::ServerUnauthorized),
+                Ok(t) => t,
+            };
+            debug!("42API returned the following token:\n{:?}\n", token);
 
-            info!("42API returned the following token:\n{:?}\n", token_res);
-
-            if let Ok(token) = token_res {
-                let scopes = if let Some(scopes_vec) = token.scopes() {
-                    scopes_vec
-                        .iter()
-                        .map(|comma_separated| comma_separated.split(','))
-                        .flatten()
-                        .collect::<Vec<_>>()
-                } else {
-                    Vec::new()
-                };
-                ac_token = token.access_token().secret().to_owned();
-                debug!("Access Token: {:?}", ac_token);
-                debug!("42API returned the following scopes:\n{:?}\n", scopes);
-            }
+            let scopes = if let Some(scopes_vec) = token.scopes() {
+                scopes_vec
+                    .iter()
+                    .map(|comma_separated| comma_separated.split(','))
+                    .flatten()
+                    .collect::<Vec<_>>()
+            } else {
+                Vec::new()
+            };
+            ac_token = token.access_token().secret().to_owned();
+            debug!("Access Token: {:?}", ac_token);
+            debug!("42API returned the following scopes:\n{:?}\n", scopes);
             break;
         }
     }
+    info!("local_server() End");
     Ok(ac_token)
 }
 
