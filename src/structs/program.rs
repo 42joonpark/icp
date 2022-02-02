@@ -98,7 +98,7 @@ impl Program {
     pub fn new() -> Program {
         Program::default()
     }
-    
+
     pub async fn init_program(&mut self) -> Result<(), CliError> {
         let client_info = fs::read_to_string("config.toml").unwrap();
         let client: Session = toml::from_str(client_info.as_str()).unwrap();
