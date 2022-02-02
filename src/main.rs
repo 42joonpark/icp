@@ -1,13 +1,14 @@
-use clap::{crate_name, crate_version, App, Arg};
+use cli::Config;
 use log::{debug, info};
 
 pub mod authorize;
+pub mod cli;
 pub mod command;
 pub mod structs;
 use cli_42::CliError;
 use structs::program::Program;
 
-async fn run(prog: &mut Program, command: &str) -> Result<(), CliError> {
+async fn run(prog: &mut Program, command: String) -> Result<(), CliError> {
     info!("run() Begin");
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
@@ -47,21 +48,12 @@ async fn main() -> Result<(), CliError> {
     info!("Staring Program");
     env_logger::init();
 
-    let cli = App::new(crate_name!())
-        .version(crate_version!())
-        .about("42 cli")
-        .arg(
-            Arg::new("command")
-                .required(true)
-                .index(1)
-                .help("Command to run"),
-        )
-        .get_matches();
-    debug!("{}", cli.value_of("command").unwrap());
+    let config = Config::new()?;
+    debug!("{}", config.command);
 
     let mut program = Program::new();
     program.init_program().await?;
-    run(&mut program, cli.value_of("command").unwrap()).await?;
+    run(&mut program, config.command.to_owned()).await?;
     info!("Quit Program");
     Ok(())
 }
