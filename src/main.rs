@@ -1,5 +1,5 @@
 use clap::{crate_name, crate_version, App, Arg};
-use log::debug;
+use log::{debug, info};
 
 pub mod authorize;
 pub mod command;
@@ -8,6 +8,7 @@ use cli_42::CliError;
 use structs::program::Program;
 
 async fn run(prog: &mut Program, command: &str) -> Result<(), CliError> {
+    info!("run() Begin");
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
         "WALLET" => {
@@ -37,11 +38,13 @@ async fn run(prog: &mut Program, command: &str) -> Result<(), CliError> {
             println!("Command not found");
         }
     }
+    info!("run() End");
     Ok(())
 }
 
 #[tokio::main]
 async fn main() -> Result<(), CliError> {
+    info!("Staring Program");
     env_logger::init();
 
     let cli = App::new(crate_name!())
@@ -59,5 +62,6 @@ async fn main() -> Result<(), CliError> {
     let mut program = Program::new();
     program.init_program().await?;
     run(&mut program, cli.value_of("command").unwrap()).await?;
+    info!("Quit Program");
     Ok(())
 }
