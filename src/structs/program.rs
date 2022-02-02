@@ -18,13 +18,15 @@ pub struct Session {
 
 impl Session {
     async fn get_access_token(&mut self) -> Result<(), CliError> {
+        info!("get_access_token() Begin");
         self.access_token = Some(check::check_token_exist(self.clone()).await?);
+        info!("get_access_token() End");
         Ok(())
     }
     /// check if token is valide.
     /// if not generate one.
     async fn check_token(&mut self) -> Result<String, CliError> {
-        info!("check_token()");
+        info!("check_token() Begin");
         let mut update = false;
         let tok =
             check::check_token_validity(self.access_token.to_owned().unwrap_or_default()).await;
@@ -44,11 +46,12 @@ impl Session {
             info!("check_token(): update file");
             check::update_file(self.access_token.to_owned().unwrap_or_default())?;
         }
+        info!("check_token() End");
         self.token = Some(tok);
         self.access_token.to_owned().ok_or(CliError::NoneError)
     }
     async fn call(&mut self, uri: &str) -> Result<String, CliError> {
-        info!("call()");
+        info!("call() Begin");
         let ac_token = self.check_token().await?;
         let client_id = self.client_id.to_owned();
         let client = reqwest::Client::new();
@@ -84,6 +87,7 @@ impl Session {
             }
         }
         let tmp = response.text().await?;
+        info!("call() End");
         Ok(tmp)
     }
 }
@@ -100,18 +104,19 @@ impl Program {
     }
 
     pub async fn init_program(&mut self) -> Result<(), CliError> {
+        info!("init_program() Begin");
         let client_info = fs::read_to_string("config.toml").unwrap();
         let client: Session = toml::from_str(client_info.as_str()).unwrap();
-        info!("init_program()");
         self.session = Some(client);
         if let Some(session) = self.session.as_mut() {
             session.get_access_token().await?
         }
+        info!("init_program() End");
         Ok(())
     }
 
     pub async fn with_session(&mut self, url: &str) -> Result<String, CliError> {
-        info!("with_session()");
+        info!("with_session() Begin");
         let res = match &mut self.session {
             Some(session) => {
                 let tmp = session.call(url).await?;
@@ -119,6 +124,7 @@ impl Program {
             }
             None => return Err(CliError::SessionExistError),
         };
+        info!("with_session() End");
         Ok(res)
     }
 }

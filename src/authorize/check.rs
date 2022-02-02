@@ -15,37 +15,39 @@ use std::{
 /// if None then try to generate one
 /// if generated then write to `config.toml`
 pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
-    info!("check_token_exist()");
+    info!("check_token_exist() Begin");
     let ac_token = match session.access_token {
         Some(token) => {
-            info!("check_token_validity(): found token");
+            info!("check_token_exist(): found token");
             token
         }
         None => {
-            debug!("check_token_validity(): token not found in ./config.toml file");
+            debug!("check_token_exist(): token not found in ./config.toml file");
             let tmp = my_authorize(session).await?;
             write_to_file("config.toml", format!("\naccess_token=\"{}\"", tmp))?;
             tmp
         }
     };
+    info!("check_token_exist() End");
     Ok(ac_token)
 }
 
 /// get current access_token information.
 async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
-    info!("token_info_request()");
+    info!("token_info_request() Begin");
     let client = reqwest::Client::new();
     let response = client
         .get("https://api.intra.42.fr/oauth/token/info")
         .header(AUTHORIZATION, format!("Bearer {}", ac_token))
         .send()
         .await?;
+    info!("token_info_request() END");
     Ok(response)
 }
 
 /// check if current access token is valide.
 pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, CliError> {
-    info!("check_token_validity()");
+    info!("check_token_validity() Begin");
     let response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {
@@ -72,6 +74,7 @@ pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, 
     }
     let res = response.text().await?;
     let tok: token::TokenInfo = serde_json::from_str(res.as_str())?;
+    info!("check_token_validity() End");
     Ok(tok)
 }
 
