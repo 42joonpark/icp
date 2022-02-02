@@ -1,4 +1,7 @@
 .env
 .vscode
+.idea
+.DS_Store
+*.swp
 target
 config.toml
