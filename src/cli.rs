@@ -12,17 +12,15 @@ impl Config {
             .about(crate_description!())
             .arg(
                 Arg::new("command")
-                    .default_value("login")
-                    // .hide_default_value(true)
+                    .default_value("me")
                     .index(1)
-                    .help("Command to run"),
+                    .help("Which command to run"),
             )
             .get_matches();
 
-        let command = matches.value_of("command").unwrap();
-
+        let command = matches.value_of("command").unwrap_or("me");
         Ok(Config {
-            command: command.to_string(),
+            command: String::from(command),
         })
     }
 }
