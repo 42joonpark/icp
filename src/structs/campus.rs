@@ -48,7 +48,7 @@ pub struct CampusElement {
     pub active: bool,
 
     #[serde(rename = "email_extension")]
-    email_extension: String,
+    email_extension: Option<String>,
 
     #[serde(rename = "default_hidden_phone")]
     default_hidden_phone: bool,
