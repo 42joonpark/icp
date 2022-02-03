@@ -5,30 +5,30 @@ view your intra information on CLI
 1. Generate client_id and client_secret at intra.\
 https://profile.intra.42.fr/oauth/applications/new  \
 set redirect_url to "http://localhost:8080"
-2. create config.toml file inside "42_cli" directory and put your client_id and client_secret.\
+2. create `config.toml` file inside "42_cli" directory and put your client_id and client_secret.\
 	client_id="your client_id" \
 	client_secret="your client_secret"
-4. enter "help" or "command" to see list of commands
+4. `./cli_42 --help` for help
 
 ### Log
-RUST_LOG=info
+to see log \
+put `RUST_LOG=info` before `cargo run`
 
-1. info
-2. debug
-3. warn
+#### Available log
+1. error - not used
+2. warn
+3. info
+4. debug
+5. trace - not used
 
 ## Commands
 ### email
-print user email
-### help
-print help
+Shows user email
 ### id
-print user id
+Shows user id
 ### login
-print user intra id
+Show user intra id
 ### point
-print user correction point
-### reload
-reload personal data
+Shows user correction point
 ### wallet
-print user wallet
+Shows user wallet
