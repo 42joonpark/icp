@@ -17,12 +17,14 @@ pub struct Session {
 }
 
 impl Session {
-    async fn get_access_token(&mut self) -> Result<(), CliError> {
-        info!("get_access_token() Begin");
-        self.access_token = Some(check::check_token_exist(self.clone()).await?);
-        info!("get_access_token() End");
-        Ok(())
+    pub async fn new() -> Result<Self, CliError> {
+        let path = "./config.toml";
+        let content = fs::read_to_string(path)?;
+        let mut session: Session = toml::from_str(&content)?;
+        session.access_token = Some(check::check_token_exist(session.clone()).await?);
+        Ok(session)
     }
+
     /// check if token is valide.
     /// if not generate one.
     async fn check_token(&mut self) -> Result<String, CliError> {
@@ -95,24 +97,16 @@ impl Session {
 #[derive(Default, Debug)]
 pub struct Program {
     session: Option<Session>,
-    pub check_cnt: u8,
 }
 
 impl Program {
-    pub fn new() -> Program {
-        Program::default()
-    }
-
-    pub async fn init_program(&mut self) -> Result<(), CliError> {
-        info!("init_program() Begin");
-        let client_info = fs::read_to_string("config.toml").unwrap();
-        let client: Session = toml::from_str(client_info.as_str()).unwrap();
-        self.session = Some(client);
-        if let Some(session) = self.session.as_mut() {
-            session.get_access_token().await?
-        }
-        info!("init_program() End");
-        Ok(())
+    pub async fn new() -> Result<Self, CliError> {
+        info!("Program::new() Begin");
+        let program = Program {
+            session: Some(Session::new().await?),
+        };
+        info!("Program::new() End");
+        Ok(program)
     }
 
     pub async fn with_session(&mut self, url: &str) -> Result<String, CliError> {

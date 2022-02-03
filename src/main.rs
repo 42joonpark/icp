@@ -51,8 +51,7 @@ async fn main() -> Result<(), CliError> {
     let config = Config::new()?;
     debug!("{}", config.command);
 
-    let mut program = Program::new();
-    program.init_program().await?;
+    let mut program = Program::new().await?;
     run(&mut program, config.command.to_owned()).await?;
     info!("Quit Program");
     Ok(())
