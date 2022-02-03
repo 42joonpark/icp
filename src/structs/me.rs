@@ -31,7 +31,7 @@ pub struct Me {
     phone: String,
 
     #[serde(rename = "displayname")]
-    displayname: String,
+    pub displayname: String,
 
     #[serde(rename = "image_url")]
     image_url: String,
@@ -73,7 +73,7 @@ pub struct Me {
     groups: Vec<Option<serde_json::Value>>,
 
     #[serde(rename = "cursus_users")]
-    cursus_users: Vec<CursusUser>,
+    pub cursus_users: Vec<CursusUser>,
 
     #[serde(rename = "projects_users")]
     projects_users: Vec<ProjectsUser>,
@@ -235,61 +235,61 @@ pub struct CampusUser {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct CursusUser {
     #[serde(rename = "grade")]
-    grade: Option<String>,
+    pub grade: Option<String>,
 
     #[serde(rename = "level")]
-    level: f64,
+    pub level: f64,
 
     #[serde(rename = "skills")]
-    skills: Vec<Skill>,
+    pub skills: Vec<Skill>,
 
     #[serde(rename = "blackholed_at")]
-    blackholed_at: Option<String>,
+    pub blackholed_at: Option<String>,
 
     #[serde(rename = "id")]
-    id: i64,
+    pub id: i64,
 
     #[serde(rename = "begin_at")]
-    begin_at: String,
+    pub begin_at: String,
 
     #[serde(rename = "end_at")]
-    end_at: Option<String>,
+    pub end_at: Option<String>,
 
     #[serde(rename = "cursus_id")]
-    cursus_id: i64,
+    pub cursus_id: i64,
 
     #[serde(rename = "has_coalition")]
-    has_coalition: bool,
+    pub has_coalition: bool,
 
     #[serde(rename = "created_at")]
-    created_at: String,
+    pub created_at: String,
 
     #[serde(rename = "updated_at")]
-    updated_at: String,
+    pub updated_at: String,
 
     #[serde(rename = "user")]
-    user: User,
+    pub user: User,
 
     #[serde(rename = "cursus")]
-    cursus: Cursus,
+    pub cursus: Cursus,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Cursus {
     #[serde(rename = "id")]
-    id: i64,
+    pub id: i64,
 
     #[serde(rename = "created_at")]
-    created_at: Option<String>,
+    pub created_at: Option<String>,
 
     #[serde(rename = "name")]
-    name: String,
+    pub name: String,
 
     #[serde(rename = "slug")]
-    slug: String,
+    pub slug: String,
 
     #[serde(rename = "parent_id")]
-    parent_id: Option<serde_json::Value>,
+    pub parent_id: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -298,79 +298,79 @@ pub struct Skill {
     id: i64,
 
     #[serde(rename = "name")]
-    name: String,
+    pub name: String,
 
     #[serde(rename = "level")]
-    level: f64,
+    pub level: f64,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct User {
     #[serde(rename = "id")]
-    id: i64,
+    pub id: i64,
 
     #[serde(rename = "email")]
-    email: String,
+    pub email: String,
 
     #[serde(rename = "login")]
-    login: String,
+    pub login: String,
 
     #[serde(rename = "first_name")]
-    first_name: String,
+    pub first_name: String,
 
     #[serde(rename = "last_name")]
-    last_name: String,
+    pub last_name: String,
 
     #[serde(rename = "usual_full_name")]
-    usual_full_name: String,
+    pub usual_full_name: String,
 
     #[serde(rename = "usual_first_name")]
-    usual_first_name: Option<serde_json::Value>,
+    pub usual_first_name: Option<serde_json::Value>,
 
     #[serde(rename = "url")]
-    url: String,
+    pub url: String,
 
     #[serde(rename = "phone")]
-    phone: String,
+    pub phone: String,
 
     #[serde(rename = "displayname")]
-    displayname: String,
+    pub displayname: String,
 
     #[serde(rename = "image_url")]
-    image_url: String,
+    pub image_url: String,
 
     #[serde(rename = "staff?")]
-    staff: bool,
+    pub staff: bool,
 
     #[serde(rename = "correction_point")]
-    correction_point: i64,
+    pub correction_point: i64,
 
     #[serde(rename = "pool_month")]
-    pool_month: String,
+    pub pool_month: String,
 
     #[serde(rename = "pool_year")]
-    pool_year: String,
+    pub pool_year: String,
 
     #[serde(rename = "location")]
-    location: Option<serde_json::Value>,
+    pub location: Option<serde_json::Value>,
 
     #[serde(rename = "wallet")]
-    wallet: i64,
+    pub wallet: i64,
 
     #[serde(rename = "anonymize_date")]
-    anonymize_date: String,
+    pub anonymize_date: String,
 
     #[serde(rename = "created_at")]
-    created_at: String,
+    pub created_at: String,
 
     #[serde(rename = "updated_at")]
-    updated_at: String,
+    pub updated_at: String,
 
     #[serde(rename = "alumni")]
-    alumni: bool,
+    pub alumni: bool,
 
     #[serde(rename = "is_launched?")]
-    is_launched: bool,
+    pub is_launched: bool,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
