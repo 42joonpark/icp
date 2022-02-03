@@ -2,12 +2,12 @@ pub mod authorize;
 pub mod cli;
 pub mod command;
 pub mod structs;
-use cli::Config;
+use cli::{Config, list_available_commands};
 use cli_42::CliError;
 use structs::program::Program;
 
-async fn run(prog: &mut Program, config: Config) -> Result<(), CliError> {
-    let command = config.command.to_owned();
+async fn run(prog: &mut Program) -> Result<(), CliError> {
+    let command = prog.config.command.to_owned();
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
         "ID" => prog.id().await?,
@@ -27,8 +27,11 @@ async fn main() -> Result<(), CliError> {
     env_logger::init();
 
     let config = Config::new()?;
-    let mut program = Program::new().await?;
+    if config.list_commands {
+        return list_available_commands();
+    }
 
-    run(&mut program, config).await?;
+    let mut program = Program::new(config).await?;
+    run(&mut program).await?;
     Ok(())
 }

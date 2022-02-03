@@ -3,6 +3,7 @@ use crate::authorize::my_authorize;
 use crate::authorize::token;
 use crate::structs::{campus, me};
 use crate::CliError;
+use crate::cli::Config;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
@@ -95,16 +96,18 @@ impl Session {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct Program {
     session: Option<Session>,
+    pub config: Config,
 }
 
 impl Program {
-    pub async fn new() -> Result<Self, CliError> {
+    pub async fn new(config: Config) -> Result<Self, CliError> {
         info!("Program::new() Begin");
         let program = Program {
             session: Some(Session::new().await?),
+            config,
         };
         info!("Program::new() End");
         Ok(program)
@@ -178,12 +181,29 @@ impl Program {
     }
 
     pub async fn campus(&mut self) -> Result<(), CliError> {
-        let result = self.with_session("v2/campus").await?;
+        // TODO
+        // make url generating function.
+        // add "v2 + /campus + page"
+
+        let url = self.generate_url("v2/campus").await;
+        let result = self.with_session(&url[..]).await?;
         let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
         for camp in campuses {
             println!("{:#?}", camp);
         }
         Ok(())
+    }
+    
+    // add url with config values.
+    // if page exists than cat page... to url
+    async fn generate_url(&mut self, url: &str) -> String {
+        let mut res = String::new();
+        res.push_str(url);
+        res.push_str("?page=");
+        if let Some(page) = &self.config.page {
+            res.push_str(&page.to_string());
+        }
+        res
     }
 }
 
