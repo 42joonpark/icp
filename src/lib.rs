@@ -16,6 +16,8 @@ pub enum CliError {
     JsonError(#[from] serde_json::Error),
     #[error(transparent)]
     VarError(#[from] std::env::VarError),
+    #[error("Error: toml Error")]
+    TomlError(#[from] toml::de::Error),
     #[error("Error: 401 Unauthorized Result")]
     Unauthorized,
     #[error("Error: Server Unauthorized")]
