@@ -12,32 +12,14 @@ async fn run(prog: &mut Program, command: String) -> Result<(), CliError> {
     info!("run() Begin");
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
-        "WALLET" => {
-            println!("Wallet: {}", prog.wallet().await?);
-        }
-        "EMAIL" => match prog.email().await {
-            Ok(content) => {
-                println!("Email: {}", content);
-            }
-            Err(error) => {
-                println!("Error... {}", error);
-            }
-        },
-        "ID" => {
-            println!("ID: {}", prog.id().await?);
-        }
-        "POINT" => {
-            println!("Correction Point: {}", prog.correction_point().await?);
-        }
-        "LOGIN" => {
-            println!("Login: {}", prog.login().await?);
-        }
-        "CAMPUS" => {
-            prog.campus().await?;
-        }
-        _ => {
-            println!("Command not found");
-        }
+        "ID" => prog.id().await?,
+        "ME" => prog.me().await?,
+        "EMAIL" => prog.email().await?,
+        "LOGIN" => prog.login().await?,
+        "POINT" => prog.correction_point().await?,
+        "CAMPUS" => prog.campus().await?,
+        "WALLET" => prog.wallet().await?,
+        _ => println!("Command `{}` not found", command),
     }
     info!("run() End");
     Ok(())

@@ -52,6 +52,7 @@ impl Session {
         self.token = Some(tok);
         self.access_token.to_owned().ok_or(CliError::NoneError)
     }
+
     async fn call(&mut self, uri: &str) -> Result<String, CliError> {
         info!("call() Begin");
         let ac_token = self.check_token().await?;
@@ -124,34 +125,56 @@ impl Program {
 }
 
 impl Program {
-    pub async fn email(&mut self) -> Result<String, CliError> {
-        let result = self.with_session("v2/me").await?;
-        let res: me::Me = serde_json::from_str(result.as_str())?;
-        Ok(res.email)
+    async fn get_me(&mut self) -> Result<me::Me, CliError> {
+        info!("get_me() Begin");
+        let res = self.with_session("v2/me").await?;
+        let me: me::Me = serde_json::from_str(res.as_str())?;
+        info!("get_me() End");
+        Ok(me)
     }
 
-    pub async fn wallet(&mut self) -> Result<i64, CliError> {
-        let result = self.with_session("v2/me").await?;
-        let res: me::Me = serde_json::from_str(result.as_str())?;
-        Ok(res.wallet)
+    pub async fn me(&mut self) -> Result<(), CliError> {
+        let m = self.get_me().await?;
+        let title = if m.titles.is_empty() {
+            ""
+        } else {
+            m.titles[0].name.split(' ').next().unwrap_or("")
+        };
+        println!("{} | {} {}", m.displayname, title, m.login);
+        println!("{:20}{}", "Wallet", m.wallet);
+        println!("{:20}{}", "Evaluation points", m.correction_point);
+        println!("{:20}{}", "Cursus", m.cursus_users[1].cursus.name);
+        Ok(())
     }
 
-    pub async fn id(&mut self) -> Result<i64, CliError> {
-        let result = self.with_session("v2/me").await?;
-        let res: me::Me = serde_json::from_str(result.as_str())?;
-        Ok(res.id)
+    pub async fn email(&mut self) -> Result<(), CliError> {
+        let m = self.get_me().await?;
+        println!("{:20}{}", "Email", m.email);
+        Ok(())
     }
 
-    pub async fn login(&mut self) -> Result<String, CliError> {
-        let result = self.with_session("v2/me").await?;
-        let res: me::Me = serde_json::from_str(result.as_str())?;
-        Ok(res.login)
+    pub async fn wallet(&mut self) -> Result<(), CliError> {
+        let m = self.get_me().await?;
+        println!("{:20}{}", "Wallet", m.wallet);
+        Ok(())
     }
 
-    pub async fn correction_point(&mut self) -> Result<i64, CliError> {
-        let result = self.with_session("v2/me").await?;
-        let res: me::Me = serde_json::from_str(result.as_str())?;
-        Ok(res.correction_point)
+    pub async fn id(&mut self) -> Result<(), CliError> {
+        let m = self.get_me().await?;
+        println!("{:20}{}", "ID", m.id);
+        Ok(())
+    }
+
+    pub async fn login(&mut self) -> Result<(), CliError> {
+        let m = self.get_me().await?;
+        println!("{:20}{}", "Login", m.login);
+        Ok(())
+    }
+
+    pub async fn correction_point(&mut self) -> Result<(), CliError> {
+        let m = self.get_me().await?;
+        println!("{:20}{}", "Correction point", m.correction_point);
+        Ok(())
     }
 
     pub async fn campus(&mut self) -> Result<(), CliError> {
