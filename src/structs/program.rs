@@ -1,9 +1,9 @@
 use crate::authorize::check;
 use crate::authorize::my_authorize;
 use crate::authorize::token;
+use crate::cli::Config;
 use crate::structs::{campus, me};
 use crate::CliError;
-use crate::cli::Config;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
@@ -193,7 +193,7 @@ impl Program {
         }
         Ok(())
     }
-    
+
     // add url with config values.
     // if page exists than cat page... to url
     async fn generate_url(&mut self, url: &str) -> String {

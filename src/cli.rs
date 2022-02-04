@@ -35,7 +35,9 @@ impl Config {
 
         let command = matches.value_of("command").unwrap_or("me");
         let list_commands = matches.is_present("list_commands");
-        let page = matches.value_of("page").map(|p| p.parse::<u32>().unwrap_or_default());
+        let page = matches
+            .value_of("page")
+            .map(|p| p.parse::<u32>().unwrap_or_default());
         Ok(Config {
             command: String::from(command),
             list_commands,
@@ -55,4 +57,3 @@ pub fn list_available_commands() -> Result<(), CliError> {
     println!("  wallet");
     Ok(())
 }
-
