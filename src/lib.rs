@@ -1,6 +1,5 @@
 pub mod authorize;
 pub mod cli;
-pub mod command;
 pub mod structs;
 
 use thiserror::Error;

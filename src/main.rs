@@ -1,6 +1,5 @@
 pub mod authorize;
 pub mod cli;
-pub mod command;
 pub mod structs;
 use cli::{list_available_commands, Config};
 use cli_42::CliError;
