@@ -1,4 +1,4 @@
-use crate::CliError;
+use ftapi::SessionError;
 use clap::{crate_description, crate_name, crate_version, App, Arg};
 
 #[derive(Debug)]
@@ -9,7 +9,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new() -> Result<Self, CliError> {
+    pub fn new() -> Result<Self, SessionError> {
         let matches = App::new(crate_name!())
             .version(crate_version!())
             .about(crate_description!())
@@ -46,7 +46,7 @@ impl Config {
     }
 }
 
-pub fn list_available_commands() -> Result<(), CliError> {
+pub fn list_available_commands() -> Result<(), SessionError> {
     println!("Available commands:");
     println!("  id");
     println!("  me");

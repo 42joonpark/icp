@@ -1,10 +1,8 @@
-use crate::authorize::my_authorize;
-use crate::authorize::token;
-use crate::structs::program::Session;
-use crate::CliError;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use reqwest::Response;
+use ftapi::SessionError;
+use ftapi::Session;
 use std::{
     io::{self, BufRead},
     path::Path,
@@ -14,7 +12,7 @@ use std::{
 /// check if session's access_token is not None.
 /// if None then try to generate one
 /// if generated then write to `config.toml`
-pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
+pub async fn check_token_exist(session: Session) -> Result<String, SessionError> {
     info!("check_token_exist() Begin");
     let ac_token = match session.access_token {
         Some(token) => {
@@ -33,7 +31,7 @@ pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
 }
 
 /// get current access_token information.
-async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
+async fn token_info_request(ac_token: String) -> Result<Response, SessionError> {
     info!("token_info_request() Begin");
     let client = reqwest::Client::new();
     let response = client
@@ -46,7 +44,7 @@ async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
 }
 
 /// check if current access token is valide.
-pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, CliError> {
+pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, SessionError> {
     info!("check_token_validity() Begin");
     let response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {
@@ -56,15 +54,15 @@ pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, 
         }
         reqwest::StatusCode::UNAUTHORIZED => {
             warn!("check_token_validity(): UNAUTHORIZED");
-            return Err(CliError::Unauthorized);
+            return Err(SessionError::Unauthorized);
         }
         reqwest::StatusCode::FORBIDDEN => {
             warn!("check_token_validity(): 402 FORBIDDEN ACCESS");
-            return Err(CliError::Fobidden);
+            return Err(SessionError::Fobidden);
         }
         reqwest::StatusCode::NOT_FOUND => {
             warn!("check_token_validity(): 404 NOT FOUND");
-            return Err(CliError::NotFound);
+            return Err(SessionError::NotFound);
         }
         _ => {
             warn!("check_token(): panic!");
@@ -79,7 +77,7 @@ pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, 
 }
 
 /// write content to file
-fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
+fn write_to_file(filename: &str, content: String) -> Result<(), SessionError> {
     use std::io::Write;
 
     info!("write_to_file()");
@@ -93,7 +91,7 @@ fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
 }
 
 /// update access_token inside config.toml
-pub fn update_file(token: String) -> Result<(), CliError> {
+pub fn update_file(token: String) -> Result<(), SessionError> {
     info!("update_file()");
     if let Ok(lines) = read_lines("config.toml") {
         for line in lines.flatten() {

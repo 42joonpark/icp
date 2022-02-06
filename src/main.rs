@@ -1,11 +1,11 @@
-pub mod authorize;
-pub mod cli;
-pub mod structs;
-use cli::{list_available_commands, Config};
-use cli_42::CliError;
-use structs::program::Program;
+mod cli;
+mod program;
 
-async fn run(prog: &mut Program) -> Result<(), CliError> {
+use ftapi::SessionError;
+use cli::{list_available_commands, Config};
+use program::Program;
+
+async fn run(prog: &mut Program) -> Result<(), SessionError> {
     let command = prog.config.command.to_owned();
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
@@ -22,7 +22,7 @@ async fn run(prog: &mut Program) -> Result<(), CliError> {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), CliError> {
+async fn main() -> Result<(), SessionError> {
     env_logger::init();
 
     let config = Config::new()?;
