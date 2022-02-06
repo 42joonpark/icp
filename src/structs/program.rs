@@ -181,10 +181,6 @@ impl Program {
     }
 
     pub async fn campus(&mut self) -> Result<(), CliError> {
-        // TODO
-        // make url generating function.
-        // add "v2 + /campus + page"
-
         let url = self.generate_url("v2/campus").await;
         let result = self.with_session(&url[..]).await?;
         let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
