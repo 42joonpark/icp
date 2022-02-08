@@ -4,6 +4,7 @@ use crate::authorize::token;
 use crate::cli::Config;
 use crate::structs::{campus, me};
 use crate::CliError;
+use directories::BaseDirs;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
@@ -20,11 +21,15 @@ pub struct Session {
 
 impl Session {
     pub async fn new() -> Result<Self, CliError> {
-        let path = "./config.toml";
-        let content = fs::read_to_string(path)?;
-        let mut session: Session = toml::from_str(&content)?;
-        session.access_token = Some(check::check_token_exist(session.clone()).await?);
-        Ok(session)
+        if let Some(dir) = BaseDirs::new() {
+            let path = dir.config_dir().join("config.toml");
+            let content = fs::read_to_string(path)?;
+            let mut session: Session = toml::from_str(&content)?;
+            session.access_token = Some(check::check_token_exist(session.clone()).await?);
+            Ok(session)
+        } else {
+            Err(CliError::ConfigFileNotFound)
+        }
     }
 
     /// check if token is valide.

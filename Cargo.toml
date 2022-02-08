@@ -17,3 +17,4 @@ oauth2 		= { version = "4.1.0" }
 url			= { version = "2.2.2" }
 clap		= { version = "3.0.10", features = ["derive", "cargo"]}
 toml		= { version = "0.5.8" }
+directories = { version = "4.0.1" }
