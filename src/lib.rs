@@ -30,4 +30,6 @@ pub enum CliError {
     NoneError,
     #[error("Error: Session Not exist")]
     SessionExistError,
+    #[error("Error: Configure file not found")]
+    ConfigFileNotFound,
 }

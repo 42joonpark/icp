@@ -8,6 +8,7 @@ use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use std::fs;
+use url::Url;
 
 #[derive(Clone, Default, Debug, Deserialize)]
 pub struct Session {
@@ -98,7 +99,7 @@ impl Session {
 
 #[derive(Debug)]
 pub struct Program {
-    session: Option<Session>,
+    session: Session,
     pub config: Config,
 }
 
@@ -106,7 +107,7 @@ impl Program {
     pub async fn new(config: Config) -> Result<Self, CliError> {
         info!("Program::new() Begin");
         let program = Program {
-            session: Some(Session::new().await?),
+            session: Session::new().await?,
             config,
         };
         info!("Program::new() End");
@@ -115,13 +116,7 @@ impl Program {
 
     pub async fn with_session(&mut self, url: &str) -> Result<String, CliError> {
         info!("with_session() Begin");
-        let res = match &mut self.session {
-            Some(session) => {
-                let tmp = session.call(url).await?;
-                tmp
-            }
-            None => return Err(CliError::SessionExistError),
-        };
+        let res = self.session.call(url).await?;
         info!("with_session() End");
         Ok(res)
     }
@@ -129,10 +124,9 @@ impl Program {
 
 impl Program {
     async fn get_me(&mut self) -> Result<me::Me, CliError> {
-        info!("get_me() Begin");
-        let res = self.with_session("v2/me").await?;
+        let url = "https://api.intra.42.fr/v2/me";
+        let res = self.with_session(url).await?;
         let me: me::Me = serde_json::from_str(res.as_str())?;
-        info!("get_me() End");
         Ok(me)
     }
 
@@ -181,29 +175,16 @@ impl Program {
     }
 
     pub async fn campus(&mut self) -> Result<(), CliError> {
-        // TODO
-        // make url generating function.
-        // add "v2 + /campus + page"
-
-        let url = self.generate_url("v2/campus").await;
-        let result = self.with_session(&url[..]).await?;
+        let url = "https://api.intra.42.fr/v2/campus/";
+        if let Some(page) = &self.config.page {
+            Url::parse_with_params(url, &[("page", page.to_string())])?;
+        }
+        let result = self.with_session(&url).await?;
         let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
         for camp in campuses {
             println!("{:#?}", camp);
         }
         Ok(())
-    }
-
-    // add url with config values.
-    // if page exists than cat page... to url
-    async fn generate_url(&mut self, url: &str) -> String {
-        let mut res = String::new();
-        res.push_str(url);
-        res.push_str("?page=");
-        if let Some(page) = &self.config.page {
-            res.push_str(&page.to_string());
-        }
-        res
     }
 }
 

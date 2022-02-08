@@ -95,10 +95,7 @@ async fn local_server(client: BasicClient) -> Result<String, CliError> {
                 .exchange_code(code)
                 .request_async(async_http_client)
                 .await;
-            let token = match token_res {
-                Err(_) => return Err(CliError::ServerUnauthorized),
-                Ok(t) => t,
-            };
+            let token = token_res.map_err(|_| CliError::ServerUnauthorized)?;
             debug!("42API returned the following token:\n{:?}\n", token);
 
             let scopes = if let Some(scopes_vec) = token.scopes() {
