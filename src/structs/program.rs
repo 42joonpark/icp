@@ -179,7 +179,7 @@ impl Program {
         if let Some(page) = &self.config.page {
             Url::parse_with_params(url, &[("page", page.to_string())])?;
         }
-        let result = self.with_session(&url).await?;
+        let result = self.with_session(url).await?;
         let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
         for camp in campuses {
             println!("{:#?}", camp);

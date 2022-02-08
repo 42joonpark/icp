@@ -10,12 +10,16 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Result<Self, CliError> {
-        let arg_command = 
-                Arg::new("command")
-                    .default_value("command")
-                    .index(1)
-                    .possible_values(["command", "id", "me", "email", "login", "point", "campus", "wallet"].iter())
-                    .help("Command to execute");
+        let arg_command = Arg::new("command")
+            .default_value("command")
+            .index(1)
+            .possible_values(
+                [
+                    "command", "id", "me", "email", "login", "point", "campus", "wallet",
+                ]
+                .iter(),
+            )
+            .help("Command to execute");
         let mut commands: Vec<String> = Vec::new();
         if let Some(val) = arg_command.get_possible_values() {
             for v in val {
