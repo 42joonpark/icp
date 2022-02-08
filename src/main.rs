@@ -1,7 +1,7 @@
 pub mod authorize;
 pub mod cli;
 pub mod structs;
-use cli::{list_available_commands, Config};
+use cli::Config;
 use cli_42::CliError;
 use structs::program::Program;
 
@@ -16,6 +16,7 @@ async fn run(prog: &mut Program) -> Result<(), CliError> {
         "POINT" => prog.correction_point().await?,
         "CAMPUS" => prog.campus().await?,
         "WALLET" => prog.wallet().await?,
+        "COMMAND" => prog.config.list_available_commands(),
         _ => println!("Command `{}` not found", command),
     }
     Ok(())
@@ -26,9 +27,6 @@ async fn main() -> Result<(), CliError> {
     env_logger::init();
 
     let config = Config::new()?;
-    if config.list_commands {
-        return list_available_commands();
-    }
 
     let mut program = Program::new(config).await?;
     run(&mut program).await?;
