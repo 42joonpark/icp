@@ -2,6 +2,7 @@ use crate::authorize::my_authorize;
 use crate::authorize::token;
 use crate::error::CliError;
 use crate::structs::program::Session;
+use directories::BaseDirs;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use reqwest::Response;
@@ -24,7 +25,10 @@ pub async fn check_token_exist(session: Session) -> Result<String, CliError> {
         None => {
             debug!("check_token_exist(): token not found in ./config.toml file");
             let tmp = my_authorize(session).await?;
-            write_to_file("config.toml", format!("\naccess_token=\"{}\"", tmp))?;
+            if let Some(dir) = BaseDirs::new() {
+                let path = dir.config_dir().join("config.toml");
+                write_to_file(&path, format!("access_token = \"{}\"", tmp))?;
+            }
             tmp
         }
     };
@@ -79,7 +83,7 @@ pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, 
 }
 
 /// write content to file
-fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
+fn write_to_file(filename: &Path, content: String) -> Result<(), CliError> {
     use std::io::Write;
 
     info!("write_to_file()");
@@ -95,19 +99,26 @@ fn write_to_file(filename: &str, content: String) -> Result<(), CliError> {
 /// update access_token inside config.toml
 pub fn update_file(token: String) -> Result<(), CliError> {
     info!("update_file()");
-    if let Ok(lines) = read_lines("config.toml") {
-        for line in lines.flatten() {
-            let mut content = String::new();
-            if line.contains("access_token") {
-                content.push_str(format!("access_token=\"{}\"", token).as_str());
-            } else {
-                content.push_str(line.as_str());
+    if let Some(dir) = BaseDirs::new() {
+        let path = dir.config_dir().join("config.toml");
+        let temp = dir.config_dir().join("temp");
+        println!("{:?}", path);
+        println!("{:?}", temp);
+        if let Ok(lines) = read_lines(path.clone()) {
+            for line in lines.flatten() {
+                let mut content = String::new();
+                if line.contains("access_token") {
+                    content.push_str(format!("access_token=\"{}\"", token).as_str());
+                } else {
+                    content.push_str(line.as_str());
+                }
+                write_to_file(temp.as_ref(), content)?;
             }
-            write_to_file(".temp", content)?;
         }
+        fs::remove_file(path.clone())?;
+        fs::rename(temp, path)?;
     }
-    fs::remove_file("config.toml")?;
-    fs::rename(".temp", "config.toml")?;
+    info!("update_file() NED");
     Ok(())
 }
 

@@ -70,7 +70,8 @@ impl Session {
             ("client_id", client_id.as_str()),
         ];
         let response = client
-            .get(format!("https://api.intra.42.fr/{}", uri))
+            // .get(format!("{}", uri))
+            .get(uri.to_string())
             .header(AUTHORIZATION, format!("Bearer {}", ac_token))
             .form(&params)
             .send()
