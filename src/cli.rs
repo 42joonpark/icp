@@ -1,4 +1,4 @@
-use crate::CliError;
+use crate::error::CliError;
 use clap::{crate_description, crate_name, crate_version, App, Arg};
 
 #[derive(Debug, clap::Parser)]
@@ -49,22 +49,11 @@ impl Config {
             commands,
         })
     }
+
     pub fn list_available_commands(&self) {
         println!("Available commands:");
         for command in &self.commands {
             println!("\t{}", command);
         }
     }
-}
-
-pub fn list_available_commands() -> Result<(), CliError> {
-    println!("Available commands:");
-    println!("  id");
-    println!("  me");
-    println!("  email");
-    println!("  login");
-    println!("  point");
-    println!("  campus");
-    println!("  wallet");
-    Ok(())
 }

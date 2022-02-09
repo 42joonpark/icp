@@ -1,8 +1,9 @@
 pub mod authorize;
 pub mod cli;
+pub mod error;
 pub mod structs;
 use cli::Config;
-use cli_42::CliError;
+use error::CliError;
 use structs::program::Program;
 
 async fn run(prog: &mut Program) -> Result<(), CliError> {

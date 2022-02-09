@@ -1,7 +1,7 @@
 use crate::authorize::my_authorize;
 use crate::authorize::token;
+use crate::error::CliError;
 use crate::structs::program::Session;
-use crate::CliError;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
 use reqwest::Response;

@@ -2,8 +2,8 @@ use crate::authorize::check;
 use crate::authorize::my_authorize;
 use crate::authorize::token;
 use crate::cli::Config;
+use crate::error::CliError;
 use crate::structs::{campus, me};
-use crate::CliError;
 use directories::BaseDirs;
 use log::{debug, info, warn};
 use reqwest::header::AUTHORIZATION;
@@ -119,7 +119,7 @@ impl Program {
         Ok(program)
     }
 
-    pub async fn with_session(&mut self, url: &str) -> Result<String, CliError> {
+    pub async fn call_api(&mut self, url: &str) -> Result<String, CliError> {
         info!("with_session() Begin");
         let res = self.session.call(url).await?;
         info!("with_session() End");
@@ -130,13 +130,14 @@ impl Program {
 impl Program {
     async fn get_me(&mut self) -> Result<me::Me, CliError> {
         let url = "https://api.intra.42.fr/v2/me";
-        let res = self.with_session(url).await?;
+        let res = self.call_api(url).await?;
         let me: me::Me = serde_json::from_str(res.as_str())?;
         Ok(me)
     }
 
     pub async fn me(&mut self) -> Result<(), CliError> {
         let m = self.get_me().await?;
+        // title이 아예 없으면 빈칸, 있으면 첫 번째 title
         let title = if m.titles.is_empty() {
             ""
         } else {
@@ -184,7 +185,7 @@ impl Program {
         if let Some(page) = &self.config.page {
             Url::parse_with_params(url, &[("page", page.to_string())])?;
         }
-        let result = self.with_session(url).await?;
+        let result = self.call_api(url).await?;
         let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
         for camp in campuses {
             println!("{:#?}", camp);
