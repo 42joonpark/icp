@@ -1,3 +1,47 @@
+use reqwest;
+use log::info;
+use crate::structs::program::Session;
+use crate::error::CliError;
+use crate::authorize::token::AccessToken;
+
+pub async fn my_authorize(session: Session) -> Result<String, CliError> {
+    info!("my_authorize() Begin");
+    let client_id = session.client_id.to_owned();
+    let client_secret = session.client_secret.to_owned();
+    let params = [
+        ("grant_type", "client_credentials"),
+        ("client_id", client_id.as_str()),
+        ("client_secret", client_secret.as_str()),
+    ];
+    let client = reqwest::Client::new();
+    let response = client
+        .post("https://api.intra.42.fr/oauth/token")
+        .form(&params)
+        .send()
+        .await;
+    
+    if let Ok(res) = response {
+        match res.status() {
+            reqwest::StatusCode::OK => {
+                info!("ok~~");
+            }
+            reqwest::StatusCode::UNAUTHORIZED => {
+                info!("unauthorized!!");
+            }
+            _ => {
+                info!("uh oh! something unexpected happened.");
+            }
+        }
+        let token = res.json::<AccessToken>().await?;
+        info!("my_authorize() END SUCCESSFULLY");
+        Ok(token.access_token)
+    } else {
+        info!("my_authorize() END WITH ERROR");
+        Err(CliError::Fobidden)
+    }
+}
+
+/*
 use crate::error::CliError;
 use crate::structs::program::Session;
 use log::{debug, info};
@@ -116,6 +160,7 @@ async fn local_server(client: BasicClient) -> Result<String, CliError> {
     info!("local_server() End");
     Ok(ac_token)
 }
+*/
 
 pub mod check;
 pub mod token;

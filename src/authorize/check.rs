@@ -52,6 +52,7 @@ async fn token_info_request(ac_token: String) -> Result<Response, CliError> {
 /// check if current access token is valide.
 pub async fn check_token_validity(ac_token: String) -> Result<token::TokenInfo, CliError> {
     info!("check_token_validity() Begin");
+    println!("{:?}", ac_token);
     let response = token_info_request(ac_token.to_owned()).await?;
     match response.status() {
         reqwest::StatusCode::OK => {

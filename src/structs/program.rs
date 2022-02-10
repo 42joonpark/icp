@@ -69,9 +69,10 @@ impl Session {
             ("grant_type", "client_credentials"),
             ("client_id", client_id.as_str()),
         ];
+        println!("{}", ac_token);
         let response = client
-            // .get(format!("{}", uri))
-            .get(uri.to_string())
+            .get(format!("{}", uri))
+            // .get(uri.to_string())
             .header(AUTHORIZATION, format!("Bearer {}", ac_token))
             .form(&params)
             .send()
@@ -185,13 +186,15 @@ impl Program {
         let url = "https://api.intra.42.fr/v2/campus/";
         if let Some(page) = &self.config.page {
             Url::parse_with_params(url, &[("page", page.to_string())])?;
+            let result = self.call_api(url).await?;
+            let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
+            for camp in campuses {
+                println!("{:#?}", camp);
+            }
+            Ok(())
+        } else {
+            Err(CliError::NoneError)
         }
-        let result = self.call_api(url).await?;
-        let campuses: campus::Campus = serde_json::from_str(result.as_str())?;
-        for camp in campuses {
-            println!("{:#?}", camp);
-        }
-        Ok(())
     }
 }
 
