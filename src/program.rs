@@ -1,53 +1,63 @@
 use crate::cli::Config;
-use log::info;
-use ftapi::results::{campus, me};
-use ftapi::Session;
-use ftapi::SessionError;
-use ftapi::token::*;
+use cli_42::results::*;
+use cli_42::token::TokenInfo;
+use cli_42::Mode;
+use cli_42::Session;
+use cli_42::SessionError;
+use url::Url;
 
 #[derive(Debug)]
 pub struct Program {
-    session: Option<Session>,
+    session: Session,
+    pub token: Option<TokenInfo>,
     pub config: Config,
 }
 
 impl Program {
     pub async fn new(config: Config) -> Result<Self, SessionError> {
-        info!("Program::new() Begin");
         let program = Program {
-            session: Some(Session::new("config.toml")?),
+            session: Session::new(Some(Mode::Credentials)).await?,
+            token: None,
             config,
         };
-        // Program이 access_token이 유효한지 확인을 하고 없으면 추가를 해줘야한다.
-        info!("Program::new() End");
         Ok(program)
     }
 
-    pub async fn with_session(&mut self, url: &str) -> Result<String, SessionError> {
-        info!("with_session() Begin");
-        let res = match &mut self.session {
-            Some(session) => {
-                let tmp = session.call(url).await?;
-                tmp
-            }
-            None => return Err(SessionError::NoneError),
-        };
-        info!("with_session() End");
+    pub async fn call(&mut self, url: &str) -> Result<String, SessionError> {
+        let res = self.session.call(url).await?;
         Ok(res)
     }
 }
 
 impl Program {
-    async fn get_me(&mut self) -> Result<me::Me, SessionError> {
-        info!("get_me() Begin");
-        let res = self.with_session("v2/me").await?;
+    async fn get_user_with_login(&mut self) -> Result<user::UserElement, SessionError> {
+        let url = "https://api.intra.42.fr/v2/users";
+        let url = Url::parse_with_params(
+            url,
+            &[
+                ("client_id", self.session.get_client_id()),
+                ("filter[login]", self.session.get_login()),
+            ],
+        )?;
+
+        let res = self.call(url.as_str()).await?;
+        let user: user::User = serde_json::from_str(res.as_str())?;
+        Ok(user[0].clone())
+    }
+
+    async fn get_me(&mut self, id: i64) -> Result<me::Me, SessionError> {
+        let url = format!("https://api.intra.42.fr/v2/users/{}", id);
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+
+        let res = self.call(url.as_str()).await?;
         let me: me::Me = serde_json::from_str(res.as_str())?;
-        info!("get_me() End");
         Ok(me)
     }
 
     pub async fn me(&mut self) -> Result<(), SessionError> {
-        let m = self.get_me().await?;
+        let tmp = self.get_user_with_login().await?;
+        let id = tmp.id;
+        let m = self.get_me(id).await?;
         let title = if m.titles.is_empty() {
             ""
         } else {
@@ -61,11 +71,14 @@ impl Program {
     }
 
     pub async fn email(&mut self) -> Result<(), SessionError> {
-        let m = self.get_me().await?;
+        let tmp = self.get_user_with_login().await?;
+        let id = tmp.id;
+        let m = self.get_me(id).await?;
         println!("{:20}{}", "Email", m.email);
         Ok(())
     }
 
+    /*
     pub async fn wallet(&mut self) -> Result<(), SessionError> {
         let m = self.get_me().await?;
         println!("{:20}{}", "Wallet", m.wallet);
@@ -111,17 +124,5 @@ impl Program {
         }
         res
     }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    use std::fs;
-
-    #[test]
-    fn test_email() {
-        let contents = fs::read_to_string("./return_value/me.json").unwrap();
-        let my_info: me::Me = serde_json::from_str(contents.as_str()).unwrap();
-        assert_eq!(my_info.email, "joonpark@student.42seoul.kr");
-    }
+    */
 }
