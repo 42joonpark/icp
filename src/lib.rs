@@ -23,6 +23,8 @@ pub enum SessionError {
     TomlError(#[from] toml::de::Error),
     #[error(transparent)]
     VarError(#[from] std::env::VarError),
+    #[error(transparent)]
+    ChoronoParseError(#[from] chrono::ParseError),
     #[error("Error: No access token found")]
     TokenNotFound,
     #[error("Error: Not valide token Error")]

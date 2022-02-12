@@ -15,10 +15,19 @@ impl Config {
             .index(1)
             .possible_values(
                 [
-                    "command", "id", "me", "email", "login", "point", "campus", "wallet",
+                    "command",
+                    "id",
+                    "me",
+                    "email",
+                    "login",
+                    "point",
+                    "campus",
+                    "wallet",
+                    "blackhole",
                 ]
                 .iter(),
             )
+            .takes_value(true)
             .help("Command to execute");
         let mut commands: Vec<String> = Vec::new();
         if let Some(val) = arg_command.get_possible_values() {

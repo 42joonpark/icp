@@ -11,11 +11,13 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     match cmd.as_str() {
         // "ID" => prog.id().await?,
         "ME" => prog.me().await?,
+        "ID" => prog.id().await?,
         "EMAIL" => prog.email().await?,
-        // "LOGIN" => prog.login().await?,
-        // "POINT" => prog.correction_point().await?,
+        "LOGIN" => prog.login().await?,
+        "POINT" => prog.correction_point().await?,
         // "CAMPUS" => prog.campus().await?,
-        // "WALLET" => prog.wallet().await?,
+        "WALLET" => prog.wallet().await?,
+        "BLACKHOLE" => prog.blackhole().await?,
         "COMMAND" => prog.config.list_available_commands(),
         _ => println!("Command `{}` not found", command),
     }
