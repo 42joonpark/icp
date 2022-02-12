@@ -21,7 +21,6 @@ impl Config {
                     "email",
                     "login",
                     "point",
-                    "campus",
                     "wallet",
                     "blackhole",
                 ]
