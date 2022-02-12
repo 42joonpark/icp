@@ -3,8 +3,8 @@ mod program;
 
 use cli::Config;
 use cli_42::SessionError;
-use program::Program;
 use program::Command;
+use program::Program;
 
 async fn run(prog: &mut Program) -> Result<(), SessionError> {
     let command = prog.config.command.to_owned();

@@ -1,8 +1,8 @@
 use crate::cli::Config;
 use chrono::DateTime;
 use chrono::Utc;
-use cli_42::results::*;
 use cli_42::results::user::UserElement;
+use cli_42::results::*;
 use cli_42::token::TokenInfo;
 use cli_42::Mode;
 use cli_42::Session;
@@ -89,8 +89,8 @@ impl Program {
             user.titles[0].name.split(' ').next().unwrap_or("")
         };
         println!("{} | {} {}", user.displayname, title, user.login);
-        self.wallet(&user).await?;
-        self.correction_point(&user).await?;
+        self.wallet(user).await?;
+        self.correction_point(user).await?;
         println!("{:20}{}", "Cursus", user.cursus_users[1].cursus.name);
         println!(
             "{:20}{}",
@@ -100,7 +100,7 @@ impl Program {
                 .as_ref()
                 .unwrap_or(&"".to_string())
         );
-        self.blackhole(&user).await?;
+        self.blackhole(user).await?;
         Ok(())
     }
 
