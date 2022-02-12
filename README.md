@@ -5,14 +5,16 @@ view your intra information on CLI
 1. Generate client_id and client_secret at intra.\
 https://profile.intra.42.fr/oauth/applications/new  \
 set redirect_url to "http://localhost:8080"
-2. create `config.toml` file inside "42_cli" directory and put your client_id and client_secret.\
+2. create `config.toml` file inside user config directory and put your client_id and client_secret. (Mac: $HOME/Library/Application Support) \
 	client_id="your client_id" \
-	client_secret="your client_secret"
-4. `./cli_42 --help` for help
+	client_secret="your client_secret" \
+	login="Your intra login ex)joonpark"
+3. `./cli_42 --help` for help.
+4. `./cli_42 command` to see available commands.
 
 ### Log
 to see log \
-put `RUST_LOG=info` before `cargo run`
+use `RUST_LOG=info` before `cargo run`
 
 #### Available log
 1. error - not used
