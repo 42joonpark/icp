@@ -36,12 +36,12 @@ struct Application {
     uid: Option<String>,
 }
 
-/// Try to get access token info.
-///
-/// # Example
-/// ```
-/// let token_info: TokenInfo = token_info("Some Token");
-/// ```
+// Try to get access token info.
+//
+// # Example
+// ```
+// let token_info: TokenInfo = token_info("Some Token");
+// ```
 pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError> {
     let url = "https://api.intra.42.fr/oauth/token/info";
     let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
@@ -50,12 +50,12 @@ pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError
     Ok(token_info)
 }
 
-/// Check if the token is valid.
-///
-/// # Example
-/// ```
-/// let res = check_token_valide(Some("Some Token".to_string())).await?;
-/// ```
+// Check if the token is valid.
+//
+// # Example
+// ```
+// let res = check_token_valide(Some("Some Token".to_string())).await?;
+// ```
 pub async fn check_token_valide(token: Option<String>) -> Result<bool, SessionError> {
     let token_info = token_info(token).await?;
     if token_info.expires_in_seconds.is_none() {
@@ -73,14 +73,14 @@ pub struct AccessToken {
     pub created_at: i64,
 }
 
-/// Generate credentials grant token.
-///
-/// # Example
-///
-/// ```
-/// let session = Session::new(Some(Mode::Credentials)).await?;
-/// let access_token = generate_token_credentials(session.clone()).await?;
-/// ```
+// Generate credentials grant token.
+//
+// # Example
+//
+// ```
+// let session = Session::new(Some(Mode::Credentials)).await?;
+// let access_token = generate_token_credentials(session.clone()).await?;
+// ```
 pub async fn generate_token_credentials(session: Session) -> Result<String, SessionError> {
     let client_id = session.client_id.to_owned();
     let client_secret = session.client_secret.to_owned();
@@ -106,14 +106,14 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
     }
 }
 
-/// Generate code grant token.
-///
-/// # Example
-///
-/// ```
-/// let session = Session::new(Some(Mode::Code)).await?;
-/// let access_token = generate_token(session.clone()).await?;
-/// ```
+// Generate code grant token.
+//
+// # Example
+//
+// ```
+// let session = Session::new(Some(Mode::Code)).await?;
+// let access_token = generate_token(session.clone()).await?;
+// ```
 pub async fn generate_token(session: Session) -> Result<String, SessionError> {
     let client = BasicClient::new(
         ClientId::new(String::from(session.get_client_id())),
@@ -135,7 +135,7 @@ pub async fn generate_token(session: Session) -> Result<String, SessionError> {
     Ok(ac_token)
 }
 
-/// Creates local server with port number 8000 and waits for user to finish authorize.
+// Creates local server with port number 8000 and waits for user to finish authorize.
 async fn local_server(client: BasicClient) -> Result<String, SessionError> {
     let ac_token;
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
