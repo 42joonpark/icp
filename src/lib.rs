@@ -91,8 +91,8 @@ impl Session {
     ///
     /// # Example
     /// ```
-    /// use ftapi::Session;
-    /// use ftapi::SessionError;
+    /// use cli_42::Session;
+    /// use cli_42::SessionError;
     ///
     /// let session: Session = Session::new(None)?;
     /// let session: Session = Session::new(Some(Mode::Code))?;
@@ -129,9 +129,9 @@ impl Session {
     ///
     /// # Example
     /// ```
-    /// use ftapi::Session;
-    /// use ftapi::SessionError;
-    /// use ftapi::Mode;
+    /// use crate::Session;
+    /// use cli_42::SessionError;
+    /// use cli_42::Mode;
     ///
     /// let session: Session = Session::new(Mode(None))?;
     /// let result = session.call("https://api.intra.42.fr/v2/users")?;
