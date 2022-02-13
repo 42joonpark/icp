@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use crate::cli::Config;
 use chrono::DateTime;
 use chrono::Utc;
@@ -7,6 +9,7 @@ use cli_42::token::TokenInfo;
 use cli_42::Mode;
 use cli_42::Session;
 use cli_42::SessionError;
+use directories::BaseDirs;
 use url::Url;
 
 pub enum Command {
@@ -28,6 +31,15 @@ pub struct Program {
 
 impl Program {
     pub async fn new(config: Config) -> Result<Self, SessionError> {
+        if !(check_if_config_file_exists()) {
+            // create new file
+            create_config_toml()?;
+            if let Ok(result) = check_config_toml() {
+                if !result {
+                    return Err(SessionError::ConfigFileNotFound);
+                }
+            }
+        }
         let program = Program {
             session: Session::new(Some(Mode::Credentials)).await?,
             token: None,
@@ -143,4 +155,89 @@ impl Program {
         );
         Ok(())
     }
+}
+
+fn check_if_config_file_exists() -> bool {
+    if let Some(dir) = BaseDirs::new() {
+        let path = dir.config_dir().join("config.toml");
+        if !(path.exists()) {
+            return false;
+        }
+    }
+    true
+}
+
+fn create_config_toml() -> Result<(), SessionError> {
+    use std::fs::File;
+    use std::io::stdin;
+
+    println!("Browse to: https://profile.intra.42.fr/oauth/applications/new");
+    println!("Create new Application");
+    println!("Set redirect_url to \"http://localhost:8080\"");
+
+    if let Some(dir) = BaseDirs::new() {
+        let path = dir.config_dir().join("config.toml");
+        let mut file = File::create(path)?;
+        let stdin = stdin();
+        let mut line = String::new();
+
+        println!("Enter client id: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
+        line.clear();
+        println!("Enter client secret: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
+        line.clear();
+        println!("Enter intra login: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "login=\"{}\"", line.trim())?;
+        Ok(())
+    } else {
+        Err(SessionError::BaseDirsNewError)
+    }
+}
+
+fn check_config_toml() -> Result<bool, SessionError> {
+    use std::io::ErrorKind;
+
+    if let Some(dir) = BaseDirs::new() {
+        let path = dir.config_dir().join("config.toml");
+        let tmp = std::fs::read_to_string(path);
+        match tmp {
+            Ok(content) => {
+                let config: Session = toml::from_str(&content)?;
+                if !(check_client(&config)) {
+                    return Ok(false);
+                }
+            }
+            Err(e) => match e.kind() {
+                ErrorKind::NotFound => {
+                    eprintln!("config.toml not found");
+                    return Ok(false);
+                }
+                ErrorKind::PermissionDenied => {
+                    eprintln!("config.toml not readable");
+                    return Ok(false);
+                }
+                _ => {
+                    eprintln!("config.toml error.");
+                    eprintln!("something went wrong.");
+                }
+            },
+        }
+    }
+    Ok(true)
+}
+
+fn check_client(session: &Session) -> bool {
+    let client_id = session.get_client_id();
+    let client_secret = session.get_client_secret();
+    if client_id.is_empty() || client_secret.is_empty() {
+        return false;
+    }
+    if client_id.len() > 256 || client_secret.len() > 256 {
+        return false;
+    }
+    true
 }
