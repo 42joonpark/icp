@@ -19,26 +19,30 @@ pub enum SessionError {
     ReqwestError(#[from] reqwest::Error),
     #[error(transparent)]
     JsonError(#[from] serde_json::Error),
-    #[error("Error: toml Error")]
+    #[error(transparent)]
     TomlError(#[from] toml::de::Error),
     #[error(transparent)]
     VarError(#[from] std::env::VarError),
     #[error(transparent)]
     ChoronoParseError(#[from] chrono::ParseError),
+    #[error("Error: NoneError {0}")]
+    NoneError(String),
+    #[error("Error: Untouched error.")]
+    Untouched,
     #[error("Error: No access token found")]
     TokenNotFound,
     #[error("Error: Not valide token Error")]
     TokenNotValid,
-    #[error("Error: NoneError")]
-    NoneError,
     #[error("Error: Server Unauthorized")]
-    UnauthorizedServerError,
+    UnauthorizedResponse,
     #[error("Error: 403 Fobidden Access")]
     Fobidden,
     #[error("Error: 404 Page or resource is not found")]
     NotFound,
     #[error("Error: Configure file not found")]
     ConfigFileNotFound,
+    #[error("Error: BaseDirs::new() returned None")]
+    BaseDirsNewError,
 }
 
 // Authorization grant type.
@@ -118,7 +122,7 @@ impl Session {
             }
             Ok(session)
         } else {
-            Err(SessionError::NoneError)
+            Err(SessionError::BaseDirsNewError)
         }
     }
 }
@@ -156,18 +160,18 @@ impl Session {
 
         match response.status() {
             reqwest::StatusCode::OK => {
-                debug!("call(): reqwest OK");
+                debug!("cli_42::Session::call(): reqwest OK");
             }
             reqwest::StatusCode::UNAUTHORIZED => {
-                warn!("call(): unauthorized");
-                return Err(SessionError::UnauthorizedServerError);
+                warn!("cli_42::Session::call(): unauthorized");
+                return Err(SessionError::UnauthorizedResponse);
             }
             reqwest::StatusCode::FORBIDDEN => {
-                warn!("call(): 402 FORBIDDEN ACCESS");
+                warn!("cli_42::Session::call(): 402 FORBIDDEN ACCESS");
                 return Err(SessionError::Fobidden);
             }
             reqwest::StatusCode::NOT_FOUND => {
-                warn!("404 NOT FOUND");
+                warn!("cli_42::Session::call(): 404 NOT FOUND");
                 return Err(SessionError::NotFound);
             }
             _ => {

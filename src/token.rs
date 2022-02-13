@@ -1,6 +1,6 @@
 use crate::Session;
 use crate::SessionError;
-use log::{self, debug};
+use log::{self, debug, info};
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
 use oauth2::{
@@ -82,6 +82,7 @@ pub struct AccessToken {
 // let access_token = generate_token_credentials(session.clone()).await?;
 // ```
 pub async fn generate_token_credentials(session: Session) -> Result<String, SessionError> {
+    info!("token::generate_token_credentials(): Begin");
     let client_id = session.client_id.to_owned();
     let client_secret = session.client_secret.to_owned();
     let params = [
@@ -96,13 +97,16 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
         .send()
         .await;
 
-    if let Ok(res) = response {
-        match res.json::<AccessToken>().await {
-            Ok(token) => Ok(token.access_token),
-            Err(e) => Err(SessionError::ReqwestError(e)),
-        }
-    } else {
-        Err(SessionError::NoneError)
+    match response {
+        Ok(res) => match res.status() {
+            reqwest::StatusCode::OK => {
+                let access_token: AccessToken = res.json().await?;
+                Ok(access_token.access_token)
+            }
+            reqwest::StatusCode::UNAUTHORIZED => Err(SessionError::UnauthorizedResponse),
+            _ => panic!("uh oh! something unexpected happened"),
+        },
+        Err(e) => Err(SessionError::ReqwestError(e)),
     }
 }
 
@@ -149,7 +153,11 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                 reader.read_line(&mut request_line).await?;
                 let redirect_url = match request_line.split_whitespace().nth(1) {
                     Some(url) => url,
-                    None => return Err(SessionError::NoneError),
+                    None => {
+                        return Err(SessionError::NoneError(
+                            "local_server(): nth(1) is out of bound".to_string(),
+                        ))
+                    }
                 };
                 let url = Url::parse(&("http://localhost".to_string() + redirect_url))?;
 
@@ -158,7 +166,11 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                     key == "code"
                 }) {
                     Some(code) => code,
-                    None => return Err(SessionError::NoneError),
+                    None => {
+                        return Err(SessionError::NoneError(
+                            "local_server(): code is not found".to_string(),
+                        ))
+                    }
                 };
 
                 let (_, value) = code_pair;
@@ -169,7 +181,11 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                     key == "state"
                 }) {
                     Some(state) => state,
-                    None => return Err(SessionError::NoneError),
+                    None => {
+                        return Err(SessionError::NoneError(
+                            "local_server(): state is not found".to_string(),
+                        ))
+                    }
                 };
 
                 let (_, value) = state_pair;
@@ -192,7 +208,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                 .request_async(async_http_client)
                 .await;
             let token = match token_res {
-                Err(_) => return Err(SessionError::UnauthorizedServerError),
+                Err(_) => return Err(SessionError::UnauthorizedResponse),
                 Ok(t) => t,
             };
             debug!("42API returned the following token:\n{:?}\n", token);
