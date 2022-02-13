@@ -64,7 +64,7 @@ impl Session {
     // # Example
     // ```
     // use cli_42::Session;
-    // 
+    //
     // let session: Session = Session::new()?;
     // ```
     pub async fn new_with_path(path: &str, m: Option<Mode>) -> Result<Self, SessionError> {
