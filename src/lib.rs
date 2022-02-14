@@ -152,6 +152,7 @@ impl Session {
             ("grant_type", "client_credentials"),
             ("client_id", self.get_client_id()),
         ];
+        debug!("{}", ac_token);
         let response = client
             .get(uri.to_string())
             .header(AUTHORIZATION, format!("Bearer {}", ac_token))
@@ -207,6 +208,10 @@ impl Session {
     // Get the `access_token` of the session
     pub fn get_access_token(&self) -> Option<String> {
         self.access_token.clone()
+    }
+    // set the `login` of the session
+    pub fn set_login(&mut self, login: String) {
+        self.login = login;
     }
     // Set the `access_token` of the session with a new value
     pub fn set_access_token(&mut self, token: String) {

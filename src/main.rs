@@ -12,6 +12,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     match cmd.as_str() {
         "ME" => prog.run_program(Command::Me).await?,
         "ID" => prog.run_program(Command::Id).await?,
+        "USER" => prog.run_program(Command::Search).await?,
         "EMAIL" => prog.run_program(Command::Email).await?,
         "LOGIN" => prog.run_program(Command::Login).await?,
         "POINT" => prog.run_program(Command::CorrectionPoint).await?,
@@ -31,18 +32,21 @@ async fn main() {
         Ok(config) => config,
         Err(err) => {
             println!("Error: {}", err);
-            return ;
+            return;
         }
     };
 
-    let mut program = match Program::new(config).await {
+    let mut program = match Program::new(config.clone()).await {
         Ok(program) => program,
         Err(err) => {
             println!("Error: {}", err);
-            return ;
+            return;
         }
     };
 
+    if let Some(name) = config.user {
+        program.session.set_login(name);
+    }
     match run(&mut program).await {
         Ok(_) => (),
         Err(err) => println!("Error: {}", err),
