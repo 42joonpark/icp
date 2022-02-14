@@ -12,7 +12,6 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     match cmd.as_str() {
         "ME" => prog.run_program(Command::Me).await?,
         "ID" => prog.run_program(Command::Id).await?,
-        "USER" => prog.run_program(Command::Search).await?,
         "EMAIL" => prog.run_program(Command::Email).await?,
         "LOGIN" => prog.run_program(Command::Login).await?,
         "POINT" => prog.run_program(Command::CorrectionPoint).await?,

@@ -17,7 +17,6 @@ pub enum Command {
     Me,
     Email,
     Login,
-    Search,
     CorrectionPoint,
     Wallet,
     Blackhole,
@@ -61,7 +60,6 @@ impl Program {
             Command::Me => self.me(&user).await?,
             Command::Email => self.email(&user).await?,
             Command::Login => self.login(&user).await?,
-            Command::Search => self.search(&user).await?,
             Command::CorrectionPoint => self.correction_point(&user).await?,
             Command::Wallet => self.wallet(&user).await?,
             Command::Blackhole => self.blackhole(&user).await?,
@@ -134,11 +132,6 @@ impl Program {
     }
 
     async fn login(&mut self, user: &me::Me) -> Result<(), SessionError> {
-        println!("{:20}{}", "Login", user.login);
-        Ok(())
-    }
-
-    async fn search(&mut self, user: &me::Me) -> Result<(), SessionError> {
         println!("{:20}{}", "Login", user.login);
         Ok(())
     }

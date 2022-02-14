@@ -23,7 +23,6 @@ impl Config {
                     "login",
                     "point",
                     "wallet",
-                    "search",
                     "blackhole",
                 ]
                 .iter(),
@@ -40,13 +39,6 @@ impl Config {
             .version(crate_version!())
             .about(crate_description!())
             .arg(arg_command)
-            .arg(
-                Arg::new("page")
-                    .short('p')
-                    .long("page")
-                    .takes_value(true)
-                    .help("Page number"),
-            )
             .arg(
                 Arg::new("user")
                     .short('u')
