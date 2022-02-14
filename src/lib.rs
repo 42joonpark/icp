@@ -6,10 +6,9 @@ use log::{self, debug, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use std::fs;
-use thiserror::Error;
 
 // Error type
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum SessionError {
     #[error(transparent)]
     IoError(#[from] std::io::Error),
@@ -25,8 +24,10 @@ pub enum SessionError {
     VarError(#[from] std::env::VarError),
     #[error(transparent)]
     ChoronoParseError(#[from] chrono::ParseError),
-    #[error("Error: NoneError {0}")]
-    NoneError(String),
+    #[error("")]
+    NoneError,
+    #[error("{0}")]
+    New(String),
     #[error("Error: Untouched error.")]
     Untouched,
     #[error("Error: No access token found")]
@@ -35,8 +36,8 @@ pub enum SessionError {
     TokenNotValid,
     #[error("Error: Server Unauthorized")]
     UnauthorizedResponse,
-    #[error("Error: 403 Fobidden Access")]
-    Fobidden,
+    #[error("Error: 403 Forbidden Access")]
+    Forbidden,
     #[error("Error: 404 Page or resource is not found")]
     NotFound,
     #[error("Error: Configure file not found")]
@@ -168,7 +169,7 @@ impl Session {
             }
             reqwest::StatusCode::FORBIDDEN => {
                 warn!("cli_42::Session::call(): 402 FORBIDDEN ACCESS");
-                return Err(SessionError::Fobidden);
+                return Err(SessionError::Forbidden);
             }
             reqwest::StatusCode::NOT_FOUND => {
                 warn!("cli_42::Session::call(): 404 NOT FOUND");

@@ -103,7 +103,9 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
                 let access_token: AccessToken = res.json().await?;
                 Ok(access_token.access_token)
             }
-            reqwest::StatusCode::UNAUTHORIZED => Err(SessionError::UnauthorizedResponse),
+            reqwest::StatusCode::UNAUTHORIZED => Err(SessionError::New(
+                "Failed to generate access token. Please check your `config.toml` file.".into(),
+            )),
             _ => panic!("uh oh! something unexpected happened"),
         },
         Err(e) => Err(SessionError::ReqwestError(e)),
@@ -153,11 +155,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                 reader.read_line(&mut request_line).await?;
                 let redirect_url = match request_line.split_whitespace().nth(1) {
                     Some(url) => url,
-                    None => {
-                        return Err(SessionError::NoneError(
-                            "local_server(): nth(1) is out of bound".to_string(),
-                        ))
-                    }
+                    None => return Err(SessionError::NoneError),
                 };
                 let url = Url::parse(&("http://localhost".to_string() + redirect_url))?;
 
@@ -166,11 +164,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                     key == "code"
                 }) {
                     Some(code) => code,
-                    None => {
-                        return Err(SessionError::NoneError(
-                            "local_server(): code is not found".to_string(),
-                        ))
-                    }
+                    None => return Err(SessionError::NoneError),
                 };
 
                 let (_, value) = code_pair;
@@ -181,11 +175,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                     key == "state"
                 }) {
                     Some(state) => state,
-                    None => {
-                        return Err(SessionError::NoneError(
-                            "local_server(): state is not found".to_string(),
-                        ))
-                    }
+                    None => return Err(SessionError::NoneError),
                 };
 
                 let (_, value) = state_pair;

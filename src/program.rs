@@ -32,7 +32,6 @@ pub struct Program {
 impl Program {
     pub async fn new(config: Config) -> Result<Self, SessionError> {
         if !(check_if_config_file_exists()) {
-            // create new file
             create_config_toml()?;
             if let Ok(result) = check_config_toml() {
                 if !result {
@@ -70,6 +69,7 @@ impl Program {
 }
 
 impl Program {
+    // 아무리 봐도 얘는 라이브러리에 가는게 맞는거 같은데
     async fn get_user_with_login(&mut self) -> Result<user::UserElement, SessionError> {
         let url = "https://api.intra.42.fr/v2/users";
         let url = Url::parse_with_params(
