@@ -36,3 +36,9 @@ Shows user correction point
 Shows user wallet
 ### blackhole
 Show user's remaining blackhole days.
+
+
+## Options
+### --user(-u)
+Specify user login.
+ex) `./cli_42 --user=joonpark`
