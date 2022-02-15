@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-02-15T02:52:49.804Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Safari/605.1.15" etag="LmJa1AzPBcGIzJoforHm" version="16.5.6" type="github">
+<mxfile host="app.diagrams.net" modified="2022-02-15T03:43:07.393Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Safari/605.1.15" etag="PEenOmo2ZiwovbIpvlE4" version="16.5.6" type="github">
   <diagram id="rfSWHlRA1yjYHvfrcOm9" name="main">
     <mxGraphModel dx="1425" dy="829" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -40,8 +40,11 @@
         <mxCell id="FwEQjmBujWVivrQduoge-32" value="&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;command: String&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;page: Option&amp;lt;u32&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;user: Option&amp;lt;String&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;commands: Vector&amp;lt;String&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="FwEQjmBujWVivrQduoge-31">
           <mxGeometry y="25" width="150" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="FwEQjmBujWVivrQduoge-40" value="access token 생성" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="334" y="420" width="80" height="40" as="geometry" />
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=15;" edge="1" parent="1" source="FwEQjmBujWVivrQduoge-40" target="7RItpEJKz6Ty_2nKmxKN-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FwEQjmBujWVivrQduoge-40" value="session 생성" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="334" y="370" width="80" height="40" as="geometry" />
         </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-43" value="Program" style="swimlane;fontSize=13;startSize=23;" vertex="1" parent="1">
           <mxGeometry x="450" y="10" width="150" height="80" as="geometry" />
@@ -73,11 +76,14 @@
         <mxCell id="FwEQjmBujWVivrQduoge-54" value="&lt;font size=&quot;1&quot;&gt;Session 생성&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="130" y="15" width="80" height="40" as="geometry" />
         </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;" edge="1" parent="1" source="FwEQjmBujWVivrQduoge-56" target="7RItpEJKz6Ty_2nKmxKN-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-56" value="&lt;font size=&quot;1&quot;&gt;run()&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="334" y="520" width="80" height="40" as="geometry" />
+          <mxGeometry x="200" y="660" width="80" height="40" as="geometry" />
         </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-60" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="334" y="270" width="216" height="100" as="geometry" />
+          <mxGeometry x="334" y="250" width="216" height="100" as="geometry" />
         </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-39" value="&lt;font style=&quot;font-size: 10px&quot;&gt;read config.toml&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="FwEQjmBujWVivrQduoge-60">
           <mxGeometry y="30" width="80" height="40" as="geometry" />
@@ -115,7 +121,7 @@
         <mxCell id="FwEQjmBujWVivrQduoge-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;" edge="1" parent="FwEQjmBujWVivrQduoge-99" source="FwEQjmBujWVivrQduoge-64" target="FwEQjmBujWVivrQduoge-65">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="FwEQjmBujWVivrQduoge-70" value="&lt;font size=&quot;1&quot;&gt;종료&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="FwEQjmBujWVivrQduoge-99">
+        <mxCell id="FwEQjmBujWVivrQduoge-70" value="&lt;font size=&quot;1&quot;&gt;결과 리턴&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="FwEQjmBujWVivrQduoge-99">
           <mxGeometry y="310" width="81.77777777777777" height="40" as="geometry" />
         </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;" edge="1" parent="FwEQjmBujWVivrQduoge-99" source="FwEQjmBujWVivrQduoge-64" target="FwEQjmBujWVivrQduoge-70">
@@ -149,7 +155,7 @@
         <mxCell id="FwEQjmBujWVivrQduoge-97" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;" edge="1" parent="FwEQjmBujWVivrQduoge-99" source="FwEQjmBujWVivrQduoge-94" target="FwEQjmBujWVivrQduoge-95">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="FwEQjmBujWVivrQduoge-96" value="&lt;font size=&quot;1&quot;&gt;종료&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="FwEQjmBujWVivrQduoge-99">
+        <mxCell id="FwEQjmBujWVivrQduoge-96" value="&lt;font size=&quot;1&quot;&gt;결과 리턴&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="FwEQjmBujWVivrQduoge-99">
           <mxGeometry x="286.22222222222223" y="190" width="81.77777777777777" height="40" as="geometry" />
         </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=11;" edge="1" parent="FwEQjmBujWVivrQduoge-99" source="FwEQjmBujWVivrQduoge-95" target="FwEQjmBujWVivrQduoge-96">
@@ -160,6 +166,98 @@
         </mxCell>
         <mxCell id="FwEQjmBujWVivrQduoge-104" value="&lt;b&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;access token 생성&lt;/font&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;glass=0;sketch=0;fontSize=11;" vertex="1" parent="FwEQjmBujWVivrQduoge-105">
           <mxGeometry x="170" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-2" value="AccessToken" style="swimlane;fontSize=13;startSize=23;" vertex="1" parent="1">
+          <mxGeometry x="813.33" y="10" width="136.67" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-3" value="&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;access_token: String&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;tokken_type: String&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;expires_in: i32&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;scope: String&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span style=&quot;font-size: 11px&quot;&gt;created_at: i64&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="7RItpEJKz6Ty_2nKmxKN-2">
+          <mxGeometry y="23" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=15;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-5" target="7RItpEJKz6Ty_2nKmxKN-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-5" value="access token 생성" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="334" y="450" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-8" value="&lt;font size=&quot;1&quot;&gt;session 리턴&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="334" y="530" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-10" target="7RItpEJKz6Ty_2nKmxKN-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-10" value="command = 사용자 입력 command" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="740" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-12" target="7RItpEJKz6Ty_2nKmxKN-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-12" value="&lt;font size=&quot;1&quot;&gt;Program::run_program()&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="660" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-19" value="YES" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-15" target="7RItpEJKz6Ty_2nKmxKN-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-23" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-15">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="100" y="859.9999999999998" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-15" value="&lt;span style=&quot;font-size: 12px&quot;&gt;사용자 정보 필요한 command&lt;/span&gt;" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;rounded=0;shadow=0;glass=0;sketch=0;fontSize=15;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="195" y="820" width="90" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-24" value="&lt;font size=&quot;1&quot;&gt;종료&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="200" y="930" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-29" target="7RItpEJKz6Ty_2nKmxKN-37">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-29" value="사용자 정보 요청" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="365" y="745" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-32" value="&lt;br&gt;지금 구현된 기능들은 client_credentials grant로 충분하고, 웹 브라우저 안 쓰는걸 목표로 하고 있어서 code grant 사용 안함." style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="450" width="245.33" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-35" target="7RItpEJKz6Ty_2nKmxKN-24">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="1039.9999999999998" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="60" y="950" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-35" value="&lt;font size=&quot;1&quot;&gt;아직 구현안된 어떤 함수&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="840" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-37" target="7RItpEJKz6Ty_2nKmxKN-24">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="405" y="950" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-37" value="Program::call()" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="365" y="835" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-41" target="7RItpEJKz6Ty_2nKmxKN-65">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-41" value="&lt;font size=&quot;1&quot;&gt;Program::call()&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="580" y="660" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-64" value="&lt;br&gt;매개변수 url : API GET 요청할 url" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="675" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;" edge="1" parent="1" source="7RItpEJKz6Ty_2nKmxKN-65" target="7RItpEJKz6Ty_2nKmxKN-68">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-65" value="send request" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="595" y="750" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-66" value="&lt;br&gt;필요한 access token, client_id 뿐이라서 grant.type 에 상관없이 호출 가능" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="765" width="170" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="7RItpEJKz6Ty_2nKmxKN-68" value="&lt;font size=&quot;1&quot;&gt;결과 리턴&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="595" y="830" width="80" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
