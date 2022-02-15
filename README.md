@@ -5,7 +5,7 @@ view your intra information on CLI
 1. Generate client_id and client_secret at intra.\
 https://profile.intra.42.fr/oauth/applications/new  \
 set redirect_url to "http://localhost:8080"
-2. create `config.toml` file inside user config directory and put your client_id and client_secret. (Mac: $HOME/Library/Application Support) \
+2. create `config.toml` file inside user config directory and put your client_id, client_secret and login. (Mac: $HOME/Library/Application Support) \
 	client_id="your client_id" \
 	client_secret="your client_secret" \
 	login="Your intra login ex)joonpark"
@@ -34,3 +34,5 @@ Show user intra id
 Shows user correction point
 ### wallet
 Shows user wallet
+### blackhole
+Show user's remaining blackhole days.
