@@ -22,6 +22,7 @@ impl Config {
                     "email",
                     "login",
                     "point",
+                    "level",
                     "wallet",
                     "blackhole",
                 ]

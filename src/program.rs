@@ -16,8 +16,9 @@ pub enum Command {
     Me,
     Email,
     Login,
-    CorrectionPoint,
+    Level,
     Wallet,
+    CorrectionPoint,
     Blackhole,
 }
 
@@ -58,12 +59,13 @@ impl Program {
             Mode::Code => {
                 let user = self.get_me().await?;
                 match command {
-                    Command::Id => self.id(user.id).await?,
+                    Command::Id => self.id(user.id).await,
                     Command::Me => self.me(&user).await?,
-                    Command::Email => self.email(&user).await?,
-                    Command::Login => self.login(&user).await?,
-                    Command::CorrectionPoint => self.correction_point(&user).await?,
-                    Command::Wallet => self.wallet(&user).await?,
+                    Command::Email => self.email(&user).await,
+                    Command::Login => self.login(&user).await,
+                    Command::Level => self.level(&user).await,
+                    Command::CorrectionPoint => self.correction_point(&user).await,
+                    Command::Wallet => self.wallet(&user).await,
                     Command::Blackhole => self.blackhole(&user).await?,
                 }
             }
@@ -71,12 +73,13 @@ impl Program {
                 let tmp = self.get_user_with_login().await?;
                 let user = self.get_user_info_with_id(tmp.id).await?;
                 match command {
-                    Command::Id => self.id(tmp.id).await?,
+                    Command::Id => self.id(tmp.id).await,
                     Command::Me => self.me(&user).await?,
-                    Command::Email => self.email(&user).await?,
-                    Command::Login => self.login(&user).await?,
-                    Command::CorrectionPoint => self.correction_point(&user).await?,
-                    Command::Wallet => self.wallet(&user).await?,
+                    Command::Email => self.email(&user).await,
+                    Command::Login => self.login(&user).await,
+                    Command::Level => self.level(&user).await,
+                    Command::CorrectionPoint => self.correction_point(&user).await,
+                    Command::Wallet => self.wallet(&user).await,
                     Command::Blackhole => self.blackhole(&user).await?,
                 }
             }
@@ -125,8 +128,8 @@ impl Program {
             user.titles[0].name.split(' ').next().unwrap_or("")
         };
         println!("{} | {} {}", user.displayname, title, user.login);
-        self.wallet(user).await?;
-        self.correction_point(user).await?;
+        self.wallet(user).await;
+        self.correction_point(user).await;
         println!("{:20}{}", "Cursus", user.cursus_users[1].cursus.name);
         println!(
             "{:20}{}",
@@ -136,33 +139,33 @@ impl Program {
                 .as_ref()
                 .unwrap_or(&"".to_string())
         );
+        self.level(user).await;
         self.blackhole(user).await?;
         Ok(())
     }
 
-    async fn email(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    async fn level(&mut self, user: &me::Me) {
+        println!("{:20}{}", "Level", user.cursus_users[1].level);
+    }
+
+    async fn email(&mut self, user: &me::Me) {
         println!("{:20}{}", "Email", user.email);
-        Ok(())
     }
 
-    async fn wallet(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    async fn wallet(&mut self, user: &me::Me) {
         println!("{:20}{}", "Wallet", user.wallet);
-        Ok(())
     }
 
-    async fn id(&mut self, id: i64) -> Result<(), SessionError> {
+    async fn id(&mut self, id: i64) {
         println!("{:20}{}", "ID", id);
-        Ok(())
     }
 
-    async fn login(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    async fn login(&mut self, user: &me::Me) {
         println!("{:20}{}", "Login", user.login);
-        Ok(())
     }
 
-    async fn correction_point(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    async fn correction_point(&mut self, user: &me::Me) {
         println!("{:20}{}", "Correction point", user.correction_point);
-        Ok(())
     }
 
     async fn blackhole(&mut self, user: &me::Me) -> Result<(), SessionError> {

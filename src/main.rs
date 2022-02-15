@@ -15,6 +15,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
         "EMAIL" => prog.run_program(Command::Email).await?,
         "LOGIN" => prog.run_program(Command::Login).await?,
         "POINT" => prog.run_program(Command::CorrectionPoint).await?,
+        "LEVEL" => prog.run_program(Command::Level).await?,
         "WALLET" => prog.run_program(Command::Wallet).await?,
         "BLACKHOLE" => prog.run_program(Command::Blackhole).await?,
         "COMMAND" => prog.config.list_available_commands(),
