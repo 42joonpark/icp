@@ -150,7 +150,6 @@ impl Session {
         let ac_token = self.access_token.clone().unwrap_or_default();
         let client = reqwest::Client::new();
         let params = [
-            ("grant_type", "client_credentials"),
             ("client_id", self.get_client_id()),
         ];
         debug!("{}", ac_token);
