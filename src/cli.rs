@@ -1,10 +1,11 @@
 use clap::{crate_description, crate_name, crate_version, App, Arg};
 use cli_42::SessionError;
 
-#[derive(Debug, clap::Parser)]
+#[derive(Clone, Debug, clap::Parser)]
 pub struct Config {
     pub command: String,
     pub page: Option<u32>,
+    pub user: Option<String>,
     commands: Vec<String>,
 }
 
@@ -39,21 +40,21 @@ impl Config {
             .about(crate_description!())
             .arg(arg_command)
             .arg(
-                Arg::new("page")
-                    .short('p')
-                    .long("page")
+                Arg::new("user")
+                    .short('u')
+                    .long("user")
                     .takes_value(true)
-                    .help("Page number"),
+                    .help("User login"),
             )
             .get_matches();
 
         let command = matches.value_of("command").unwrap_or("me");
-        let page = matches
-            .value_of("page")
-            .map(|p| p.parse::<u32>().unwrap_or_default());
+        let page = None;
+        let user = matches.value_of("user").map(|u| u.to_string());
         Ok(Config {
             command: String::from(command),
             page,
+            user,
             commands,
         })
     }

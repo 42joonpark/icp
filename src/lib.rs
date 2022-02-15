@@ -6,10 +6,9 @@ use log::{self, debug, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use std::fs;
-use thiserror::Error;
 
 // Error type
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum SessionError {
     #[error(transparent)]
     IoError(#[from] std::io::Error),
@@ -19,29 +18,36 @@ pub enum SessionError {
     ReqwestError(#[from] reqwest::Error),
     #[error(transparent)]
     JsonError(#[from] serde_json::Error),
-    #[error("Error: toml Error")]
+    #[error(transparent)]
     TomlError(#[from] toml::de::Error),
     #[error(transparent)]
     VarError(#[from] std::env::VarError),
     #[error(transparent)]
     ChoronoParseError(#[from] chrono::ParseError),
+    #[error("")]
+    NoneError,
+    #[error("{0}")]
+    New(String),
+    #[error("Error: Untouched error.")]
+    Untouched,
     #[error("Error: No access token found")]
     TokenNotFound,
     #[error("Error: Not valide token Error")]
     TokenNotValid,
-    #[error("Error: NoneError")]
-    NoneError,
     #[error("Error: Server Unauthorized")]
-    UnauthorizedServerError,
-    #[error("Error: 403 Fobidden Access")]
-    Fobidden,
+    UnauthorizedResponse,
+    #[error("Error: 403 Forbidden Access")]
+    Forbidden,
     #[error("Error: 404 Page or resource is not found")]
     NotFound,
     #[error("Error: Configure file not found")]
     ConfigFileNotFound,
+    #[error("Error: BaseDirs::new() returned None")]
+    BaseDirsNewError,
 }
 
 // Authorization grant type.
+#[derive(Debug, Deserialize)]
 pub enum Mode {
     Code,
     Credentials,
@@ -118,7 +124,7 @@ impl Session {
             }
             Ok(session)
         } else {
-            Err(SessionError::NoneError)
+            Err(SessionError::BaseDirsNewError)
         }
     }
 }
@@ -143,10 +149,8 @@ impl Session {
         }
         let ac_token = self.access_token.clone().unwrap_or_default();
         let client = reqwest::Client::new();
-        let params = [
-            ("grant_type", "client_credentials"),
-            ("client_id", self.get_client_id()),
-        ];
+        let params = [("client_id", self.get_client_id())];
+        debug!("{}", ac_token);
         let response = client
             .get(uri.to_string())
             .header(AUTHORIZATION, format!("Bearer {}", ac_token))
@@ -156,18 +160,18 @@ impl Session {
 
         match response.status() {
             reqwest::StatusCode::OK => {
-                debug!("call(): reqwest OK");
+                debug!("cli_42::Session::call(): reqwest OK");
             }
             reqwest::StatusCode::UNAUTHORIZED => {
-                warn!("call(): unauthorized");
-                return Err(SessionError::UnauthorizedServerError);
+                warn!("cli_42::Session::call(): unauthorized");
+                return Err(SessionError::UnauthorizedResponse);
             }
             reqwest::StatusCode::FORBIDDEN => {
-                warn!("call(): 402 FORBIDDEN ACCESS");
-                return Err(SessionError::Fobidden);
+                warn!("cli_42::Session::call(): 402 FORBIDDEN ACCESS");
+                return Err(SessionError::Forbidden);
             }
             reqwest::StatusCode::NOT_FOUND => {
-                warn!("404 NOT FOUND");
+                warn!("cli_42::Session::call(): 404 NOT FOUND");
                 return Err(SessionError::NotFound);
             }
             _ => {
@@ -202,6 +206,10 @@ impl Session {
     // Get the `access_token` of the session
     pub fn get_access_token(&self) -> Option<String> {
         self.access_token.clone()
+    }
+    // set the `login` of the session
+    pub fn set_login(&mut self, login: String) {
+        self.login = login;
     }
     // Set the `access_token` of the session with a new value
     pub fn set_access_token(&mut self, token: String) {

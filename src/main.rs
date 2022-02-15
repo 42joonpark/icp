@@ -24,12 +24,30 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), SessionError> {
+async fn main() {
     env_logger::init();
 
-    let config = Config::new()?;
+    let config = match Config::new() {
+        Ok(config) => config,
+        Err(err) => {
+            println!("Error: {}", err);
+            return;
+        }
+    };
 
-    let mut program = Program::new(config).await?;
-    run(&mut program).await?;
-    Ok(())
+    let mut program = match Program::new(config.clone()).await {
+        Ok(program) => program,
+        Err(err) => {
+            println!("Error: {}", err);
+            return;
+        }
+    };
+
+    if let Some(name) = config.user {
+        program.session.set_login(name);
+    }
+    match run(&mut program).await {
+        Ok(_) => (),
+        Err(err) => println!("Error: {}", err),
+    }
 }
