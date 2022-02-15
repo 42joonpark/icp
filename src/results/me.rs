@@ -49,7 +49,7 @@ pub struct Me {
     pool_year: String,
 
     #[serde(rename = "location")]
-    location: Option<serde_json::Value>,
+    pub location: Option<serde_json::Value>,
 
     #[serde(rename = "wallet")]
     pub wallet: i64,
@@ -433,7 +433,7 @@ pub struct ProjectsUser {
     validated: Option<bool>,
 
     #[serde(rename = "current_team_id")]
-    current_team_id: i64,
+    current_team_id: Option<i64>,
 
     #[serde(rename = "project")]
     project: Cursus,
@@ -531,6 +531,9 @@ impl Default for Tier {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Status {
+    #[serde(rename = "searching_a_group")]
+    SearchingGroup,
+
     #[serde(rename = "finished")]
     Finished,
 
