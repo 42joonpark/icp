@@ -99,7 +99,6 @@ impl Program {
         let res = self.call(url.as_str()).await?;
         Ok(serde_json::from_str(res.as_str())?)
     }
-    // 아무리 봐도 얘는 라이브러리에 가는게 맞는거 같은데
     async fn get_user_with_login(&mut self) -> Result<user::UserElement, SessionError> {
         let url = "https://api.intra.42.fr/v2/users";
         let url = Url::parse_with_params(
