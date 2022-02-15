@@ -3,7 +3,6 @@ use std::io::Write;
 use crate::cli::Config;
 use chrono::DateTime;
 use chrono::Utc;
-use cli_42::results::user::UserElement;
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
 use cli_42::Mode;
@@ -67,7 +66,7 @@ impl Program {
                     Command::Wallet => self.wallet(&user).await?,
                     Command::Blackhole => self.blackhole(&user).await?,
                 }
-            },
+            }
             Mode::Credentials => {
                 let tmp = self.get_user_with_login().await?;
                 let user = self.get_user_info_with_id(tmp.id).await?;
@@ -89,12 +88,7 @@ impl Program {
 impl Program {
     async fn get_me(&mut self) -> Result<me::Me, SessionError> {
         let url = "https://api.intra.42.fr/v2/me";
-        let url = Url::parse_with_params(
-            url,
-            &[
-                ("client_id", self.session.get_client_id()),
-            ],
-        )?;
+        let url = Url::parse_with_params(url, &[("client_id", self.session.get_client_id())])?;
 
         let res = self.call(url.as_str()).await?;
         Ok(serde_json::from_str(res.as_str())?)
