@@ -23,6 +23,7 @@ impl Config {
                     "login",
                     "point",
                     "level",
+                    "location",
                     "wallet",
                     "blackhole",
                 ]

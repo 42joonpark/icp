@@ -18,6 +18,7 @@ pub enum Command {
     Login,
     Level,
     Wallet,
+    Location,
     CorrectionPoint,
     Blackhole,
 }
@@ -64,6 +65,7 @@ impl Program {
                     Command::Email => self.email(&user).await,
                     Command::Login => self.login(&user).await,
                     Command::Level => self.level(&user).await,
+                    Command::Location => self.location(user.id).await?,
                     Command::CorrectionPoint => self.correction_point(&user).await,
                     Command::Wallet => self.wallet(&user).await,
                     Command::Blackhole => self.blackhole(&user).await?,
@@ -78,6 +80,7 @@ impl Program {
                     Command::Email => self.email(&user).await,
                     Command::Login => self.login(&user).await,
                     Command::Level => self.level(&user).await,
+                    Command::Location => self.location(tmp.id).await?,
                     Command::CorrectionPoint => self.correction_point(&user).await,
                     Command::Wallet => self.wallet(&user).await,
                     Command::Blackhole => self.blackhole(&user).await?,
@@ -141,6 +144,25 @@ impl Program {
         );
         self.level(user).await;
         self.blackhole(user).await?;
+        Ok(())
+    }
+
+    async fn location(&mut self, id: i64) -> Result<(), SessionError> {
+        let url = format!("https://api.intra.42.fr/v2/users/{}/locations", id);
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+
+        let res = self.call(url.as_str()).await?;
+        let location_info: campus_user_location::CampusUserLocation =
+            serde_json::from_str(res.as_str())?;
+        let location = location_info[0].clone();
+        if location.begin_at.is_none() {
+            println!("User is not currently logged into the cluster.");
+        }
+        if location.end_at.is_none() {
+            println!("{:20}{}", "Location", location.host.unwrap_or_default(),);
+        } else {
+            println!("User is not currently logged into the cluster.");
+        }
         Ok(())
     }
 

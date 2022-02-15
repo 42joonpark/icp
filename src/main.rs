@@ -17,6 +17,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
         "POINT" => prog.run_program(Command::CorrectionPoint).await?,
         "LEVEL" => prog.run_program(Command::Level).await?,
         "WALLET" => prog.run_program(Command::Wallet).await?,
+        "LOCATION" => prog.run_program(Command::Location).await?,
         "BLACKHOLE" => prog.run_program(Command::Blackhole).await?,
         "COMMAND" => prog.config.list_available_commands(),
         _ => println!("Command `{}` not found", command),
