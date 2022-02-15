@@ -185,11 +185,18 @@ impl Program {
             .as_ref()
             .unwrap_or(&"".to_string())
             .parse::<DateTime<Utc>>()?;
-        println!(
+
+        let remaining_days = utc2.signed_duration_since(utc).num_days();
+        print!(
             "{:20}{}",
             "Blackhole",
-            utc2.signed_duration_since(utc).num_days()
+            remaining_days
         );
+        match remaining_days {
+            1..=30 => println!(" 😱"),
+            31..=60 => println!(" 😡"),
+            _ => println!(" 🤪"),
+        }
         Ok(())
     }
 }
