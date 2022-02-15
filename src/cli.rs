@@ -20,6 +20,7 @@ impl Config {
                     "id",
                     "me",
                     "email",
+                    "event",
                     "login",
                     "point",
                     "level",

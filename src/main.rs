@@ -13,6 +13,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
         "ME" => prog.run_program(Command::Me).await?,
         "ID" => prog.run_program(Command::Id).await?,
         "EMAIL" => prog.run_program(Command::Email).await?,
+        "EVENT" => prog.run_program(Command::Event).await?,
         "LOGIN" => prog.run_program(Command::Login).await?,
         "POINT" => prog.run_program(Command::CorrectionPoint).await?,
         "LEVEL" => prog.run_program(Command::Level).await?,

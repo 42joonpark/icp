@@ -106,7 +106,7 @@ pub struct Me {
     roles: Vec<Option<serde_json::Value>>,
 
     #[serde(rename = "campus")]
-    campus: Vec<Campus>,
+    pub campus: Vec<Campus>,
 
     #[serde(rename = "campus_users")]
     campus_users: Vec<CampusUser>,
@@ -145,10 +145,10 @@ pub struct Achievement {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Campus {
     #[serde(rename = "id")]
-    id: i64,
+    pub id: i64,
 
     #[serde(rename = "name")]
-    name: String,
+    pub name: String,
 
     #[serde(rename = "time_zone")]
     time_zone: String,

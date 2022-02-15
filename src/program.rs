@@ -1,8 +1,7 @@
 use std::io::Write;
 
 use crate::cli::Config;
-use chrono::DateTime;
-use chrono::Utc;
+use chrono::{DateTime, Duration, Utc};
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
 use cli_42::Mode;
@@ -15,6 +14,7 @@ pub enum Command {
     Id,
     Me,
     Email,
+    Event,
     Login,
     Level,
     Wallet,
@@ -63,6 +63,7 @@ impl Program {
                     Command::Id => self.id(user.id).await,
                     Command::Me => self.me(&user).await?,
                     Command::Email => self.email(&user).await,
+                    Command::Event => self.event(&user).await?,
                     Command::Login => self.login(&user).await,
                     Command::Level => self.level(&user).await,
                     Command::Location => self.location(&user).await,
@@ -78,6 +79,7 @@ impl Program {
                     Command::Id => self.id(tmp.id).await,
                     Command::Me => self.me(&user).await?,
                     Command::Email => self.email(&user).await,
+                    Command::Event => self.event(&user).await?,
                     Command::Login => self.login(&user).await,
                     Command::Level => self.level(&user).await,
                     Command::Location => self.location(&user).await,
@@ -162,6 +164,27 @@ impl Program {
         println!("{:20}{}", "Email", user.email);
     }
 
+    async fn event(&mut self, user: &me::Me) -> Result<(), SessionError> {
+        let campus_id = user.campus[0].id;
+        let url = format!("https://api.intra.42.fr/v2/campus/{}/events", campus_id);
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+        let res = self.call(url.as_str()).await?;
+        let events: campus_event::CampusEvent = serde_json::from_str(res.as_str())?;
+
+        let utc = Utc::now() + Duration::hours(9);
+        for (_, event) in events.iter().enumerate() {
+            let begin = event.begin_at.parse::<DateTime<Utc>>()? + Duration::hours(9);
+            let end = event.end_at.parse::<DateTime<Utc>>()? + Duration::hours(9);
+            if end.signed_duration_since(utc).num_seconds() > 0 {
+                println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
+                println!("{}\n", event.description);
+                println!("⏰{:24}{}", "Begin at", begin);
+                println!("⏰{:24}{}\n", "End at", end);
+            }
+        }
+        Ok(())
+    }
+
     async fn wallet(&mut self, user: &me::Me) {
         println!("{:20}{}", "Wallet", user.wallet);
     }
@@ -187,11 +210,7 @@ impl Program {
             .parse::<DateTime<Utc>>()?;
 
         let remaining_days = utc2.signed_duration_since(utc).num_days();
-        print!(
-            "{:20}{}",
-            "Blackhole",
-            remaining_days
-        );
+        print!("{:20}{}", "Blackhole", remaining_days);
         match remaining_days {
             1..=30 => println!(" 😱"),
             31..=60 => println!(" 😡"),
