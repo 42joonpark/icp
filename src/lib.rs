@@ -47,6 +47,7 @@ pub enum SessionError {
 }
 
 // Authorization grant type.
+#[derive(Debug, Deserialize)]
 pub enum Mode {
     Code,
     Credentials,

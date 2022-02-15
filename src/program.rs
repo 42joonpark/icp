@@ -27,6 +27,7 @@ pub struct Program {
     pub session: Session,
     pub token: Option<TokenInfo>,
     pub config: Config,
+    pub grant_mode: Mode,
 }
 
 impl Program {
@@ -43,6 +44,7 @@ impl Program {
             session: Session::new(Some(Mode::Credentials)).await?,
             token: None,
             config,
+            grant_mode: Mode::Credentials,
         };
         Ok(program)
     }
@@ -53,22 +55,50 @@ impl Program {
     }
 
     pub async fn run_program(&mut self, command: Command) -> Result<(), SessionError> {
-        let tmp = self.get_user_with_login().await?;
-        let user = self.get_user_info_with_id(tmp.id).await?;
-        match command {
-            Command::Id => self.id(&tmp).await?,
-            Command::Me => self.me(&user).await?,
-            Command::Email => self.email(&user).await?,
-            Command::Login => self.login(&user).await?,
-            Command::CorrectionPoint => self.correction_point(&user).await?,
-            Command::Wallet => self.wallet(&user).await?,
-            Command::Blackhole => self.blackhole(&user).await?,
+        match self.grant_mode {
+            Mode::Code => {
+                let user = self.get_me().await?;
+                match command {
+                    Command::Id => self.id(user.id).await?,
+                    Command::Me => self.me(&user).await?,
+                    Command::Email => self.email(&user).await?,
+                    Command::Login => self.login(&user).await?,
+                    Command::CorrectionPoint => self.correction_point(&user).await?,
+                    Command::Wallet => self.wallet(&user).await?,
+                    Command::Blackhole => self.blackhole(&user).await?,
+                }
+            },
+            Mode::Credentials => {
+                let tmp = self.get_user_with_login().await?;
+                let user = self.get_user_info_with_id(tmp.id).await?;
+                match command {
+                    Command::Id => self.id(tmp.id).await?,
+                    Command::Me => self.me(&user).await?,
+                    Command::Email => self.email(&user).await?,
+                    Command::Login => self.login(&user).await?,
+                    Command::CorrectionPoint => self.correction_point(&user).await?,
+                    Command::Wallet => self.wallet(&user).await?,
+                    Command::Blackhole => self.blackhole(&user).await?,
+                }
+            }
         }
         Ok(())
     }
 }
 
 impl Program {
+    async fn get_me(&mut self) -> Result<me::Me, SessionError> {
+        let url = "https://api.intra.42.fr/v2/me";
+        let url = Url::parse_with_params(
+            url,
+            &[
+                ("client_id", self.session.get_client_id()),
+            ],
+        )?;
+
+        let res = self.call(url.as_str()).await?;
+        Ok(serde_json::from_str(res.as_str())?)
+    }
     // 아무리 봐도 얘는 라이브러리에 가는게 맞는거 같은데
     async fn get_user_with_login(&mut self) -> Result<user::UserElement, SessionError> {
         let url = "https://api.intra.42.fr/v2/users";
@@ -126,8 +156,8 @@ impl Program {
         Ok(())
     }
 
-    async fn id(&mut self, tmp: &UserElement) -> Result<(), SessionError> {
-        println!("{:20}{}", "ID", tmp.id);
+    async fn id(&mut self, id: i64) -> Result<(), SessionError> {
+        println!("{:20}{}", "ID", id);
         Ok(())
     }
 
