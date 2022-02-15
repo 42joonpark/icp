@@ -15,7 +15,8 @@ set redirect_url to "http://localhost:8080"
 
 ### Log
 to see log \
-use `RUST_LOG=info` before `cargo run`
+use `RUST_LOG=info` before `cargo run`\
+`RUST_LOG=info cli_42 [options] [command]`
 
 #### Available log
 1. error - not used
