@@ -49,9 +49,7 @@ impl Config {
             .get_matches();
 
         let command = matches.value_of("command").unwrap_or("me");
-        let page = matches
-            .value_of("page")
-            .map(|p| p.parse::<u32>().unwrap_or_default());
+        let page = None;
         let user = matches.value_of("user").map(|u| u.to_string());
         Ok(Config {
             command: String::from(command),
