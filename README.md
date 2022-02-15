@@ -9,8 +9,9 @@ set redirect_url to "http://localhost:8080"
 	client_id="your client_id" \
 	client_secret="your client_secret" \
 	login="Your intra login ex)joonpark"
-3. `./cli_42 --help` for help.
-4. `./cli_42 command` to see available commands.
+3. `cli_42 --help` for help.
+4. `cli_42 command` to see available commands.
+5. `cli_42 [options] [command]` to run command.
 
 ### Log
 to see log \
