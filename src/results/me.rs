@@ -133,7 +133,7 @@ pub struct Achievement {
     visible: bool,
 
     #[serde(rename = "image")]
-    image: String,
+    image: Option<String>,
 
     #[serde(rename = "nbr_of_success")]
     nbr_of_success: Option<i64>,
