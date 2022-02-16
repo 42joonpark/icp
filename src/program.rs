@@ -11,16 +11,16 @@ use directories::BaseDirs;
 use url::Url;
 
 pub enum Command {
-    Id,
-    Me,
+    Blackhole,
+    CorrectionPoint,
     Email,
     Event,
-    Login,
+    Id,
     Level,
-    Wallet,
     Location,
-    CorrectionPoint,
-    Blackhole,
+    Login,
+    Me,
+    Wallet,
 }
 
 #[derive(Debug)]
@@ -179,7 +179,7 @@ impl Program {
         let events: campus_event::CampusEvent = serde_json::from_str(res.as_str())?;
 
         let local = Local::now();
-        for (_, event) in events.iter().enumerate() {
+        for (_, event) in events.iter().rev().enumerate() {
             let begin = event.begin_at.parse::<DateTime<Local>>()?;
             let end = event.end_at.parse::<DateTime<Local>>()?;
             if end.signed_duration_since(local).num_seconds() > 0 {
@@ -226,6 +226,11 @@ impl Program {
             1..=30 => println!(" 😱"),
             31..=60 => println!(" 😡"),
             _ => println!(" 🤪"),
+        }
+        if let Some(det) = self.config.detail {
+            if det {
+                println!("{:19}{}\n", "⏰End at", local2);
+            }
         }
         Ok(())
     }
