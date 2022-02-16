@@ -93,6 +93,8 @@ impl Program {
     }
 }
 
+// TODO:
+// - Add a functions detail if needed.
 impl Program {
     async fn get_me(&mut self) -> Result<me::Me, SessionError> {
         let url = "https://api.intra.42.fr/v2/me";
@@ -113,6 +115,11 @@ impl Program {
 
         let res = self.call(url.as_str()).await?;
         let user: user::User = serde_json::from_str(res.as_str())?;
+        if user.is_empty() {
+            return Err(SessionError::UserNotFound(
+                self.session.get_login().to_string(),
+            ));
+        }
         Ok(user[0].clone())
     }
 
@@ -177,9 +184,13 @@ impl Program {
             let end = event.end_at.parse::<DateTime<Local>>()?;
             if end.signed_duration_since(local).num_seconds() > 0 {
                 println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
-                println!("{}\n", event.description);
                 println!("⏰{:24}{}", "Begin at", begin);
                 println!("⏰{:24}{}\n", "End at", end);
+                if let Some(det) = self.config.detail {
+                    if det {
+                        println!("{}\n", event.description);
+                    }
+                }
             }
         }
         Ok(())

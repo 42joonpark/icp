@@ -2,12 +2,13 @@ use clap::{crate_description, crate_name, crate_version, App, Arg};
 use cli_42::SessionError;
 
 // TODO:
-// - Add a --detail flag to print more information about the event
+// - Add a --detail flag to print more information about the result
 #[derive(Clone, Debug, clap::Parser)]
 pub struct Config {
     pub command: String,
     pub page: Option<u32>,
     pub user: Option<String>,
+    pub detail: Option<bool>,
     commands: Vec<String>,
 }
 
@@ -51,15 +52,24 @@ impl Config {
                     .takes_value(true)
                     .help("User login"),
             )
+            .arg(
+                Arg::new("detail")
+                    .short('d')
+                    .long("detail")
+                    .takes_value(false)
+                    .help("Print more information about the result"),
+            )
             .get_matches();
 
         let command = matches.value_of("command").unwrap_or("me");
         let page = None;
         let user = matches.value_of("user").map(|u| u.to_string());
+        let detail = matches.is_present("detail");
         Ok(Config {
             command: String::from(command),
             page,
             user,
+            detail: Some(detail),
             commands,
         })
     }
