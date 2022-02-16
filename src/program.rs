@@ -1,7 +1,7 @@
 use std::io::Write;
 
 use crate::cli::Config;
-use chrono::{Local, DateTime};
+use chrono::{DateTime, Local};
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
 use cli_42::Mode;
