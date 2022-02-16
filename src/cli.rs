@@ -1,6 +1,8 @@
 use clap::{crate_description, crate_name, crate_version, App, Arg};
 use cli_42::SessionError;
 
+// TODO:
+// - Add a --detail flag to print more information about the event
 #[derive(Clone, Debug, clap::Parser)]
 pub struct Config {
     pub command: String,
