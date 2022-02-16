@@ -26,21 +26,29 @@ use `RUST_LOG=info` before `cargo run`\
 5. trace - not used
 
 ## Commands
+### blackhole
+Show user's remaining blackhole days.
 ### email
 Shows user email
-### id
-Shows user id
+### event
+Shows campus events
+### level
+Show user level
+### location
+Show user location in the cluster
 ### login
 Show user intra id
+### id
+Shows user id
 ### point
 Shows user correction point
 ### wallet
 Shows user wallet
-### blackhole
-Show user's remaining blackhole days.
 
 
 ## Options
+### --detail(-d)
+Show detail information.
 ### --user(-u)
-Specify user login.
+Specify user login.\
 ex) `./cli_42 --user=joonpark`
