@@ -26,7 +26,9 @@ pub enum SessionError {
     ChoronoParseError(#[from] chrono::ParseError),
     #[error("")]
     NoneError,
-    #[error("{0}")]
+    #[error("Error: User {0} not found.")]
+    UserNotFound(String),
+    #[error("Error: {0}")]
     New(String),
     #[error("Error: Untouched error.")]
     Untouched,

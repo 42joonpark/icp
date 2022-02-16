@@ -33,7 +33,7 @@ async fn main() {
     let config = match Config::new() {
         Ok(config) => config,
         Err(err) => {
-            println!("Error: {}", err);
+            println!("{}", err);
             return;
         }
     };
@@ -41,7 +41,7 @@ async fn main() {
     let mut program = match Program::new(config.clone()).await {
         Ok(program) => program,
         Err(err) => {
-            println!("Error: {}", err);
+            println!("{}", err);
             return;
         }
     };
@@ -51,6 +51,6 @@ async fn main() {
     }
     match run(&mut program).await {
         Ok(_) => (),
-        Err(err) => println!("Error: {}", err),
+        Err(err) => println!("{}", err),
     }
 }
