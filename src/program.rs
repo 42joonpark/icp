@@ -1,7 +1,7 @@
 use std::io::Write;
 
 use crate::cli::Config;
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Local};
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
 use cli_42::Mode;
@@ -171,11 +171,11 @@ impl Program {
         let res = self.call(url.as_str()).await?;
         let events: campus_event::CampusEvent = serde_json::from_str(res.as_str())?;
 
-        let utc = Utc::now() + Duration::hours(9);
+        let local = Local::now();
         for (_, event) in events.iter().enumerate() {
-            let begin = event.begin_at.parse::<DateTime<Utc>>()? + Duration::hours(9);
-            let end = event.end_at.parse::<DateTime<Utc>>()? + Duration::hours(9);
-            if end.signed_duration_since(utc).num_seconds() > 0 {
+            let begin = event.begin_at.parse::<DateTime<Local>>()?;
+            let end = event.end_at.parse::<DateTime<Local>>()?;
+            if end.signed_duration_since(local).num_seconds() > 0 {
                 println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
                 println!("{}\n", event.description);
                 println!("⏰{:24}{}", "Begin at", begin);
@@ -202,14 +202,14 @@ impl Program {
     }
 
     async fn blackhole(&mut self, user: &me::Me) -> Result<(), SessionError> {
-        let utc = Utc::now();
-        let utc2 = user.cursus_users[1]
+        let local = Local::now();
+        let local2 = user.cursus_users[1]
             .blackholed_at
             .as_ref()
             .unwrap_or(&"".to_string())
-            .parse::<DateTime<Utc>>()?;
+            .parse::<DateTime<Local>>()?;
 
-        let remaining_days = utc2.signed_duration_since(utc).num_days();
+        let remaining_days = local2.signed_duration_since(local).num_days();
         print!("{:20}{}", "Blackhole", remaining_days);
         match remaining_days {
             1..=30 => println!(" 😱"),
