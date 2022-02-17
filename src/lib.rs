@@ -7,6 +7,8 @@ use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use std::fs;
 
+// TODO:
+// 의미에 따라 에러 나누기
 // Error type
 #[derive(thiserror::Error, Debug)]
 pub enum SessionError {
@@ -100,6 +102,8 @@ impl Session {
     // ```
     // TODO:
     // combine new_with_path() and new()
+    // TODO:
+    // remove Option from m
     pub async fn new_with_path(path: &str, m: Option<Mode>) -> Result<Self, SessionError> {
         let content = fs::read_to_string(path)?;
         let config: Config = toml::from_str(&content)?;
@@ -133,6 +137,8 @@ impl Session {
     // let session: Session = Session::new(Some(Mode::Code))?;
     // let session: Session = Session::new(Some(Mode::Credentials))?;
     // ```
+    // TODO:
+    // remove Option from m
     pub async fn new(m: Option<Mode>) -> Result<Self, SessionError> {
         let config = Config::new()?;
         let mut session: Session = config.session();
@@ -222,6 +228,8 @@ impl Session {
     pub fn client_secret(&self) -> &str {
         self.client_secret.as_str()
     }
+    // TODO:
+    // use map() instead of clone
     // Get the `access_token` of the session
     pub fn access_token(&self) -> Option<String> {
         self.access_token.clone()

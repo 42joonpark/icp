@@ -58,6 +58,8 @@ pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError
 // ```
 pub async fn check_token_valide(token: Option<String>) -> Result<bool, SessionError> {
     let token_info = token_info(token).await?;
+    // TODO:
+    // use is_some()
     if token_info.expires_in_seconds.is_none() {
         return Ok(false);
     }
@@ -83,6 +85,8 @@ pub struct AccessToken {
 // ```
 pub async fn generate_token_credentials(session: Session) -> Result<String, SessionError> {
     info!("token::generate_token_credentials(): Begin");
+    // TODO:
+    // don't use to_owned(). use close() or as_str() etc
     let client_id = session.client_id.to_owned();
     let client_secret = session.client_secret.to_owned();
     let params = [
@@ -97,6 +101,8 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
         .send()
         .await;
 
+    // TODO:
+    // use map_err()
     match response {
         Ok(res) => match res.status() {
             reqwest::StatusCode::OK => {
@@ -135,6 +141,8 @@ pub async fn generate_token(session: Session) -> Result<String, SessionError> {
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("public".to_string()))
         .url();
+    // FIXME:
+    // also you can use {auth_url}
     println!("Browse to: {}", auth_url);
 
     let ac_token = local_server(client).await?;

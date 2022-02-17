@@ -3,6 +3,8 @@ use cli_42::SessionError;
 
 // TODO:
 // - Add a --detail flag to print more information about the result
+// TODO:
+// - add method functions
 #[derive(Clone, Debug, clap::Parser)]
 pub struct Cli {
     pub command: String,

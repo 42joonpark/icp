@@ -6,6 +6,8 @@ use cli_42::SessionError;
 use program::Command;
 use program::Program;
 
+// TODO:
+// Event 만들어주는 library 찾아보기 예) enum_derive? strum?
 async fn run(prog: &mut Program) -> Result<(), SessionError> {
     let command = prog.config.command.to_owned();
     let cmd = command.trim().to_uppercase();
@@ -26,6 +28,8 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     Ok(())
 }
 
+// TODO:
+// - add wrapper_main() -> Result<(), SessionError>
 #[tokio::main]
 async fn main() {
     env_logger::init();
@@ -47,7 +51,7 @@ async fn main() {
     };
 
     if let Some(name) = config.user {
-        program.session.set_login(name);
+        program.set_login(name);
     }
     match run(&mut program).await {
         Ok(_) => (),
