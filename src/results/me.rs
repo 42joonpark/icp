@@ -1,3 +1,6 @@
+// TODO:
+// 왜 이렇게 만들었는지, 어떤 툴 썼는지 적어주세요. 
+
 extern crate serde_json;
 use serde::{Deserialize, Serialize};
 
