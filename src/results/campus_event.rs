@@ -1,5 +1,9 @@
-// TODO:
-// 왜 이렇게 만들었는지, 어떤 툴 썼는지 적어주세요. 
+// - CampusEvent 는 campus event 정보를 담고 있습니다.
+// - https://api.intra.42.fr/v2/campus/{}/events 이런식으로 호출할 때 사용됩니다.
+// 
+// - Program::event() 함수 호출 시 얻는 결과입니다.
+// 
+// - Paste Json as Code vscode extension을 사용했습니다.
 
 extern crate serde_json;
 use serde::{Deserialize, Serialize};

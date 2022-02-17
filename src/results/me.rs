@@ -1,5 +1,11 @@
-// TODO:
-// 왜 이렇게 만들었는지, 어떤 툴 썼는지 적어주세요. 
+// - Me 는 
+// - https://api.intra.42.fr/v2/me 또는
+// - https://api.intra.42.fr/v2/users/{id} 이런식으로 호출할 때 사용됩니다.
+// 
+// - Program::get_me() 또는
+// - Program::get_user_with_login() 함수 호출 시 얻는 결과입니다.
+// 
+// - Paste Json as Code vscode extension을 사용했습니다.
 
 extern crate serde_json;
 use serde::{Deserialize, Serialize};
