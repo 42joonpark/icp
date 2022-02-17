@@ -1,3 +1,6 @@
+// TODO:
+// - change the name of the program.
+
 mod cli;
 mod program;
 
