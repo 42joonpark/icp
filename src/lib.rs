@@ -55,12 +55,35 @@ pub enum Mode {
     Credentials,
 }
 
+#[derive(Deserialize)]
+pub struct Config {
+    session: Session,
+    login: String,
+}
+
+impl Config {
+    pub fn new() -> Result<Self, SessionError> {
+        if let Some(dir) = BaseDirs::new() {
+            let path = dir.config_dir().join("config.toml");
+            let content = fs::read_to_string(path)?;
+            Ok(toml::from_str(&content)?)
+        } else {
+            Err(SessionError::BaseDirsNewError)
+        }
+    }
+    pub fn login(&self) -> String {
+        self.login.clone()
+    }
+    pub fn session(&self) -> Session {
+        self.session.clone()
+    }
+}
+
 // Build a session information.
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct Session {
     client_id: String,
     client_secret: String,
-    login: String,
     access_token: Option<String>,
 }
 
@@ -75,9 +98,12 @@ impl Session {
     //
     // let session: Session = Session::new()?;
     // ```
+    // TODO:
+    // combine new_with_path() and new()
     pub async fn new_with_path(path: &str, m: Option<Mode>) -> Result<Self, SessionError> {
         let content = fs::read_to_string(path)?;
-        let mut session: Session = toml::from_str(&content)?;
+        let config: Config = toml::from_str(&content)?;
+        let mut session: Session = config.session;
         if let Some(mode) = m {
             match mode {
                 Mode::Code => {
@@ -108,26 +134,21 @@ impl Session {
     // let session: Session = Session::new(Some(Mode::Credentials))?;
     // ```
     pub async fn new(m: Option<Mode>) -> Result<Self, SessionError> {
-        if let Some(dir) = BaseDirs::new() {
-            let path = dir.config_dir().join("config.toml");
-            let content = fs::read_to_string(path)?;
-            let mut session: Session = toml::from_str(&content)?;
-            if let Some(mode) = m {
-                match mode {
-                    Mode::Code => {
-                        session.generate_token().await?;
-                    }
-                    Mode::Credentials => {
-                        session.generate_token_credentials().await?;
-                    }
+        let config = Config::new()?;
+        let mut session: Session = config.session();
+        if let Some(mode) = m {
+            match mode {
+                Mode::Code => {
+                    session.generate_token().await?;
                 }
-            } else {
-                session.generate_token_credentials().await?;
+                Mode::Credentials => {
+                    session.generate_token_credentials().await?;
+                }
             }
-            Ok(session)
         } else {
-            Err(SessionError::BaseDirsNewError)
+            session.generate_token_credentials().await?;
         }
+        Ok(session)
     }
 }
 
@@ -193,10 +214,6 @@ impl Session {
         self.access_token = Some(token::generate_token(self.clone()).await?);
         Ok(())
     }
-    // Get the `login` of the session
-    pub fn login(&self) -> &str {
-        self.login.as_str()
-    }
     // Get the `client_id` of the session
     pub fn client_id(&self) -> &str {
         self.client_id.as_str()
@@ -208,13 +225,5 @@ impl Session {
     // Get the `access_token` of the session
     pub fn access_token(&self) -> Option<String> {
         self.access_token.clone()
-    }
-    // set the `login` of the session
-    pub fn set_login(&mut self, login: String) {
-        self.login = login;
-    }
-    // Set the `access_token` of the session with a new value
-    pub fn set_access_token(&mut self, token: String) {
-        self.access_token = Some(token);
     }
 }

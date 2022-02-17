@@ -4,6 +4,7 @@ use crate::cli::Cli;
 use chrono::{DateTime, Local};
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
+use cli_42::Config;
 use cli_42::Mode;
 use cli_42::Session;
 use cli_42::SessionError;
@@ -28,6 +29,7 @@ pub struct Program {
     pub session: Session,
     pub token: Option<TokenInfo>,
     pub config: Cli,
+    login: String,
     pub grant_mode: Mode,
 }
 
@@ -45,6 +47,7 @@ impl Program {
             session: Session::new(Some(Mode::Credentials)).await?,
             token: None,
             config,
+            login: Config::new()?.login(),
             grant_mode: Mode::Credentials,
         };
         Ok(program)
@@ -55,6 +58,8 @@ impl Program {
         Ok(res)
     }
 
+    // TODO:
+    // 호출하는게 똑같으니까 하나로 합치기
     pub async fn run_program(&mut self, command: Command) -> Result<(), SessionError> {
         match self.grant_mode {
             Mode::Code => {
@@ -91,6 +96,10 @@ impl Program {
         }
         Ok(())
     }
+
+    pub fn set_login(&mut self, new_login: String) {
+        self.login = new_login;
+    }
 }
 
 // TODO:
@@ -109,16 +118,14 @@ impl Program {
             url,
             &[
                 ("client_id", self.session.client_id()),
-                ("filter[login]", self.session.login()),
+                ("filter[login]", &self.login),
             ],
         )?;
 
         let res = self.call(url.as_str()).await?;
         let user: user::User = serde_json::from_str(res.as_str())?;
         if user.is_empty() {
-            return Err(SessionError::UserNotFound(
-                self.session.login().to_string(),
-            ));
+            return Err(SessionError::UserNotFound(self.login.clone()));
         }
         Ok(user[0].clone())
     }
