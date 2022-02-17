@@ -102,23 +102,17 @@ impl Session {
     // ```
     // TODO:
     // combine new_with_path() and new()
-    // TODO:
-    // remove Option from m
-    pub async fn new_with_path(path: &str, m: Option<Mode>) -> Result<Self, SessionError> {
+    pub async fn new_with_path(path: &str, m: Mode) -> Result<Self, SessionError> {
         let content = fs::read_to_string(path)?;
         let config: Config = toml::from_str(&content)?;
         let mut session: Session = config.session;
-        if let Some(mode) = m {
-            match mode {
-                Mode::Code => {
-                    session.generate_token().await?;
-                }
-                Mode::Credentials => {
-                    session.generate_token_credentials().await?;
-                }
+        match m {
+            Mode::Code => {
+                session.generate_token().await?;
             }
-        } else {
-            session.generate_token_credentials().await?;
+            Mode::Credentials => {
+                session.generate_token_credentials().await?;
+            }
         }
         Ok(session)
     }
@@ -137,22 +131,16 @@ impl Session {
     // let session: Session = Session::new(Some(Mode::Code))?;
     // let session: Session = Session::new(Some(Mode::Credentials))?;
     // ```
-    // TODO:
-    // remove Option from m
-    pub async fn new(m: Option<Mode>) -> Result<Self, SessionError> {
+    pub async fn new(m: Mode) -> Result<Self, SessionError> {
         let config = Config::new()?;
         let mut session: Session = config.session();
-        if let Some(mode) = m {
-            match mode {
-                Mode::Code => {
-                    session.generate_token().await?;
-                }
-                Mode::Credentials => {
-                    session.generate_token_credentials().await?;
-                }
+        match m {
+            Mode::Code => {
+                session.generate_token().await?;
             }
-        } else {
-            session.generate_token_credentials().await?;
+            Mode::Credentials => {
+                session.generate_token_credentials().await?;
+            }
         }
         Ok(session)
     }
