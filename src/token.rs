@@ -122,8 +122,8 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
 // ```
 pub async fn generate_token(session: Session) -> Result<String, SessionError> {
     let client = BasicClient::new(
-        ClientId::new(String::from(session.get_client_id())),
-        Some(ClientSecret::new(String::from(session.get_client_secret()))),
+        ClientId::new(String::from(session.client_id())),
+        Some(ClientSecret::new(String::from(session.client_secret()))),
         AuthUrl::new("https://api.intra.42.fr/oauth/authorize".to_string())?,
         Some(TokenUrl::new(
             "https://api.intra.42.fr/oauth/token".to_string(),

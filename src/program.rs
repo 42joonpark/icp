@@ -98,7 +98,7 @@ impl Program {
 impl Program {
     async fn get_me(&mut self) -> Result<me::Me, SessionError> {
         let url = "https://api.intra.42.fr/v2/me";
-        let url = Url::parse_with_params(url, &[("client_id", self.session.get_client_id())])?;
+        let url = Url::parse_with_params(url, &[("client_id", self.session.client_id())])?;
 
         let res = self.call(url.as_str()).await?;
         Ok(serde_json::from_str(res.as_str())?)
@@ -108,8 +108,8 @@ impl Program {
         let url = Url::parse_with_params(
             url,
             &[
-                ("client_id", self.session.get_client_id()),
-                ("filter[login]", self.session.get_login()),
+                ("client_id", self.session.client_id()),
+                ("filter[login]", self.session.login()),
             ],
         )?;
 
@@ -117,7 +117,7 @@ impl Program {
         let user: user::User = serde_json::from_str(res.as_str())?;
         if user.is_empty() {
             return Err(SessionError::UserNotFound(
-                self.session.get_login().to_string(),
+                self.session.login().to_string(),
             ));
         }
         Ok(user[0].clone())
@@ -125,7 +125,7 @@ impl Program {
 
     async fn get_user_info_with_id(&mut self, id: i64) -> Result<me::Me, SessionError> {
         let url = format!("https://api.intra.42.fr/v2/users/{}", id);
-        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
 
         let res = self.call(url.as_str()).await?;
         let me: me::Me = serde_json::from_str(res.as_str())?;
@@ -174,7 +174,7 @@ impl Program {
     async fn event(&mut self, user: &me::Me) -> Result<(), SessionError> {
         let campus_id = user.campus[0].id;
         let url = format!("https://api.intra.42.fr/v2/campus/{}/events", campus_id);
-        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
         let res = self.call(url.as_str()).await?;
         let events: campus_event::CampusEvent = serde_json::from_str(res.as_str())?;
 
@@ -310,8 +310,8 @@ fn check_config_toml() -> Result<bool, SessionError> {
 }
 
 fn check_client(session: &Session) -> bool {
-    let client_id = session.get_client_id();
-    let client_secret = session.get_client_secret();
+    let client_id = session.client_id();
+    let client_secret = session.client_secret();
     if client_id.is_empty() || client_secret.is_empty() {
         return false;
     }

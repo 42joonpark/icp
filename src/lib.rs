@@ -151,7 +151,7 @@ impl Session {
         }
         let ac_token = self.access_token.clone().unwrap_or_default();
         let client = reqwest::Client::new();
-        let params = [("client_id", self.get_client_id())];
+        let params = [("client_id", self.client_id())];
         debug!("{}", ac_token);
         let response = client
             .get(uri.to_string())
@@ -194,19 +194,19 @@ impl Session {
         Ok(())
     }
     // Get the `login` of the session
-    pub fn get_login(&self) -> &str {
+    pub fn login(&self) -> &str {
         self.login.as_str()
     }
     // Get the `client_id` of the session
-    pub fn get_client_id(&self) -> &str {
+    pub fn client_id(&self) -> &str {
         self.client_id.as_str()
     }
     // Get the `client_secret` of the session
-    pub fn get_client_secret(&self) -> &str {
+    pub fn client_secret(&self) -> &str {
         self.client_secret.as_str()
     }
     // Get the `access_token` of the session
-    pub fn get_access_token(&self) -> Option<String> {
+    pub fn access_token(&self) -> Option<String> {
         self.access_token.clone()
     }
     // set the `login` of the session
