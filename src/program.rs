@@ -267,6 +267,12 @@ fn create_config_toml() -> Result<(), SessionError> {
         let stdin = stdin();
         let mut line = String::new();
 
+        println!("Enter intra login: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "login=\"{}\"", line.trim())?;
+        line.clear();
+        writeln!(&mut file, "[session]")?;
+        line.clear();
         println!("Enter client id: ");
         stdin.read_line(&mut line)?;
         writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
@@ -274,10 +280,6 @@ fn create_config_toml() -> Result<(), SessionError> {
         println!("Enter client secret: ");
         stdin.read_line(&mut line)?;
         writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
-        line.clear();
-        println!("Enter intra login: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "login=\"{}\"", line.trim())?;
         Ok(())
     } else {
         Err(SessionError::BaseDirsNewError)
