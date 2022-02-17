@@ -85,14 +85,10 @@ pub struct AccessToken {
 // ```
 pub async fn generate_token_credentials(session: Session) -> Result<String, SessionError> {
     info!("token::generate_token_credentials(): Begin");
-    // TODO:
-    // don't use to_owned(). use close() or as_str() etc
-    let client_id = session.client_id.to_owned();
-    let client_secret = session.client_secret.to_owned();
     let params = [
         ("grant_type", "client_credentials"),
-        ("client_id", client_id.as_str()),
-        ("client_secret", client_secret.as_str()),
+        ("client_id", session.client_id.as_str()),
+        ("client_secret", session.client_secret.as_str()),
     ];
     let client = reqwest::Client::new();
     let response = client
