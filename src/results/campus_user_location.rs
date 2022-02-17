@@ -1,5 +1,5 @@
-// - CampusUserLocationElement 
-// https://api.intra.42.fr/v2/campus_users/:campus_user_id/locations 이런식으로 호출할 때 사용됩니다. 
+// - CampusUserLocationElement
+// https://api.intra.42.fr/v2/campus_users/:campus_user_id/locations 이런식으로 호출할 때 사용됩니다.
 // campus 의 사용자 정보가 필요할 때 사용합니다.
 //
 // - Paste Json as Code vscode extension을 사용했습니다.

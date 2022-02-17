@@ -1,6 +1,6 @@
 // - Campus 는
 // - https://api.intra.42.fr/v2/campus 이런식으로 호출할 때 사용됩니다.
-// 
+//
 // - Paste Json as Code vscode extension을 사용했습니다.
 
 extern crate serde_json;
