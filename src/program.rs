@@ -1,9 +1,10 @@
 use std::io::Write;
 
-use crate::cli::Config;
+use crate::cli::Cli;
 use chrono::{DateTime, Local};
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
+use cli_42::Config;
 use cli_42::Mode;
 use cli_42::Session;
 use cli_42::SessionError;
@@ -27,12 +28,13 @@ pub enum Command {
 pub struct Program {
     pub session: Session,
     pub token: Option<TokenInfo>,
-    pub config: Config,
+    pub config: Cli,
+    login: String,
     pub grant_mode: Mode,
 }
 
 impl Program {
-    pub async fn new(config: Config) -> Result<Self, SessionError> {
+    pub async fn new(config: Cli) -> Result<Self, SessionError> {
         if !(check_if_config_file_exists()) {
             create_config_toml()?;
             if let Ok(result) = check_config_toml() {
@@ -42,9 +44,10 @@ impl Program {
             }
         }
         let program = Program {
-            session: Session::new(Some(Mode::Credentials)).await?,
+            session: Session::new(Mode::Credentials).await?,
             token: None,
             config,
+            login: Config::new()?.login(),
             grant_mode: Mode::Credentials,
         };
         Ok(program)
@@ -55,6 +58,8 @@ impl Program {
         Ok(res)
     }
 
+    // TODO:
+    // 호출하는게 똑같으니까 하나로 합치기
     pub async fn run_program(&mut self, command: Command) -> Result<(), SessionError> {
         match self.grant_mode {
             Mode::Code => {
@@ -91,6 +96,10 @@ impl Program {
         }
         Ok(())
     }
+
+    pub fn set_login(&mut self, new_login: String) {
+        self.login = new_login;
+    }
 }
 
 // TODO:
@@ -98,7 +107,7 @@ impl Program {
 impl Program {
     async fn get_me(&mut self) -> Result<me::Me, SessionError> {
         let url = "https://api.intra.42.fr/v2/me";
-        let url = Url::parse_with_params(url, &[("client_id", self.session.get_client_id())])?;
+        let url = Url::parse_with_params(url, &[("client_id", self.session.client_id())])?;
 
         let res = self.call(url.as_str()).await?;
         Ok(serde_json::from_str(res.as_str())?)
@@ -108,24 +117,22 @@ impl Program {
         let url = Url::parse_with_params(
             url,
             &[
-                ("client_id", self.session.get_client_id()),
-                ("filter[login]", self.session.get_login()),
+                ("client_id", self.session.client_id()),
+                ("filter[login]", &self.login),
             ],
         )?;
 
         let res = self.call(url.as_str()).await?;
         let user: user::User = serde_json::from_str(res.as_str())?;
         if user.is_empty() {
-            return Err(SessionError::UserNotFound(
-                self.session.get_login().to_string(),
-            ));
+            return Err(SessionError::UserNotFound(self.login.clone()));
         }
         Ok(user[0].clone())
     }
 
     async fn get_user_info_with_id(&mut self, id: i64) -> Result<me::Me, SessionError> {
         let url = format!("https://api.intra.42.fr/v2/users/{}", id);
-        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
 
         let res = self.call(url.as_str()).await?;
         let me: me::Me = serde_json::from_str(res.as_str())?;
@@ -174,7 +181,7 @@ impl Program {
     async fn event(&mut self, user: &me::Me) -> Result<(), SessionError> {
         let campus_id = user.campus[0].id;
         let url = format!("https://api.intra.42.fr/v2/campus/{}/events", campus_id);
-        let url = Url::parse_with_params(&url, &[("client_id", self.session.get_client_id())])?;
+        let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
         let res = self.call(url.as_str()).await?;
         let events: campus_event::CampusEvent = serde_json::from_str(res.as_str())?;
 
@@ -260,6 +267,12 @@ fn create_config_toml() -> Result<(), SessionError> {
         let stdin = stdin();
         let mut line = String::new();
 
+        println!("Enter intra login: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "login=\"{}\"", line.trim())?;
+        line.clear();
+        writeln!(&mut file, "[session]")?;
+        line.clear();
         println!("Enter client id: ");
         stdin.read_line(&mut line)?;
         writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
@@ -267,10 +280,6 @@ fn create_config_toml() -> Result<(), SessionError> {
         println!("Enter client secret: ");
         stdin.read_line(&mut line)?;
         writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
-        line.clear();
-        println!("Enter intra login: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "login=\"{}\"", line.trim())?;
         Ok(())
     } else {
         Err(SessionError::BaseDirsNewError)
@@ -310,8 +319,8 @@ fn check_config_toml() -> Result<bool, SessionError> {
 }
 
 fn check_client(session: &Session) -> bool {
-    let client_id = session.get_client_id();
-    let client_secret = session.get_client_secret();
+    let client_id = session.client_id();
+    let client_secret = session.client_secret();
     if client_id.is_empty() || client_secret.is_empty() {
         return false;
     }

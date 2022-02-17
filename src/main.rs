@@ -1,11 +1,16 @@
+// TODO:
+// - change the name of the program.
+
 mod cli;
 mod program;
 
-use cli::Config;
+use cli::Cli;
 use cli_42::SessionError;
 use program::Command;
 use program::Program;
 
+// TODO:
+// Event 만들어주는 library 찾아보기 예) enum_derive? strum?
 async fn run(prog: &mut Program) -> Result<(), SessionError> {
     let command = prog.config.command.to_owned();
     let cmd = command.trim().to_uppercase();
@@ -26,31 +31,24 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     Ok(())
 }
 
+async fn wrapped_main() -> Result<(), SessionError> {
+    let config = Cli::new()?;
+
+    let mut program = Program::new(config.clone()).await?;
+
+    if let Some(name) = config.user {
+        program.set_login(name);
+    }
+    run(&mut program).await?;
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
     env_logger::init();
 
-    let config = match Config::new() {
-        Ok(config) => config,
-        Err(err) => {
-            println!("{}", err);
-            return;
-        }
-    };
-
-    let mut program = match Program::new(config.clone()).await {
-        Ok(program) => program,
-        Err(err) => {
-            println!("{}", err);
-            return;
-        }
-    };
-
-    if let Some(name) = config.user {
-        program.session.set_login(name);
-    }
-    match run(&mut program).await {
+    match wrapped_main().await {
         Ok(_) => (),
-        Err(err) => println!("{}", err),
+        Err(e) => println!("{}", e),
     }
 }

@@ -1,3 +1,9 @@
+// - User 는 https://api.intra.42.fr/v2/users?filter[login]=<login> 이런식으로 호출할 때 사용됩니다.
+//
+// - Program::get_user_with_id() 함수 호출 시 얻는 결과입니다.
+//
+// - Paste Json as Code vscode extension을 사용했습니다.
+
 extern crate serde_json;
 use serde::{Deserialize, Serialize};
 
