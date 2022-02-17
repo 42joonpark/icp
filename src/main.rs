@@ -1,7 +1,7 @@
 mod cli;
 mod program;
 
-use cli::Config;
+use cli::Cli;
 use cli_42::SessionError;
 use program::Command;
 use program::Program;
@@ -30,7 +30,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
 async fn main() {
     env_logger::init();
 
-    let config = match Config::new() {
+    let config = match Cli::new() {
         Ok(config) => config,
         Err(err) => {
             println!("{}", err);

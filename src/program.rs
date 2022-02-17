@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use crate::cli::Config;
+use crate::cli::Cli;
 use chrono::{DateTime, Local};
 use cli_42::results::*;
 use cli_42::token::TokenInfo;
@@ -27,12 +27,12 @@ pub enum Command {
 pub struct Program {
     pub session: Session,
     pub token: Option<TokenInfo>,
-    pub config: Config,
+    pub config: Cli,
     pub grant_mode: Mode,
 }
 
 impl Program {
-    pub async fn new(config: Config) -> Result<Self, SessionError> {
+    pub async fn new(config: Cli) -> Result<Self, SessionError> {
         if !(check_if_config_file_exists()) {
             create_config_toml()?;
             if let Ok(result) = check_config_toml() {

@@ -4,7 +4,7 @@ use cli_42::SessionError;
 // TODO:
 // - Add a --detail flag to print more information about the result
 #[derive(Clone, Debug, clap::Parser)]
-pub struct Config {
+pub struct Cli {
     pub command: String,
     pub page: Option<u32>,
     pub user: Option<String>,
@@ -12,7 +12,7 @@ pub struct Config {
     commands: Vec<String>,
 }
 
-impl Config {
+impl Cli {
     pub fn new() -> Result<Self, SessionError> {
         let arg_command = Arg::new("command")
             .default_value("command")
@@ -65,7 +65,7 @@ impl Config {
         let page = None;
         let user = matches.value_of("user").map(|u| u.to_string());
         let detail = matches.is_present("detail");
-        Ok(Config {
+        Ok(Cli {
             command: String::from(command),
             page,
             user,
