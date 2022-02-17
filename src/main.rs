@@ -34,7 +34,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
 async fn wrapped_main() -> Result<(), SessionError> {
     let config = Cli::new()?;
 
-    let mut program =  Program::new(config.clone()).await?;
+    let mut program = Program::new(config.clone()).await?;
 
     if let Some(name) = config.user {
         program.set_login(name);
