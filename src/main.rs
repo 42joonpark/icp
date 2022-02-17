@@ -28,33 +28,24 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     Ok(())
 }
 
-// TODO:
-// - add wrapper_main() -> Result<(), SessionError>
-#[tokio::main]
-async fn main() {
-    env_logger::init();
+async fn wrapped_main() -> Result<(), SessionError> {
+    let config = Cli::new()?;
 
-    let config = match Cli::new() {
-        Ok(config) => config,
-        Err(err) => {
-            println!("{}", err);
-            return;
-        }
-    };
-
-    let mut program = match Program::new(config.clone()).await {
-        Ok(program) => program,
-        Err(err) => {
-            println!("{}", err);
-            return;
-        }
-    };
+    let mut program =  Program::new(config.clone()).await?;
 
     if let Some(name) = config.user {
         program.set_login(name);
     }
-    match run(&mut program).await {
+    run(&mut program).await?;
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() {
+    env_logger::init();
+
+    match wrapped_main().await {
         Ok(_) => (),
-        Err(err) => println!("{}", err),
+        Err(e) => println!("{}", e),
     }
 }
