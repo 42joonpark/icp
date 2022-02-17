@@ -44,7 +44,7 @@ impl Program {
             }
         }
         let program = Program {
-            session: Session::new(Some(Mode::Credentials)).await?,
+            session: Session::new(Mode::Credentials).await?,
             token: None,
             config,
             login: Config::new()?.login(),
