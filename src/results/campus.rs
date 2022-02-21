@@ -6,6 +6,7 @@
 extern crate serde_json;
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 pub type Campus = Vec<CampusElement>;
 
 #[derive(Debug, Serialize, Deserialize)]
