@@ -58,41 +58,20 @@ impl Program {
         Ok(res)
     }
 
-    // TODO:
-    // 호출하는게 똑같으니까 하나로 합치기
     pub async fn run_program(&mut self, command: Command) -> Result<(), SessionError> {
-        match self.grant_mode {
-            Mode::Code => {
-                let user = self.get_me().await?;
-                match command {
-                    Command::Id => self.id(user.id).await,
-                    Command::Me => self.me(&user).await?,
-                    Command::Email => self.email(&user).await,
-                    Command::Event => self.event(&user).await?,
-                    Command::Login => self.login(&user).await,
-                    Command::Level => self.level(&user).await,
-                    Command::Location => self.location(&user).await,
-                    Command::CorrectionPoint => self.correction_point(&user).await,
-                    Command::Wallet => self.wallet(&user).await,
-                    Command::Blackhole => self.blackhole(&user).await?,
-                }
-            }
-            Mode::Credentials => {
-                let tmp = self.get_user_with_login().await?;
-                let user = self.get_user_info_with_id(tmp.id).await?;
-                match command {
-                    Command::Id => self.id(tmp.id).await,
-                    Command::Me => self.me(&user).await?,
-                    Command::Email => self.email(&user).await,
-                    Command::Event => self.event(&user).await?,
-                    Command::Login => self.login(&user).await,
-                    Command::Level => self.level(&user).await,
-                    Command::Location => self.location(&user).await,
-                    Command::CorrectionPoint => self.correction_point(&user).await,
-                    Command::Wallet => self.wallet(&user).await,
-                    Command::Blackhole => self.blackhole(&user).await?,
-                }
-            }
+        let tmp = self.get_user_with_login().await?;
+        let user = self.get_user_info_with_id(tmp.id).await?;
+        match command {
+            Command::Id => self.id(user.id).await,
+            Command::Me => self.me(&user).await?,
+            Command::Email => self.email(&user).await,
+            Command::Event => self.event(&user).await?,
+            Command::Login => self.login(&user).await,
+            Command::Level => self.level(&user).await,
+            Command::Location => self.location(&user).await,
+            Command::CorrectionPoint => self.correction_point(&user).await,
+            Command::Wallet => self.wallet(&user).await,
+            Command::Blackhole => self.blackhole(&user).await?,
         }
         Ok(())
     }
@@ -105,6 +84,9 @@ impl Program {
 // TODO:
 // - Add a functions detail if needed.
 impl Program {
+    // FIXME:
+    // - can be used when code grant is implemented.
+    #[allow(dead_code)]
     async fn get_me(&mut self) -> Result<me::Me, SessionError> {
         let url = "https://api.intra.42.fr/v2/me";
         let url = Url::parse_with_params(url, &[("client_id", self.session.client_id())])?;
