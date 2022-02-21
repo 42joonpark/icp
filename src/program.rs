@@ -1,13 +1,11 @@
 use std::io::Write;
 
 use crate::cli::Cli;
+use crate::results::*;
+use crate::session::{Config, Mode, Session};
+use crate::token::TokenInfo;
+use crate::CliError;
 use chrono::{DateTime, Local};
-use cli_42::results::*;
-use cli_42::token::TokenInfo;
-use cli_42::Config;
-use cli_42::Mode;
-use cli_42::Session;
-use cli_42::SessionError;
 use directories::BaseDirs;
 use url::Url;
 
@@ -34,12 +32,12 @@ pub struct Program {
 }
 
 impl Program {
-    pub async fn new(config: Cli) -> Result<Self, SessionError> {
+    pub async fn new(config: Cli) -> Result<Self, CliError> {
         if !(check_if_config_file_exists()) {
             create_config_toml()?;
             if let Ok(result) = check_config_toml() {
                 if !result {
-                    return Err(SessionError::ConfigFileNotFound);
+                    return Err(CliError::ConfigFileNotFound);
                 }
             }
         }
@@ -53,46 +51,25 @@ impl Program {
         Ok(program)
     }
 
-    pub async fn call(&mut self, url: &str) -> Result<String, SessionError> {
+    pub async fn call(&mut self, url: &str) -> Result<String, CliError> {
         let res = self.session.call(url).await?;
         Ok(res)
     }
 
-    // TODO:
-    // 호출하는게 똑같으니까 하나로 합치기
-    pub async fn run_program(&mut self, command: Command) -> Result<(), SessionError> {
-        match self.grant_mode {
-            Mode::Code => {
-                let user = self.get_me().await?;
-                match command {
-                    Command::Id => self.id(user.id).await,
-                    Command::Me => self.me(&user).await?,
-                    Command::Email => self.email(&user).await,
-                    Command::Event => self.event(&user).await?,
-                    Command::Login => self.login(&user).await,
-                    Command::Level => self.level(&user).await,
-                    Command::Location => self.location(&user).await,
-                    Command::CorrectionPoint => self.correction_point(&user).await,
-                    Command::Wallet => self.wallet(&user).await,
-                    Command::Blackhole => self.blackhole(&user).await?,
-                }
-            }
-            Mode::Credentials => {
-                let tmp = self.get_user_with_login().await?;
-                let user = self.get_user_info_with_id(tmp.id).await?;
-                match command {
-                    Command::Id => self.id(tmp.id).await,
-                    Command::Me => self.me(&user).await?,
-                    Command::Email => self.email(&user).await,
-                    Command::Event => self.event(&user).await?,
-                    Command::Login => self.login(&user).await,
-                    Command::Level => self.level(&user).await,
-                    Command::Location => self.location(&user).await,
-                    Command::CorrectionPoint => self.correction_point(&user).await,
-                    Command::Wallet => self.wallet(&user).await,
-                    Command::Blackhole => self.blackhole(&user).await?,
-                }
-            }
+    pub async fn run_program(&mut self, command: Command) -> Result<(), CliError> {
+        let tmp = self.get_user_with_login().await?;
+        let user = self.get_user_info_with_id(tmp.id).await?;
+        match command {
+            Command::Id => self.id(user.id).await,
+            Command::Me => self.me(&user).await?,
+            Command::Email => self.email(&user).await,
+            Command::Event => self.event(&user).await?,
+            Command::Login => self.login(&user).await,
+            Command::Level => self.level(&user).await,
+            Command::Location => self.location(&user).await,
+            Command::CorrectionPoint => self.correction_point(&user).await,
+            Command::Wallet => self.wallet(&user).await,
+            Command::Blackhole => self.blackhole(&user).await?,
         }
         Ok(())
     }
@@ -103,16 +80,19 @@ impl Program {
 }
 
 // TODO:
-// - Add a functions detail if needed.
+// - Add a functions detail if needed. for --details option.
 impl Program {
-    async fn get_me(&mut self) -> Result<me::Me, SessionError> {
+    // FIXME:
+    // - can be used when code grant is implemented.
+    #[allow(dead_code)]
+    async fn get_me(&mut self) -> Result<me::Me, CliError> {
         let url = "https://api.intra.42.fr/v2/me";
         let url = Url::parse_with_params(url, &[("client_id", self.session.client_id())])?;
 
         let res = self.call(url.as_str()).await?;
         Ok(serde_json::from_str(res.as_str())?)
     }
-    async fn get_user_with_login(&mut self) -> Result<user::UserElement, SessionError> {
+    async fn get_user_with_login(&mut self) -> Result<user::UserElement, CliError> {
         let url = "https://api.intra.42.fr/v2/users";
         let url = Url::parse_with_params(
             url,
@@ -125,12 +105,12 @@ impl Program {
         let res = self.call(url.as_str()).await?;
         let user: user::User = serde_json::from_str(res.as_str())?;
         if user.is_empty() {
-            return Err(SessionError::UserNotFound(self.login.clone()));
+            return Err(CliError::UserNotFound(self.login.clone()));
         }
         Ok(user[0].clone())
     }
 
-    async fn get_user_info_with_id(&mut self, id: i64) -> Result<me::Me, SessionError> {
+    async fn get_user_info_with_id(&mut self, id: i64) -> Result<me::Me, CliError> {
         let url = format!("https://api.intra.42.fr/v2/users/{}", id);
         let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
 
@@ -139,7 +119,10 @@ impl Program {
         Ok(me)
     }
 
-    async fn me(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    // TODO:
+    // when user did not finish piscine, then it panics because their user.cursus_users have only 1 item.
+    // so we need to check if cursus_users size is > 1, or find way to determine if user is in piscine.
+    async fn me(&mut self, user: &me::Me) -> Result<(), CliError> {
         let title = if user.titles.is_empty() {
             ""
         } else {
@@ -178,7 +161,7 @@ impl Program {
         println!("{:20}{}", "Email", user.email);
     }
 
-    async fn event(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    async fn event(&mut self, user: &me::Me) -> Result<(), CliError> {
         let campus_id = user.campus[0].id;
         let url = format!("https://api.intra.42.fr/v2/campus/{}/events", campus_id);
         let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
@@ -193,10 +176,8 @@ impl Program {
                 println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
                 println!("⏰{:24}{}", "Begin at", begin);
                 println!("⏰{:24}{}\n", "End at", end);
-                if let Some(det) = self.config.detail {
-                    if det {
-                        println!("{}\n", event.description);
-                    }
+                if self.config.detail.unwrap_or(false) {
+                    println!("{}\n", event.description);
                 }
             }
         }
@@ -219,7 +200,7 @@ impl Program {
         println!("{:20}{}", "Correction point", user.correction_point);
     }
 
-    async fn blackhole(&mut self, user: &me::Me) -> Result<(), SessionError> {
+    async fn blackhole(&mut self, user: &me::Me) -> Result<(), CliError> {
         let local = Local::now();
         let local2 = user.cursus_users[1]
             .blackholed_at
@@ -234,10 +215,8 @@ impl Program {
             31..=60 => println!(" 😡"),
             _ => println!(" 🤪"),
         }
-        if let Some(det) = self.config.detail {
-            if det {
-                println!("{:19}{}\n", "⏰End at", local2);
-            }
+        if self.config.detail.unwrap_or(false) {
+            println!("{:19}{}\n", "⏰End at", local2);
         }
         Ok(())
     }
@@ -245,15 +224,12 @@ impl Program {
 
 fn check_if_config_file_exists() -> bool {
     if let Some(dir) = BaseDirs::new() {
-        let path = dir.config_dir().join("config.toml");
-        if !(path.exists()) {
-            return false;
-        }
+        return dir.config_dir().join("config.toml").exists();
     }
-    true
+    false
 }
 
-fn create_config_toml() -> Result<(), SessionError> {
+fn create_config_toml() -> Result<(), CliError> {
     use std::fs::File;
     use std::io::stdin;
 
@@ -261,32 +237,29 @@ fn create_config_toml() -> Result<(), SessionError> {
     println!("Create new Application");
     println!("Set redirect_url to \"http://localhost:8080\"");
 
-    if let Some(dir) = BaseDirs::new() {
-        let path = dir.config_dir().join("config.toml");
-        let mut file = File::create(path)?;
-        let stdin = stdin();
-        let mut line = String::new();
+    let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
+    let path = dir.config_dir().join("config.toml");
+    let mut file = File::create(path)?;
+    let stdin = stdin();
+    let mut line = String::new();
 
-        println!("Enter intra login: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "login=\"{}\"", line.trim())?;
-        line.clear();
-        writeln!(&mut file, "[session]")?;
-        line.clear();
-        println!("Enter client id: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
-        line.clear();
-        println!("Enter client secret: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
-        Ok(())
-    } else {
-        Err(SessionError::BaseDirsNewError)
-    }
+    println!("Enter intra login: ");
+    stdin.read_line(&mut line)?;
+    writeln!(&mut file, "login=\"{}\"", line.trim())?;
+    line.clear();
+    writeln!(&mut file, "[session]")?;
+    line.clear();
+    println!("Enter client id: ");
+    stdin.read_line(&mut line)?;
+    writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
+    line.clear();
+    println!("Enter client secret: ");
+    stdin.read_line(&mut line)?;
+    writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
+    Ok(())
 }
 
-fn check_config_toml() -> Result<bool, SessionError> {
+fn check_config_toml() -> Result<bool, CliError> {
     use std::io::ErrorKind;
 
     if let Some(dir) = BaseDirs::new() {

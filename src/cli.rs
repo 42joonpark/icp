@@ -1,5 +1,5 @@
+use crate::error::CliError;
 use clap::{crate_description, crate_name, crate_version, App, Arg};
-use cli_42::SessionError;
 
 // TODO:
 // - Add a --detail flag to print more information about the result
@@ -15,7 +15,7 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub fn new() -> Result<Self, SessionError> {
+    pub fn new() -> Result<Self, CliError> {
         let arg_command = Arg::new("command")
             .default_value("command")
             .index(1)

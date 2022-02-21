@@ -7,6 +7,7 @@
 extern crate serde_json;
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 pub type CampusUserLocation = Vec<CampusUserLocationElement>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

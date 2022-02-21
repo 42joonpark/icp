@@ -1,54 +1,11 @@
-pub mod results;
-pub mod token;
-
+use crate::error::CliError;
+use crate::error::{AuthError, TokenError};
+use crate::token;
 use directories::BaseDirs;
 use log::{self, debug, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use std::fs;
-
-// TODO:
-// 의미에 따라 에러 나누기
-// Error type
-#[derive(thiserror::Error, Debug)]
-pub enum SessionError {
-    #[error(transparent)]
-    IoError(#[from] std::io::Error),
-    #[error(transparent)]
-    ParseUrlError(#[from] url::ParseError),
-    #[error(transparent)]
-    ReqwestError(#[from] reqwest::Error),
-    #[error(transparent)]
-    JsonError(#[from] serde_json::Error),
-    #[error(transparent)]
-    TomlError(#[from] toml::de::Error),
-    #[error(transparent)]
-    VarError(#[from] std::env::VarError),
-    #[error(transparent)]
-    ChoronoParseError(#[from] chrono::ParseError),
-    #[error("")]
-    NoneError,
-    #[error("Error: User {0} not found.")]
-    UserNotFound(String),
-    #[error("Error: {0}")]
-    New(String),
-    #[error("Error: Untouched error.")]
-    Untouched,
-    #[error("Error: No access token found")]
-    TokenNotFound,
-    #[error("Error: Not valide token Error")]
-    TokenNotValid,
-    #[error("Error: Server Unauthorized")]
-    UnauthorizedResponse,
-    #[error("Error: 403 Forbidden Access")]
-    Forbidden,
-    #[error("Error: 404 Page or resource is not found")]
-    NotFound,
-    #[error("Error: Configure file not found")]
-    ConfigFileNotFound,
-    #[error("Error: BaseDirs::new() returned None")]
-    BaseDirsNewError,
-}
 
 // Authorization grant type.
 #[derive(Debug, Deserialize)]
@@ -64,14 +21,11 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new() -> Result<Self, SessionError> {
-        if let Some(dir) = BaseDirs::new() {
-            let path = dir.config_dir().join("config.toml");
-            let content = fs::read_to_string(path)?;
-            Ok(toml::from_str(&content)?)
-        } else {
-            Err(SessionError::BaseDirsNewError)
-        }
+    pub fn new() -> Result<Self, CliError> {
+        let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
+        let path = dir.config_dir().join("config.toml");
+        let content = fs::read_to_string(path)?;
+        Ok(toml::from_str(&content)?)
     }
     pub fn login(&self) -> String {
         self.login.clone()
@@ -96,13 +50,14 @@ impl Session {
     //
     // # Example
     // ```
-    // use cli_42::Session;
+    // use icp::Session;
     //
     // let session: Session = Session::new()?;
     // ```
     // TODO:
     // combine new_with_path() and new()
-    pub async fn new_with_path(path: &str, m: Mode) -> Result<Self, SessionError> {
+    #[allow(dead_code)]
+    pub async fn new_with_path(path: &str, m: Mode) -> Result<Self, CliError> {
         let content = fs::read_to_string(path)?;
         let config: Config = toml::from_str(&content)?;
         let mut session: Session = config.session;
@@ -124,14 +79,14 @@ impl Session {
     //
     // # Example
     // ```
-    // use cli_42::Session;
-    // use cli_42::SessionError;
+    // use icp::Session;
+    // use icp::CliError;
     //
     // let session: Session = Session::new(None)?;
     // let session: Session = Session::new(Some(Mode::Code))?;
     // let session: Session = Session::new(Some(Mode::Credentials))?;
     // ```
-    pub async fn new(m: Mode) -> Result<Self, SessionError> {
+    pub async fn new(m: Mode) -> Result<Self, CliError> {
         let config = Config::new()?;
         let mut session: Session = config.session();
         match m {
@@ -152,17 +107,17 @@ impl Session {
     //
     // # Example
     // ```
-    // use cli_42::Session;
-    // use cli_42::SessionError;
-    // use cli_42::Mode;
+    // use icp::Session;
+    // use icp::CliError;
+    // use icp::Mode;
     //
     // let session: Session = Session::new(Mode(None))?;
     // let result = session.call("https://api.intra.42.fr/v2/users")?;
     // ```
-    pub async fn call(&self, uri: &str) -> Result<String, SessionError> {
+    pub async fn call(&self, uri: &str) -> Result<String, CliError> {
         if self.access_token.is_none() {
             warn!("No access_token found");
-            return Err(SessionError::TokenNotFound);
+            return Err(CliError::TokenError(TokenError::NoAccessToken));
         }
         let ac_token = self.access_token.clone().unwrap_or_default();
         let client = reqwest::Client::new();
@@ -177,19 +132,20 @@ impl Session {
 
         match response.status() {
             reqwest::StatusCode::OK => {
-                debug!("cli_42::Session::call(): reqwest OK");
+                debug!("icp::Session::call(): reqwest OK");
             }
             reqwest::StatusCode::UNAUTHORIZED => {
-                warn!("cli_42::Session::call(): unauthorized");
-                return Err(SessionError::UnauthorizedResponse);
+                warn!("icp::Session::call(): unauthorized");
+                // return Err(CliError::UnauthorizedResponse);
+                return Err(CliError::AuthError(AuthError::UnauthResponse));
             }
             reqwest::StatusCode::FORBIDDEN => {
-                warn!("cli_42::Session::call(): 402 FORBIDDEN ACCESS");
-                return Err(SessionError::Forbidden);
+                warn!("icp::Session::call(): 402 FORBIDDEN ACCESS");
+                return Err(CliError::AuthError(AuthError::Forbidden));
             }
             reqwest::StatusCode::NOT_FOUND => {
-                warn!("cli_42::Session::call(): 404 NOT FOUND");
-                return Err(SessionError::NotFound);
+                warn!("icp::Session::call(): 404 NOT FOUND");
+                return Err(CliError::AuthError(AuthError::NotFound));
             }
             _ => {
                 panic!("uh oh! something unexpected happened");
@@ -200,11 +156,11 @@ impl Session {
     }
 
     // Generate new access_token and asign it to the session
-    pub async fn generate_token_credentials(&mut self) -> Result<(), SessionError> {
+    pub async fn generate_token_credentials(&mut self) -> Result<(), CliError> {
         self.access_token = Some(token::generate_token_credentials(self.clone()).await?);
         Ok(())
     }
-    pub async fn generate_token(&mut self) -> Result<(), SessionError> {
+    pub async fn generate_token(&mut self) -> Result<(), CliError> {
         self.access_token = Some(token::generate_token(self.clone()).await?);
         Ok(())
     }
@@ -216,10 +172,8 @@ impl Session {
     pub fn client_secret(&self) -> &str {
         self.client_secret.as_str()
     }
-    // TODO:
-    // use map() instead of clone
-    // Get the `access_token` of the session
-    pub fn access_token(&self) -> Option<String> {
-        self.access_token.clone()
+    #[allow(dead_code)]
+    pub fn access_token(&self) -> Option<&str> {
+        self.access_token.as_deref()
     }
 }

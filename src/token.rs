@@ -1,5 +1,6 @@
-use crate::Session;
-use crate::SessionError;
+use crate::error::AuthError;
+use crate::session::Session;
+use crate::CliError;
 use log::{self, debug, info};
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
@@ -42,7 +43,8 @@ struct Application {
 // ```
 // let token_info: TokenInfo = token_info("Some Token");
 // ```
-pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError> {
+#[allow(dead_code)]
+pub async fn token_info(token: Option<String>) -> Result<TokenInfo, CliError> {
     let url = "https://api.intra.42.fr/oauth/token/info";
     let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
     let resp = reqwest::get(url).await?;
@@ -56,7 +58,8 @@ pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError
 // ```
 // let res = check_token_valide(Some("Some Token".to_string())).await?;
 // ```
-pub async fn check_token_valide(token: Option<String>) -> Result<bool, SessionError> {
+#[allow(dead_code)]
+pub async fn check_token_valide(token: Option<String>) -> Result<bool, CliError> {
     let token_info = token_info(token).await?;
     Ok(token_info.expires_in_seconds.is_some())
 }
@@ -78,12 +81,12 @@ pub struct AccessToken {
 // let session = Session::new(Some(Mode::Credentials)).await?;
 // let access_token = generate_token_credentials(session.clone()).await?;
 // ```
-pub async fn generate_token_credentials(session: Session) -> Result<String, SessionError> {
+pub async fn generate_token_credentials(session: Session) -> Result<String, CliError> {
     info!("token::generate_token_credentials(): Begin");
     let params = [
         ("grant_type", "client_credentials"),
-        ("client_id", session.client_id.as_str()),
-        ("client_secret", session.client_secret.as_str()),
+        ("client_id", session.client_id()),
+        ("client_secret", session.client_secret()),
     ];
     let client = reqwest::Client::new();
     let response = client
@@ -97,7 +100,7 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
             let access_token: AccessToken = response.json().await?;
             Ok(access_token.access_token)
         }
-        reqwest::StatusCode::UNAUTHORIZED => Err(SessionError::New(
+        reqwest::StatusCode::UNAUTHORIZED => Err(CliError::IcpError(
             "Failed to generate access token. Please check your `config.toml` file.".into(),
         )),
         _ => panic!("uh oh! something unexpected happened"),
@@ -112,7 +115,7 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
 // let session = Session::new(Some(Mode::Code)).await?;
 // let access_token = generate_token(session.clone()).await?;
 // ```
-pub async fn generate_token(session: Session) -> Result<String, SessionError> {
+pub async fn generate_token(session: Session) -> Result<String, CliError> {
     let client = BasicClient::new(
         ClientId::new(String::from(session.client_id())),
         Some(ClientSecret::new(String::from(session.client_secret()))),
@@ -136,7 +139,7 @@ pub async fn generate_token(session: Session) -> Result<String, SessionError> {
 }
 
 // Creates local server with port number 8000 and waits for user to finish authorize.
-async fn local_server(client: BasicClient) -> Result<String, SessionError> {
+async fn local_server(client: BasicClient) -> Result<String, CliError> {
     let ac_token;
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     loop {
@@ -149,7 +152,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                 reader.read_line(&mut request_line).await?;
                 let redirect_url = match request_line.split_whitespace().nth(1) {
                     Some(url) => url,
-                    None => return Err(SessionError::NoneError),
+                    None => return Err(CliError::IcpError("Failed to get redirect url.".into())),
                 };
                 let url = Url::parse(&("http://localhost".to_string() + redirect_url))?;
 
@@ -158,7 +161,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                     key == "code"
                 }) {
                     Some(code) => code,
-                    None => return Err(SessionError::NoneError),
+                    None => return Err(CliError::IcpError("Failed to get code.".into())),
                 };
 
                 let (_, value) = code_pair;
@@ -169,7 +172,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                     key == "state"
                 }) {
                     Some(state) => state,
-                    None => return Err(SessionError::NoneError),
+                    None => return Err(CliError::IcpError("Failed to get state.".into())),
                 };
 
                 let (_, value) = state_pair;
@@ -192,7 +195,7 @@ async fn local_server(client: BasicClient) -> Result<String, SessionError> {
                 .request_async(async_http_client)
                 .await;
             let token = match token_res {
-                Err(_) => return Err(SessionError::UnauthorizedResponse),
+                Err(_) => return Err(CliError::AuthError(AuthError::UnauthResponse)),
                 Ok(t) => t,
             };
             debug!("42API returned the following token:\n{:?}\n", token);

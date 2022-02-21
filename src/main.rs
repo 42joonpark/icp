@@ -1,17 +1,23 @@
 // TODO:
 // - change the name of the program.
+// TODO:
+// remove #[allow(dead_code)] if used.
 
 mod cli;
+mod error;
 mod program;
+mod results;
+mod session;
+mod token;
 
 use cli::Cli;
-use cli_42::SessionError;
+use error::CliError;
 use program::Command;
 use program::Program;
 
 // TODO:
 // Event 만들어주는 library 찾아보기 예) enum_derive? strum?
-async fn run(prog: &mut Program) -> Result<(), SessionError> {
+async fn run(prog: &mut Program) -> Result<(), CliError> {
     let command = prog.config.command.to_owned();
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
@@ -31,7 +37,7 @@ async fn run(prog: &mut Program) -> Result<(), SessionError> {
     Ok(())
 }
 
-async fn wrapped_main() -> Result<(), SessionError> {
+async fn wrapped_main() -> Result<(), CliError> {
     let config = Cli::new()?;
 
     let mut program = Program::new(config.clone()).await?;
