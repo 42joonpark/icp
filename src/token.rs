@@ -58,12 +58,7 @@ pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError
 // ```
 pub async fn check_token_valide(token: Option<String>) -> Result<bool, SessionError> {
     let token_info = token_info(token).await?;
-    // TODO:
-    // use is_some()
-    if token_info.expires_in_seconds.is_none() {
-        return Ok(false);
-    }
-    Ok(true)
+    Ok(token_info.expires_in_seconds.is_some())
 }
 
 #[derive(Deserialize, Debug)]
