@@ -58,12 +58,7 @@ pub async fn token_info(token: Option<String>) -> Result<TokenInfo, SessionError
 // ```
 pub async fn check_token_valide(token: Option<String>) -> Result<bool, SessionError> {
     let token_info = token_info(token).await?;
-    // TODO:
-    // use is_some()
-    if token_info.expires_in_seconds.is_none() {
-        return Ok(false);
-    }
-    Ok(true)
+    Ok(token_info.expires_in_seconds.is_some())
 }
 
 #[derive(Deserialize, Debug)]
@@ -95,22 +90,17 @@ pub async fn generate_token_credentials(session: Session) -> Result<String, Sess
         .post("https://api.intra.42.fr/oauth/token")
         .form(&params)
         .send()
-        .await;
+        .await?;
 
-    // TODO:
-    // use map_err()
-    match response {
-        Ok(res) => match res.status() {
-            reqwest::StatusCode::OK => {
-                let access_token: AccessToken = res.json().await?;
-                Ok(access_token.access_token)
-            }
-            reqwest::StatusCode::UNAUTHORIZED => Err(SessionError::New(
-                "Failed to generate access token. Please check your `config.toml` file.".into(),
-            )),
-            _ => panic!("uh oh! something unexpected happened"),
-        },
-        Err(e) => Err(SessionError::ReqwestError(e)),
+    match response.status() {
+        reqwest::StatusCode::OK => {
+            let access_token: AccessToken = response.json().await?;
+            Ok(access_token.access_token)
+        }
+        reqwest::StatusCode::UNAUTHORIZED => Err(SessionError::New(
+            "Failed to generate access token. Please check your `config.toml` file.".into(),
+        )),
+        _ => panic!("uh oh! something unexpected happened"),
     }
 }
 
