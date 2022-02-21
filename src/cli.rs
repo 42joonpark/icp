@@ -4,14 +4,22 @@ use clap::{crate_description, crate_name, crate_version, App, Arg};
 // TODO:
 // - Add a --detail flag to print more information about the result
 // TODO:
-// - add method functions
-#[derive(Clone, Debug, clap::Parser)]
+// - add method functions -> ??
+#[derive(Clone, Debug)]
 pub struct Cli {
     pub command: String,
     pub page: Option<u32>,
     pub user: Option<String>,
-    pub detail: Option<bool>,
     commands: Vec<String>,
+    pub detail: bool,
+    pub id: bool,
+    pub email: bool,
+    pub login: bool,
+    pub point: bool,
+    pub level: bool,
+    pub location: bool,
+    pub wallet: bool,
+    pub blackhole: bool,
 }
 
 impl Cli {
@@ -61,18 +69,90 @@ impl Cli {
                     .takes_value(false)
                     .help("Print more information about the result"),
             )
+            .arg(
+                Arg::new("id")
+                    .short('i')
+                    .long("id")
+                    .takes_value(false)
+                    .help("Print user intra id(number)"),
+            )
+            .arg(
+                Arg::new("email")
+                    .short('e')
+                    .long("email")
+                    .takes_value(false)
+                    .help("Print user email"),
+            )
+            .arg(
+                Arg::new("login")
+                    .short('l')
+                    .long("login")
+                    .takes_value(false)
+                    .help("Print user login"),
+            )
+            .arg(
+                Arg::new("point")
+                    .short('p')
+                    .long("point")
+                    .takes_value(false)
+                    .help("Print user point"),
+            )
+            .arg(
+                Arg::new("level")
+                    .short('v')
+                    .long("level")
+                    .takes_value(false)
+                    .help("Print user level"),
+            )
+            .arg(
+                Arg::new("location")
+                    .short('o')
+                    .long("location")
+                    .takes_value(false)
+                    .help("Print user location"),
+            )
+            .arg(
+                Arg::new("wallet")
+                    .short('w')
+                    .long("wallet")
+                    .takes_value(false)
+                    .help("Print user wallet"),
+            )
+            .arg(
+                Arg::new("blackhole")
+                    .short('b')
+                    .long("blackhole")
+                    .takes_value(false)
+                    .help("Print user blackhole"),
+            )
             .get_matches();
 
         let command = matches.value_of("command").unwrap_or("me");
         let page = None;
         let user = matches.value_of("user").map(|u| u.to_string());
         let detail = matches.is_present("detail");
+        let id = matches.is_present("id");
+        let email = matches.is_present("email");
+        let login = matches.is_present("login");
+        let point = matches.is_present("point");
+        let level = matches.is_present("level");
+        let location = matches.is_present("location");
+        let wallet = matches.is_present("wallet");
+        let blackhole = matches.is_present("blackhole");
         Ok(Cli {
             command: String::from(command),
             page,
             user,
-            detail: Some(detail),
+            detail,
             commands,
+            id,
+            email,
+            login,
+            point,
+            level,
+            location,
+            wallet,
+            blackhole,
         })
     }
 
