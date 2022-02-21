@@ -2,7 +2,7 @@ use crate::error::CliError;
 use clap::{crate_description, crate_name, crate_version, App, Arg};
 
 // TODO:
-// - Add a --detail flag to print more information about the result
+// remove commands that are not used anymore.
 // TODO:
 // - add method functions -> ??
 #[derive(Clone, Debug)]

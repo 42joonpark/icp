@@ -82,6 +82,8 @@ impl Program {
 
 // TODO:
 // - Add a functions detail if needed. for --details option.
+// TODO:
+// implement options for command: me"
 impl Program {
     // FIXME:
     // - can be used when code grant is implemented.

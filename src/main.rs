@@ -1,6 +1,4 @@
 // TODO:
-// - change the name of the program.
-// TODO:
 // remove #[allow(dead_code)] if used.
 
 mod cli;
