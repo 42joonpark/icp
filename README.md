@@ -1,4 +1,5 @@
 # <span style="color: rgb(255, 111, 122)"> icp </span>
+Intra Command line Program \
 view your intra information on CLI
 
 ## How to use
