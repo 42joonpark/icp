@@ -2,7 +2,7 @@ use std::io::Write;
 
 use crate::cli::Cli;
 use crate::results::*;
-use crate::session::{Config, Mode, Session};
+use crate::session::{Mode, Session, SysConfig};
 use crate::token::TokenInfo;
 use crate::CliError;
 use chrono::{DateTime, Local};
@@ -41,11 +41,16 @@ impl Program {
                 }
             }
         }
+        let name = config.user.clone();
+        // if you want to use custom config file path then use Sysconfig::new_with_path()
+        // TODO -> SysConfig::new_with_path()
+        let sys_config = SysConfig::new()?;
+        let session = Session::new(Mode::Credentials, &sys_config).await?;
         let program = Program {
-            session: Session::new(Mode::Credentials).await?,
+            session,
             token: None,
             config,
-            login: Config::new()?.login(),
+            login: name.unwrap_or_else(|| sys_config.login()),
             grant_mode: Mode::Credentials,
         };
         Ok(program)
@@ -72,10 +77,6 @@ impl Program {
             Command::Blackhole => self.blackhole(&user).await?,
         }
         Ok(())
-    }
-
-    pub fn set_login(&mut self, new_login: String) {
-        self.login = new_login;
     }
 }
 
@@ -176,7 +177,7 @@ impl Program {
                 println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
                 println!("⏰{:24}{}", "Begin at", begin);
                 println!("⏰{:24}{}\n", "End at", end);
-                if self.config.detail.unwrap_or(false) {
+                if self.config.detail {
                     println!("{}\n", event.description);
                 }
             }
@@ -215,7 +216,7 @@ impl Program {
             31..=60 => println!(" 😡"),
             _ => println!(" 🤪"),
         }
-        if self.config.detail.unwrap_or(false) {
+        if self.config.detail {
             println!("{:19}{}\n", "⏰End at", local2);
         }
         Ok(())

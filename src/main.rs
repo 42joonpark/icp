@@ -41,10 +41,6 @@ async fn wrapped_main() -> Result<(), CliError> {
     let config = Cli::new()?;
 
     let mut program = Program::new(config.clone()).await?;
-
-    if let Some(name) = config.user {
-        program.set_login(name);
-    }
     run(&mut program).await?;
     Ok(())
 }
