@@ -82,7 +82,7 @@ impl Program {
 }
 
 // TODO:
-// - Add a functions detail if needed.
+// - Add a functions detail if needed. for --details option.
 impl Program {
     // FIXME:
     // - can be used when code grant is implemented.
@@ -175,10 +175,8 @@ impl Program {
                 println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
                 println!("⏰{:24}{}", "Begin at", begin);
                 println!("⏰{:24}{}\n", "End at", end);
-                if let Some(det) = self.config.detail {
-                    if det {
-                        println!("{}\n", event.description);
-                    }
+                if self.config.detail.unwrap_or(false) {
+                    println!("{}\n", event.description);
                 }
             }
         }
@@ -216,10 +214,8 @@ impl Program {
             31..=60 => println!(" 😡"),
             _ => println!(" 🤪"),
         }
-        if let Some(det) = self.config.detail {
-            if det {
-                println!("{:19}{}\n", "⏰End at", local2);
-            }
+        if self.config.detail.unwrap_or(false) {
+            println!("{:19}{}\n", "⏰End at", local2);
         }
         Ok(())
     }
@@ -227,12 +223,9 @@ impl Program {
 
 fn check_if_config_file_exists() -> bool {
     if let Some(dir) = BaseDirs::new() {
-        let path = dir.config_dir().join("config.toml");
-        if !(path.exists()) {
-            return false;
-        }
+        return dir.config_dir().join("config.toml").exists();
     }
-    true
+    false
 }
 
 fn create_config_toml() -> Result<(), SessionError> {
@@ -243,29 +236,26 @@ fn create_config_toml() -> Result<(), SessionError> {
     println!("Create new Application");
     println!("Set redirect_url to \"http://localhost:8080\"");
 
-    if let Some(dir) = BaseDirs::new() {
-        let path = dir.config_dir().join("config.toml");
-        let mut file = File::create(path)?;
-        let stdin = stdin();
-        let mut line = String::new();
+    let dir = BaseDirs::new().ok_or(SessionError::BaseDirsNewError)?;
+    let path = dir.config_dir().join("config.toml");
+    let mut file = File::create(path)?;
+    let stdin = stdin();
+    let mut line = String::new();
 
-        println!("Enter intra login: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "login=\"{}\"", line.trim())?;
-        line.clear();
-        writeln!(&mut file, "[session]")?;
-        line.clear();
-        println!("Enter client id: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
-        line.clear();
-        println!("Enter client secret: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
-        Ok(())
-    } else {
-        Err(SessionError::BaseDirsNewError)
-    }
+    println!("Enter intra login: ");
+    stdin.read_line(&mut line)?;
+    writeln!(&mut file, "login=\"{}\"", line.trim())?;
+    line.clear();
+    writeln!(&mut file, "[session]")?;
+    line.clear();
+    println!("Enter client id: ");
+    stdin.read_line(&mut line)?;
+    writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
+    line.clear();
+    println!("Enter client secret: ");
+    stdin.read_line(&mut line)?;
+    writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
+    Ok(())
 }
 
 fn check_config_toml() -> Result<bool, SessionError> {

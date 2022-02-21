@@ -65,13 +65,10 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Result<Self, SessionError> {
-        if let Some(dir) = BaseDirs::new() {
-            let path = dir.config_dir().join("config.toml");
-            let content = fs::read_to_string(path)?;
-            Ok(toml::from_str(&content)?)
-        } else {
-            Err(SessionError::BaseDirsNewError)
-        }
+        let dir = BaseDirs::new().ok_or(SessionError::BaseDirsNewError)?;
+        let path = dir.config_dir().join("config.toml");
+        let content = fs::read_to_string(path)?;
+        Ok(toml::from_str(&content)?)
     }
     pub fn login(&self) -> String {
         self.login.clone()
