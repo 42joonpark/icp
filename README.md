@@ -1,4 +1,4 @@
-# <span style="color: rgb(255, 111, 122)"> 42_cli </span>
+# <span style="color: rgb(255, 111, 122)"> icp </span>
 view your intra information on CLI
 
 ## How to use
