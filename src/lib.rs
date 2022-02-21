@@ -216,10 +216,7 @@ impl Session {
     pub fn client_secret(&self) -> &str {
         self.client_secret.as_str()
     }
-    // TODO:
-    // use map() instead of clone
-    // Get the `access_token` of the session
-    pub fn access_token(&self) -> Option<String> {
-        self.access_token.clone()
+    pub fn access_token(&self) -> Option<&str> {
+        self.access_token.as_ref().map(|s| s.as_str())
     }
 }
