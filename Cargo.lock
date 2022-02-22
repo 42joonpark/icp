@@ -118,25 +118,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cli_42"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "directories",
- "env_logger",
- "log",
- "oauth2",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "toml",
- "url",
-]
-
-[[package]]
 name = "core-foundation"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -451,6 +432,25 @@ dependencies = [
  "native-tls",
  "tokio",
  "tokio-native-tls",
+]
+
+[[package]]
+name = "icp"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "directories",
+ "env_logger",
+ "log",
+ "oauth2",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "toml",
+ "url",
 ]
 
 [[package]]
