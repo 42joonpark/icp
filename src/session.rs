@@ -34,7 +34,7 @@ impl SysConfig {
     pub fn new() -> Result<Self, CliError> {
         let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
         let path = dir.config_dir().join("config.toml");
-        Ok(SysConfig::new_with_path(path)?)
+        SysConfig::new_with_path(path)
     }
     pub fn login(&self) -> String {
         self.login.clone()
