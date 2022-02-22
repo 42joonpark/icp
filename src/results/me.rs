@@ -607,6 +607,9 @@ impl Me {
 // when user did not finish piscine, then it panics because their user.cursus_users have only 1 item.
 // so we need to check if cursus_users size is > 1, or find way to determine if user is in piscine.
 // ex) -u=soh
+
+// TODO:
+// - Add a functions detail if needed. for --details option.
 impl Me {
     fn print_pretty_name(&mut self) {
         let title = if self.titles.is_empty() {
