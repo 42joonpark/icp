@@ -6,6 +6,7 @@ use log::{self, debug, warn};
 use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use std::fs;
+use std::path::PathBuf;
 
 // Authorization grant type.
 #[derive(Debug, Deserialize)]
@@ -21,13 +22,16 @@ pub struct SysConfig {
 }
 
 impl SysConfig {
-    // TODO: Sysconfig::new_with_path()
-    // new() should work with custom config file path
+    pub fn new_with_path(path: PathBuf) -> Result<Self, CliError> {
+        let content = fs::read_to_string(path)?;
+        Ok(toml::from_str(&content)?)
+    }
     pub fn new() -> Result<Self, CliError> {
         let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
         let path = dir.config_dir().join("config.toml");
-        let content = fs::read_to_string(path)?;
-        Ok(toml::from_str(&content)?)
+        // let content = fs::read_to_string(path)?;
+        // Ok(toml::from_str(&content)?)
+        Ok(SysConfig::new_with_path(path)?)
     }
     pub fn login(&self) -> String {
         self.login.clone()
