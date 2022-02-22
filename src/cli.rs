@@ -9,16 +9,17 @@ use clap::{crate_description, crate_name, crate_version, App, Arg};
 pub struct Cli {
     pub command: String,
     pub page: Option<u32>,
-    pub user: Option<String>,
     commands: Vec<String>,
+    pub user: Option<String>,
     pub detail: bool,
+    pub me: bool,
     pub id: bool,
-    pub email: bool,
+    pub grade: bool,
+    pub level: bool,
     pub login: bool,
     pub point: bool,
-    pub level: bool,
-    pub location: bool,
     pub wallet: bool,
+    pub location: bool,
     pub blackhole: bool,
 }
 
@@ -27,22 +28,7 @@ impl Cli {
         let arg_command = Arg::new("command")
             .default_value("command")
             .index(1)
-            .possible_values(
-                [
-                    "command",
-                    "id",
-                    "me",
-                    "email",
-                    "event",
-                    "login",
-                    "point",
-                    "level",
-                    "location",
-                    "wallet",
-                    "blackhole",
-                ]
-                .iter(),
-            )
+            .possible_values(["command", "me", "event", "email"].iter())
             .takes_value(true)
             .help("Command to execute");
         let mut commands: Vec<String> = Vec::new();
@@ -77,25 +63,11 @@ impl Cli {
                     .help("Print user intra id(number)"),
             )
             .arg(
-                Arg::new("email")
-                    .short('e')
-                    .long("email")
+                Arg::new("grade")
+                    .short('g')
+                    .long("grade")
                     .takes_value(false)
-                    .help("Print user email"),
-            )
-            .arg(
-                Arg::new("login")
-                    .short('l')
-                    .long("login")
-                    .takes_value(false)
-                    .help("Print user login"),
-            )
-            .arg(
-                Arg::new("point")
-                    .short('p')
-                    .long("point")
-                    .takes_value(false)
-                    .help("Print user point"),
+                    .help("Print user grade"),
             )
             .arg(
                 Arg::new("level")
@@ -105,11 +77,18 @@ impl Cli {
                     .help("Print user level"),
             )
             .arg(
-                Arg::new("location")
-                    .short('o')
-                    .long("location")
+                Arg::new("login")
+                    .short('l')
+                    .long("login")
                     .takes_value(false)
-                    .help("Print user location"),
+                    .help("Print user intra login(name)"),
+            )
+            .arg(
+                Arg::new("point")
+                    .short('p')
+                    .long("point")
+                    .takes_value(false)
+                    .help("Print user point"),
             )
             .arg(
                 Arg::new("wallet")
@@ -117,6 +96,13 @@ impl Cli {
                     .long("wallet")
                     .takes_value(false)
                     .help("Print user wallet"),
+            )
+            .arg(
+                Arg::new("location")
+                    .short('o')
+                    .long("location")
+                    .takes_value(false)
+                    .help("Print user location"),
             )
             .arg(
                 Arg::new("blackhole")
@@ -132,12 +118,12 @@ impl Cli {
         let user = matches.value_of("user").map(|u| u.to_string());
         let detail = matches.is_present("detail");
         let id = matches.is_present("id");
-        let email = matches.is_present("email");
         let login = matches.is_present("login");
         let point = matches.is_present("point");
         let level = matches.is_present("level");
         let location = matches.is_present("location");
         let wallet = matches.is_present("wallet");
+        let grade = matches.is_present("grade");
         let blackhole = matches.is_present("blackhole");
         Ok(Cli {
             command: String::from(command),
@@ -145,13 +131,14 @@ impl Cli {
             user,
             detail,
             commands,
+            me: !(id || login || point || level || location || wallet || blackhole),
             id,
-            email,
             login,
             point,
             level,
             location,
             wallet,
+            grade,
             blackhole,
         })
     }

@@ -10,16 +10,9 @@ use directories::BaseDirs;
 use url::Url;
 
 pub enum Command {
-    Blackhole,
-    CorrectionPoint,
     Email,
     Event,
-    Id,
-    Level,
-    Location,
-    Login,
     Me,
-    Wallet,
 }
 
 #[derive(Debug)]
@@ -65,16 +58,9 @@ impl Program {
         let tmp = self.get_user_with_login().await?;
         let user = self.get_user_info_with_id(tmp.id).await?;
         match command {
-            Command::Id => self.id(user.id).await,
             Command::Me => self.me(&user).await?,
-            Command::Email => self.email(&user).await,
+            Command::Email => self.email(&user),
             Command::Event => self.event(&user).await?,
-            Command::Login => self.login(&user).await,
-            Command::Level => self.level(&user).await,
-            Command::Location => self.location(&user).await,
-            Command::CorrectionPoint => self.correction_point(&user).await,
-            Command::Wallet => self.wallet(&user).await,
-            Command::Blackhole => self.blackhole(&user).await?,
         }
         Ok(())
     }
@@ -125,16 +111,58 @@ impl Program {
     // TODO:
     // when user did not finish piscine, then it panics because their user.cursus_users have only 1 item.
     // so we need to check if cursus_users size is > 1, or find way to determine if user is in piscine.
+    // ex) -u=soh
     async fn me(&mut self, user: &me::Me) -> Result<(), CliError> {
+        if self.config.me {
+            self.print_pretty_name(user);
+            self.wallet(user);
+            self.correction_point(user);
+            println!("{:20}{}", "Cursus", user.cursus_users[1].cursus.name);
+            self.grade(user);
+            self.level(user);
+            self.blackhole(user)?;
+            self.location(user);
+        } else {
+            if self.config.id {
+                self.id(user.id);
+            }
+            if self.config.login {
+                self.login(user);
+            }
+            if self.config.wallet {
+                self.wallet(user);
+            }
+            if self.config.point {
+                self.correction_point(user);
+            }
+            if self.config.grade {
+                self.grade(user);
+            }
+            if self.config.level {
+                self.level(user);
+            }
+            if self.config.blackhole {
+                self.blackhole(user)?;
+            }
+            if self.config.location {
+                self.location(user);
+            }
+        }
+        Ok(())
+    }
+
+    fn print_pretty_name(&mut self, user: &me::Me) {
         let title = if user.titles.is_empty() {
             ""
         } else {
             user.titles[0].name.split(' ').next().unwrap_or("")
         };
         println!("{} | {} {}", user.displayname, title, user.login);
-        self.wallet(user).await;
-        self.correction_point(user).await;
-        println!("{:20}{}", "Cursus", user.cursus_users[1].cursus.name);
+    }
+
+    // TODO:
+    // remove async from all functions if not needed.
+    fn grade(&mut self, user: &me::Me) {
         println!(
             "{:20}{}",
             "Grade",
@@ -143,24 +171,21 @@ impl Program {
                 .as_ref()
                 .unwrap_or(&"".to_string())
         );
-        self.level(user).await;
-        self.blackhole(user).await?;
-        Ok(())
     }
 
-    async fn location(&mut self, user: &me::Me) {
+    fn location(&mut self, user: &me::Me) {
         if let Some(loc) = &user.location {
             println!("{:20}{}", "Location", loc);
         } else {
-            println!("User is not currently logged into the cluster.");
+            println!("{:20}", "Location");
         }
     }
 
-    async fn level(&mut self, user: &me::Me) {
+    fn level(&mut self, user: &me::Me) {
         println!("{:20}{}", "Level", user.cursus_users[1].level);
     }
 
-    async fn email(&mut self, user: &me::Me) {
+    fn email(&mut self, user: &me::Me) {
         println!("{:20}{}", "Email", user.email);
     }
 
@@ -187,23 +212,23 @@ impl Program {
         Ok(())
     }
 
-    async fn wallet(&mut self, user: &me::Me) {
+    fn wallet(&mut self, user: &me::Me) {
         println!("{:20}{}", "Wallet", user.wallet);
     }
 
-    async fn id(&mut self, id: i64) {
+    fn id(&mut self, id: i64) {
         println!("{:20}{}", "ID", id);
     }
 
-    async fn login(&mut self, user: &me::Me) {
+    fn login(&mut self, user: &me::Me) {
         println!("{:20}{}", "Login", user.login);
     }
 
-    async fn correction_point(&mut self, user: &me::Me) {
+    fn correction_point(&mut self, user: &me::Me) {
         println!("{:20}{}", "Correction point", user.correction_point);
     }
 
-    async fn blackhole(&mut self, user: &me::Me) -> Result<(), CliError> {
+    fn blackhole(&mut self, user: &me::Me) -> Result<(), CliError> {
         let local = Local::now();
         let local2 = user.cursus_users[1]
             .blackholed_at

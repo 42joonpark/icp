@@ -20,15 +20,8 @@ async fn run(prog: &mut Program) -> Result<(), CliError> {
     let cmd = command.trim().to_uppercase();
     match cmd.as_str() {
         "ME" => prog.run_program(Command::Me).await?,
-        "ID" => prog.run_program(Command::Id).await?,
         "EMAIL" => prog.run_program(Command::Email).await?,
         "EVENT" => prog.run_program(Command::Event).await?,
-        "LOGIN" => prog.run_program(Command::Login).await?,
-        "POINT" => prog.run_program(Command::CorrectionPoint).await?,
-        "LEVEL" => prog.run_program(Command::Level).await?,
-        "WALLET" => prog.run_program(Command::Wallet).await?,
-        "LOCATION" => prog.run_program(Command::Location).await?,
-        "BLACKHOLE" => prog.run_program(Command::Blackhole).await?,
         "COMMAND" => prog.config.list_available_commands(),
         _ => println!("Command `{}` not found", command),
     }
