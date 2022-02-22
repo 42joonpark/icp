@@ -8,6 +8,9 @@
 // - Paste Json as Code vscode extension을 사용했습니다.
 
 extern crate serde_json;
+use super::super::Cli;
+use super::super::CliError;
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -556,5 +559,125 @@ pub enum Status {
 impl Default for Status {
     fn default() -> Self {
         Status::WaitingForCorrection
+    }
+}
+
+impl Me {
+    pub async fn me(&mut self, config: &Cli) -> Result<(), CliError> {
+        if config.me {
+            self.print_pretty_name();
+            self.wallet();
+            self.correction_point();
+            println!("{:20}{}", "Cursus", self.cursus_users[1].cursus.name);
+            self.grade();
+            self.level();
+            self.blackhole(config.detail)?;
+            self.location();
+        } else {
+            if config.id {
+                self.id();
+            }
+            if config.login {
+                self.login();
+            }
+            if config.wallet {
+                self.wallet();
+            }
+            if config.point {
+                self.correction_point();
+            }
+            if config.grade {
+                self.grade();
+            }
+            if config.level {
+                self.level();
+            }
+            if config.blackhole {
+                self.blackhole(config.detail)?;
+            }
+            if config.location {
+                self.location();
+            }
+        }
+        Ok(())
+    }
+}
+
+// TODO:
+// when user did not finish piscine, then it panics because their user.cursus_users have only 1 item.
+// so we need to check if cursus_users size is > 1, or find way to determine if user is in piscine.
+// ex) -u=soh
+impl Me {
+    fn print_pretty_name(&mut self) {
+        let title = if self.titles.is_empty() {
+            ""
+        } else {
+            self.titles[0].name.split(' ').next().unwrap_or("")
+        };
+        println!("{} | {} {}", self.displayname, title, self.login);
+    }
+
+    fn wallet(&self) {
+        println!("{:20}{}", "Wallet", self.wallet);
+    }
+
+    fn id(&self) {
+        println!("{:20}{}", "ID", self.id);
+    }
+
+    fn login(&self) {
+        println!("{:20}{}", "Login", self.login);
+    }
+
+    fn correction_point(&mut self) {
+        println!("{:20}{}", "Correction point", self.correction_point);
+    }
+
+    fn blackhole(&mut self, detail: bool) -> Result<(), CliError> {
+        let local = Local::now();
+        let local2 = self.cursus_users[1]
+            .blackholed_at
+            .as_ref()
+            .unwrap_or(&"".to_string())
+            .parse::<DateTime<Local>>()?;
+
+        let remaining_days = local2.signed_duration_since(local).num_days();
+        print!("{:20}{}", "Blackhole", remaining_days);
+        match remaining_days {
+            1..=30 => println!(" 😱"),
+            31..=60 => println!(" 😡"),
+            _ => println!(" 🤪"),
+        }
+        if detail {
+            println!("{:19}{}\n", "⏰End at", local2);
+        }
+        Ok(())
+    }
+
+    fn grade(&mut self) {
+        println!(
+            "{:20}{}",
+            "Grade",
+            self.cursus_users[1]
+                .grade
+                .as_ref()
+                .unwrap_or(&"".to_string())
+        );
+    }
+
+    fn location(&mut self) {
+        if let Some(loc) = &self.location {
+            println!("{:20}{}", "Location", loc);
+        } else {
+            println!("{:20}", "Location");
+        }
+    }
+
+    fn level(&mut self) {
+        println!("{:20}{}", "Level", self.cursus_users[1].level);
+    }
+
+    pub fn email(&mut self) {
+        println!("{:20}{}", "Email", self.email);
     }
 }
