@@ -1,10 +1,6 @@
 use crate::error::CliError;
 use clap::{crate_description, crate_name, crate_version, App, Arg};
 
-// TODO:
-// remove commands that are not used anymore.
-// TODO:
-// - add method functions -> ??
 #[derive(Clone, Debug)]
 pub struct Cli {
     pub command: String,

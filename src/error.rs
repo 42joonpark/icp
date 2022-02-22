@@ -1,10 +1,5 @@
 use thiserror::Error;
 
-// TODO:
-// 의미에 따라 에러 나누기
-// Error type
-// TODO:
-// check if all errors matchthe error type
 #[derive(Error, Debug)]
 pub enum CliError {
     #[error(transparent)]

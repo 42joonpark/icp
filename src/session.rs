@@ -22,6 +22,11 @@ pub struct SysConfig {
 }
 
 impl SysConfig {
+    // Creates a new instance of a `SysConfig`.
+    // # Example
+    // ```
+    // let sys_config = SysConfig::new_with_path(PathBuf::from("/Users/someuser/Library/ApplicationSupport/config.toml"))?;
+    // ```
     pub fn new_with_path(path: PathBuf) -> Result<Self, CliError> {
         let content = fs::read_to_string(path)?;
         Ok(toml::from_str(&content)?)
@@ -29,8 +34,6 @@ impl SysConfig {
     pub fn new() -> Result<Self, CliError> {
         let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
         let path = dir.config_dir().join("config.toml");
-        // let content = fs::read_to_string(path)?;
-        // Ok(toml::from_str(&content)?)
         Ok(SysConfig::new_with_path(path)?)
     }
     pub fn login(&self) -> String {
