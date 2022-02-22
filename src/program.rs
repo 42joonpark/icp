@@ -26,17 +26,15 @@ pub struct Program {
 
 impl Program {
     pub async fn new(config: Cli) -> Result<Self, CliError> {
-        if !(check_if_config_file_exists()) {
-            create_config_toml()?;
-            if let Ok(result) = check_config_toml() {
+        if !(Program::check_if_config_file_exists()) {
+            Program::create_config_toml()?;
+            if let Ok(result) = Program::check_config_toml() {
                 if !result {
                     return Err(CliError::ConfigFileNotFound);
                 }
             }
         }
         let name = config.user.clone();
-        // if you want to use custom config file path then use Sysconfig::new_with_path()
-        // TODO -> SysConfig::new_with_path()
         let sys_config = SysConfig::new()?;
         let session = Session::new(Mode::Credentials, &sys_config).await?;
         let program = Program {
@@ -56,20 +54,16 @@ impl Program {
 
     pub async fn run_program(&mut self, command: Command) -> Result<(), CliError> {
         let tmp = self.get_user_with_login().await?;
-        let user = self.get_user_info_with_id(tmp.id).await?;
+        let mut user = self.get_user_info_with_id(tmp.id).await?;
         match command {
-            Command::Me => self.me(&user).await?,
-            Command::Email => self.email(&user),
+            Command::Me => user.me(&self.config).await?,
+            Command::Email => user.email(),
             Command::Event => self.event(&user).await?,
         }
         Ok(())
     }
 }
 
-// TODO:
-// - Add a functions detail if needed. for --details option.
-// TODO:
-// implement options for command: me"
 impl Program {
     // FIXME:
     // - can be used when code grant is implemented.
@@ -77,7 +71,6 @@ impl Program {
     async fn get_me(&mut self) -> Result<me::Me, CliError> {
         let url = "https://api.intra.42.fr/v2/me";
         let url = Url::parse_with_params(url, &[("client_id", self.session.client_id())])?;
-
         let res = self.call(url.as_str()).await?;
         Ok(serde_json::from_str(res.as_str())?)
     }
@@ -108,87 +101,6 @@ impl Program {
         Ok(me)
     }
 
-    // TODO:
-    // when user did not finish piscine, then it panics because their user.cursus_users have only 1 item.
-    // so we need to check if cursus_users size is > 1, or find way to determine if user is in piscine.
-    // ex) -u=soh
-    async fn me(&mut self, user: &me::Me) -> Result<(), CliError> {
-        if self.config.me {
-            self.print_pretty_name(user);
-            self.wallet(user);
-            self.correction_point(user);
-            println!("{:20}{}", "Cursus", user.cursus_users[1].cursus.name);
-            self.grade(user);
-            self.level(user);
-            self.blackhole(user)?;
-            self.location(user);
-        } else {
-            if self.config.id {
-                self.id(user.id);
-            }
-            if self.config.login {
-                self.login(user);
-            }
-            if self.config.wallet {
-                self.wallet(user);
-            }
-            if self.config.point {
-                self.correction_point(user);
-            }
-            if self.config.grade {
-                self.grade(user);
-            }
-            if self.config.level {
-                self.level(user);
-            }
-            if self.config.blackhole {
-                self.blackhole(user)?;
-            }
-            if self.config.location {
-                self.location(user);
-            }
-        }
-        Ok(())
-    }
-
-    fn print_pretty_name(&mut self, user: &me::Me) {
-        let title = if user.titles.is_empty() {
-            ""
-        } else {
-            user.titles[0].name.split(' ').next().unwrap_or("")
-        };
-        println!("{} | {} {}", user.displayname, title, user.login);
-    }
-
-    // TODO:
-    // remove async from all functions if not needed.
-    fn grade(&mut self, user: &me::Me) {
-        println!(
-            "{:20}{}",
-            "Grade",
-            user.cursus_users[1]
-                .grade
-                .as_ref()
-                .unwrap_or(&"".to_string())
-        );
-    }
-
-    fn location(&mut self, user: &me::Me) {
-        if let Some(loc) = &user.location {
-            println!("{:20}{}", "Location", loc);
-        } else {
-            println!("{:20}", "Location");
-        }
-    }
-
-    fn level(&mut self, user: &me::Me) {
-        println!("{:20}{}", "Level", user.cursus_users[1].level);
-    }
-
-    fn email(&mut self, user: &me::Me) {
-        println!("{:20}{}", "Email", user.email);
-    }
-
     async fn event(&mut self, user: &me::Me) -> Result<(), CliError> {
         let campus_id = user.campus[0].id;
         let url = format!("https://api.intra.42.fr/v2/campus/{}/events", campus_id);
@@ -212,121 +124,84 @@ impl Program {
         Ok(())
     }
 
-    fn wallet(&mut self, user: &me::Me) {
-        println!("{:20}{}", "Wallet", user.wallet);
-    }
-
-    fn id(&mut self, id: i64) {
-        println!("{:20}{}", "ID", id);
-    }
-
-    fn login(&mut self, user: &me::Me) {
-        println!("{:20}{}", "Login", user.login);
-    }
-
-    fn correction_point(&mut self, user: &me::Me) {
-        println!("{:20}{}", "Correction point", user.correction_point);
-    }
-
-    fn blackhole(&mut self, user: &me::Me) -> Result<(), CliError> {
-        let local = Local::now();
-        let local2 = user.cursus_users[1]
-            .blackholed_at
-            .as_ref()
-            .unwrap_or(&"".to_string())
-            .parse::<DateTime<Local>>()?;
-
-        let remaining_days = local2.signed_duration_since(local).num_days();
-        print!("{:20}{}", "Blackhole", remaining_days);
-        match remaining_days {
-            1..=30 => println!(" 😱"),
-            31..=60 => println!(" 😡"),
-            _ => println!(" 🤪"),
+    fn check_if_config_file_exists() -> bool {
+        if let Some(dir) = BaseDirs::new() {
+            return dir.config_dir().join("config.toml").exists();
         }
-        if self.config.detail {
-            println!("{:19}{}\n", "⏰End at", local2);
-        }
+        false
+    }
+
+    fn create_config_toml() -> Result<(), CliError> {
+        use std::fs::File;
+        use std::io::stdin;
+
+        println!("Browse to: https://profile.intra.42.fr/oauth/applications/new");
+        println!("Create new Application");
+        println!("Set redirect_url to \"http://localhost:8080\"");
+
+        let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
+        let path = dir.config_dir().join("config.toml");
+        let mut file = File::create(path)?;
+        let stdin = stdin();
+        let mut line = String::new();
+
+        println!("Enter intra login: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "login=\"{}\"", line.trim())?;
+        line.clear();
+        writeln!(&mut file, "[session]")?;
+        line.clear();
+        println!("Enter client id: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
+        line.clear();
+        println!("Enter client secret: ");
+        stdin.read_line(&mut line)?;
+        writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
         Ok(())
     }
-}
 
-fn check_if_config_file_exists() -> bool {
-    if let Some(dir) = BaseDirs::new() {
-        return dir.config_dir().join("config.toml").exists();
-    }
-    false
-}
+    fn check_config_toml() -> Result<bool, CliError> {
+        use std::io::ErrorKind;
 
-fn create_config_toml() -> Result<(), CliError> {
-    use std::fs::File;
-    use std::io::stdin;
-
-    println!("Browse to: https://profile.intra.42.fr/oauth/applications/new");
-    println!("Create new Application");
-    println!("Set redirect_url to \"http://localhost:8080\"");
-
-    let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
-    let path = dir.config_dir().join("config.toml");
-    let mut file = File::create(path)?;
-    let stdin = stdin();
-    let mut line = String::new();
-
-    println!("Enter intra login: ");
-    stdin.read_line(&mut line)?;
-    writeln!(&mut file, "login=\"{}\"", line.trim())?;
-    line.clear();
-    writeln!(&mut file, "[session]")?;
-    line.clear();
-    println!("Enter client id: ");
-    stdin.read_line(&mut line)?;
-    writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
-    line.clear();
-    println!("Enter client secret: ");
-    stdin.read_line(&mut line)?;
-    writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
-    Ok(())
-}
-
-fn check_config_toml() -> Result<bool, CliError> {
-    use std::io::ErrorKind;
-
-    if let Some(dir) = BaseDirs::new() {
-        let path = dir.config_dir().join("config.toml");
-        let tmp = std::fs::read_to_string(path);
-        match tmp {
-            Ok(content) => {
-                let config: Session = toml::from_str(&content)?;
-                if !(check_client(&config)) {
-                    return Ok(false);
+        if let Some(dir) = BaseDirs::new() {
+            let path = dir.config_dir().join("config.toml");
+            let tmp = std::fs::read_to_string(path);
+            match tmp {
+                Ok(content) => {
+                    let config: Session = toml::from_str(&content)?;
+                    if !(Program::check_client(&config)) {
+                        return Ok(false);
+                    }
                 }
+                Err(e) => match e.kind() {
+                    ErrorKind::NotFound => {
+                        eprintln!("config.toml not found");
+                        return Ok(false);
+                    }
+                    ErrorKind::PermissionDenied => {
+                        eprintln!("config.toml not readable");
+                        return Ok(false);
+                    }
+                    _ => {
+                        eprintln!("config.toml error.");
+                        eprintln!("something went wrong.");
+                    }
+                },
             }
-            Err(e) => match e.kind() {
-                ErrorKind::NotFound => {
-                    eprintln!("config.toml not found");
-                    return Ok(false);
-                }
-                ErrorKind::PermissionDenied => {
-                    eprintln!("config.toml not readable");
-                    return Ok(false);
-                }
-                _ => {
-                    eprintln!("config.toml error.");
-                    eprintln!("something went wrong.");
-                }
-            },
         }
+        Ok(true)
     }
-    Ok(true)
-}
 
-fn check_client(session: &Session) -> bool {
-    let client_id = session.client_id();
-    let client_secret = session.client_secret();
-    if client_id.is_empty() || client_secret.is_empty() {
-        return false;
+    fn check_client(session: &Session) -> bool {
+        let client_id = session.client_id();
+        let client_secret = session.client_secret();
+        if client_id.is_empty() || client_secret.is_empty() {
+            return false;
+        }
+        if client_id.len() > 256 || client_secret.len() > 256 {
+            return false;
+        }
+        true
     }
-    if client_id.len() > 256 || client_secret.len() > 256 {
-        return false;
-    }
-    true
 }
