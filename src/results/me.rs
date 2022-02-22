@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Me {
     #[serde(rename = "id")]
-    pub id: i64,
+    id: i64,
 
     #[serde(rename = "email")]
-    pub email: String,
+    email: String,
 
     #[serde(rename = "login")]
-    pub login: String,
+    login: String,
 
     #[serde(rename = "first_name")]
     first_name: String,
@@ -43,7 +43,7 @@ pub struct Me {
     phone: String,
 
     #[serde(rename = "displayname")]
-    pub displayname: String,
+    displayname: String,
 
     #[serde(rename = "image_url")]
     image_url: String,
@@ -52,7 +52,7 @@ pub struct Me {
     staff: bool,
 
     #[serde(rename = "correction_point")]
-    pub correction_point: i64,
+    correction_point: i64,
 
     #[serde(rename = "pool_month")]
     pool_month: String,
@@ -61,10 +61,10 @@ pub struct Me {
     pool_year: String,
 
     #[serde(rename = "location")]
-    pub location: Option<serde_json::Value>,
+    location: Option<serde_json::Value>,
 
     #[serde(rename = "wallet")]
-    pub wallet: i64,
+    wallet: i64,
 
     #[serde(rename = "anonymize_date")]
     anonymize_date: String,
@@ -85,7 +85,7 @@ pub struct Me {
     groups: Vec<Option<serde_json::Value>>,
 
     #[serde(rename = "cursus_users")]
-    pub cursus_users: Vec<CursusUser>,
+    cursus_users: Vec<CursusUser>,
 
     #[serde(rename = "projects_users")]
     projects_users: Vec<ProjectsUser>,
@@ -97,7 +97,7 @@ pub struct Me {
     achievements: Vec<Achievement>,
 
     #[serde(rename = "titles")]
-    pub titles: Vec<Title>,
+    titles: Vec<Title>,
 
     #[serde(rename = "titles_users")]
     titles_users: Vec<TitlesUser>,
@@ -247,61 +247,61 @@ pub struct CampusUser {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct CursusUser {
     #[serde(rename = "grade")]
-    pub grade: Option<String>,
+    grade: Option<String>,
 
     #[serde(rename = "level")]
-    pub level: f64,
+    level: f64,
 
     #[serde(rename = "skills")]
-    pub skills: Vec<Skill>,
+    skills: Vec<Skill>,
 
     #[serde(rename = "blackholed_at")]
-    pub blackholed_at: Option<String>,
+    blackholed_at: Option<String>,
 
     #[serde(rename = "id")]
-    pub id: i64,
+    id: i64,
 
     #[serde(rename = "begin_at")]
-    pub begin_at: String,
+    begin_at: String,
 
     #[serde(rename = "end_at")]
-    pub end_at: Option<String>,
+    end_at: Option<String>,
 
     #[serde(rename = "cursus_id")]
-    pub cursus_id: i64,
+    cursus_id: i64,
 
     #[serde(rename = "has_coalition")]
-    pub has_coalition: bool,
+    has_coalition: bool,
 
     #[serde(rename = "created_at")]
-    pub created_at: String,
+    created_at: String,
 
     #[serde(rename = "updated_at")]
-    pub updated_at: String,
+    updated_at: String,
 
     #[serde(rename = "user")]
-    pub user: User,
+    user: User,
 
     #[serde(rename = "cursus")]
-    pub cursus: Cursus,
+    cursus: Cursus,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Cursus {
     #[serde(rename = "id")]
-    pub id: i64,
+    id: i64,
 
     #[serde(rename = "created_at")]
-    pub created_at: Option<String>,
+    created_at: Option<String>,
 
     #[serde(rename = "name")]
-    pub name: String,
+    name: String,
 
     #[serde(rename = "slug")]
-    pub slug: String,
+    slug: String,
 
     #[serde(rename = "parent_id")]
-    pub parent_id: Option<serde_json::Value>,
+    parent_id: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -310,79 +310,79 @@ pub struct Skill {
     id: i64,
 
     #[serde(rename = "name")]
-    pub name: String,
+    name: String,
 
     #[serde(rename = "level")]
-    pub level: f64,
+    level: f64,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct User {
     #[serde(rename = "id")]
-    pub id: i64,
+    id: i64,
 
     #[serde(rename = "email")]
-    pub email: String,
+    email: String,
 
     #[serde(rename = "login")]
-    pub login: String,
+    login: String,
 
     #[serde(rename = "first_name")]
-    pub first_name: String,
+    first_name: String,
 
     #[serde(rename = "last_name")]
-    pub last_name: String,
+    last_name: String,
 
     #[serde(rename = "usual_full_name")]
-    pub usual_full_name: String,
+    usual_full_name: String,
 
     #[serde(rename = "usual_first_name")]
-    pub usual_first_name: Option<serde_json::Value>,
+    usual_first_name: Option<serde_json::Value>,
 
     #[serde(rename = "url")]
-    pub url: String,
+    url: String,
 
     #[serde(rename = "phone")]
-    pub phone: String,
+    phone: String,
 
     #[serde(rename = "displayname")]
-    pub displayname: String,
+    displayname: String,
 
     #[serde(rename = "image_url")]
-    pub image_url: String,
+    image_url: String,
 
     #[serde(rename = "staff?")]
-    pub staff: bool,
+    staff: bool,
 
     #[serde(rename = "correction_point")]
-    pub correction_point: i64,
+    correction_point: i64,
 
     #[serde(rename = "pool_month")]
-    pub pool_month: String,
+    pool_month: String,
 
     #[serde(rename = "pool_year")]
-    pub pool_year: String,
+    pool_year: String,
 
     #[serde(rename = "location")]
-    pub location: Option<serde_json::Value>,
+    location: Option<serde_json::Value>,
 
     #[serde(rename = "wallet")]
-    pub wallet: i64,
+    wallet: i64,
 
     #[serde(rename = "anonymize_date")]
-    pub anonymize_date: String,
+    anonymize_date: String,
 
     #[serde(rename = "created_at")]
-    pub created_at: String,
+    created_at: String,
 
     #[serde(rename = "updated_at")]
-    pub updated_at: String,
+    updated_at: String,
 
     #[serde(rename = "alumni")]
-    pub alumni: bool,
+    alumni: bool,
 
     #[serde(rename = "is_launched?")]
-    pub is_launched: bool,
+    is_launched: bool,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -475,7 +475,7 @@ pub struct Title {
     id: i64,
 
     #[serde(rename = "name")]
-    pub name: String,
+    name: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -568,7 +568,7 @@ impl Me {
             self.print_pretty_name();
             self.wallet();
             self.correction_point();
-            println!("{:20}{}", "Cursus", self.cursus_users[1].cursus.name);
+            self.cursus();
             self.grade();
             self.level();
             self.blackhole(config.detail)?;
@@ -604,11 +604,6 @@ impl Me {
 }
 
 // TODO:
-// when user did not finish piscine, then it panics because their user.cursus_users have only 1 item.
-// so we need to check if cursus_users size is > 1, or find way to determine if user is in piscine.
-// ex) -u=soh
-
-// TODO:
 // - Add a functions detail if needed. for --details option.
 impl Me {
     fn print_pretty_name(&mut self) {
@@ -628,6 +623,14 @@ impl Me {
         println!("{:20}{}", "ID", self.id);
     }
 
+    fn cursus(&self) {
+        println!(
+            "{:20}{}",
+            "Cursus",
+            self.cursus_users[self.cursus_users.len() - 1].cursus.name
+        );
+    }
+
     fn login(&self) {
         println!("{:20}{}", "Login", self.login);
     }
@@ -637,8 +640,14 @@ impl Me {
     }
 
     fn blackhole(&mut self, detail: bool) -> Result<(), CliError> {
+        if self.cursus_users[self.cursus_users.len() - 1]
+            .blackholed_at
+            .is_none()
+        {
+            return Ok(());
+        }
         let local = Local::now();
-        let local2 = self.cursus_users[1]
+        let local2 = self.cursus_users[self.cursus_users.len() - 1]
             .blackholed_at
             .as_ref()
             .unwrap_or(&"".to_string())
@@ -661,7 +670,7 @@ impl Me {
         println!(
             "{:20}{}",
             "Grade",
-            self.cursus_users[1]
+            self.cursus_users[self.cursus_users.len() - 1]
                 .grade
                 .as_ref()
                 .unwrap_or(&"".to_string())
@@ -677,7 +686,11 @@ impl Me {
     }
 
     fn level(&mut self) {
-        println!("{:20}{}", "Level", self.cursus_users[1].level);
+        println!(
+            "{:20}{}",
+            "Level",
+            self.cursus_users[self.cursus_users.len() - 1].level
+        );
     }
 
     pub fn email(&mut self) {
