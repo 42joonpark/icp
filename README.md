@@ -7,17 +7,18 @@ view your intra information on CLI
 https://profile.intra.42.fr/oauth/applications/new  \
 set redirect_url to "http://localhost:8080"
 2. create `config.toml` file inside user config directory and put your client_id, client_secret and login. (Mac: $HOME/Library/Application Support) \
+	login="Your intra login ex)joonpark" \
+	[session] \
 	client_id="your client_id" \
 	client_secret="your client_secret" \
-	login="Your intra login ex)joonpark"
-3. `cli_42 --help` for help.
-4. `cli_42 command` to see available commands.
-5. `cli_42 [options] [command]` to run command.
+3. `icp --help` for help.
+4. `icp command` to see available commands.
+5. `icp [options] [command]` to run command.
 
 ### Log
 to see log \
 use `RUST_LOG=info` before `cargo run`\
-`RUST_LOG=info cli_42 [options] [command]`
+`RUST_LOG=info icp [options] [command]`
 
 #### Available log
 1. error - not used
@@ -27,29 +28,36 @@ use `RUST_LOG=info` before `cargo run`\
 5. trace - not used
 
 ## Commands
-### blackhole
-Show user's remaining blackhole days.
+### me
+Print user information
 ### email
-Shows user email
+Print user email
 ### event
-Shows campus events
-### level
-Show user level
-### location
-Show user location in the cluster
-### login
-Show user intra id
-### id
-Shows user id
-### point
-Shows user correction point
-### wallet
-Shows user wallet
+Print campus events
 
 
 ## Options
-### --detail(-d)
-Show detail information.
-### --user(-u)
-Specify user login.\
-ex) `./cli_42 --user=joonpark`
+### -b, --blackhole
+Print user blackhole
+### -d, --detail
+Print more information about the result
+### -g, --grade
+Print user grade
+### -h, --help
+Print help information
+### -i, --id
+Print user intra id(number)
+### -l, --login
+Print user intra login(name)
+### -o, --location
+Print user location
+### -p, --point
+Print user point
+### -u, --user <user>
+User login
+### -v, --level
+Print user level
+### -V, --version
+Print version information
+### -w, --wallet
+Print user wallet
