@@ -15,12 +15,14 @@ pub enum Mode {
 }
 
 #[derive(Deserialize)]
-pub struct Config {
+pub struct SysConfig {
     session: Session,
     login: String,
 }
 
-impl Config {
+impl SysConfig {
+    // TODO: Sysconfig::new_with_path()
+    // new() should work with custom config file path
     pub fn new() -> Result<Self, CliError> {
         let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
         let path = dir.config_dir().join("config.toml");
@@ -46,34 +48,6 @@ pub struct Session {
 impl Session {
     // Creates a new instance of a `Session`.
     //
-    // It is required to have a `config.toml` file in the path directory.
-    //
-    // # Example
-    // ```
-    // use icp::Session;
-    //
-    // let session: Session = Session::new()?;
-    // ```
-    // TODO:
-    // combine new_with_path() and new()
-    #[allow(dead_code)]
-    pub async fn new_with_path(path: &str, m: Mode) -> Result<Self, CliError> {
-        let content = fs::read_to_string(path)?;
-        let config: Config = toml::from_str(&content)?;
-        let mut session: Session = config.session;
-        match m {
-            Mode::Code => {
-                session.generate_token().await?;
-            }
-            Mode::Credentials => {
-                session.generate_token_credentials().await?;
-            }
-        }
-        Ok(session)
-    }
-
-    // Creates a new instance of a `Session`.
-    //
     // It is required to have a `config.toml` file in the user's conig directory.\
     // Default authorization method is credentials grant. \
     //
@@ -86,8 +60,7 @@ impl Session {
     // let session: Session = Session::new(Some(Mode::Code))?;
     // let session: Session = Session::new(Some(Mode::Credentials))?;
     // ```
-    pub async fn new(m: Mode) -> Result<Self, CliError> {
-        let config = Config::new()?;
+    pub async fn new(m: Mode, config: &SysConfig) -> Result<Self, CliError> {
         let mut session: Session = config.session();
         match m {
             Mode::Code => {
