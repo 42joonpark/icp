@@ -543,6 +543,12 @@ impl Default for Tier {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Status {
+    #[serde(rename = "creating_group")]
+    CreatingGroup,
+
+    #[serde(rename = "waiting_to_start")]
+    WaitingToStart,
+
     #[serde(rename = "searching_a_group")]
     SearchingGroup,
 
