@@ -91,7 +91,7 @@ impl Session {
     // use icp::CliError;
     // use icp::Mode;
     //
-    // let session: Session = Session::new(Mode(None))?;
+    // let session: Session = Session::new(Mode::Credentials)?;
     // let result = session.call("https://api.intra.42.fr/v2/users")?;
     // ```
     pub async fn call(&self, uri: &str) -> Result<String, CliError> {
