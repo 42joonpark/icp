@@ -1,5 +1,5 @@
-use directories::BaseDirs;
 use crate::error::{AuthError, CliError, TokenError};
+use directories::BaseDirs;
 use log::{self, debug, info};
 use oauth2::{
     basic::BasicClient, reqwest::async_http_client, AuthUrl, AuthorizationCode, ClientId,
@@ -11,7 +11,6 @@ use std::path::Path;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use url::Url;
-
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Client {
@@ -60,18 +59,18 @@ impl Client {
     pub fn refresh_token(&self) -> Option<&str> {
         self.refresh_token.as_ref().map(|s| s.as_str())
     }
-	fn write_to_file(&self, filename: &Path, content: String) -> Result<(), CliError> {
-	    use std::io::Write;
+    fn write_to_file(&self, filename: &Path, content: String) -> Result<(), CliError> {
+        use std::io::Write;
 
-	    info!("write_to_file()");
-	    let mut file = fs::OpenOptions::new()
-	        .create(true)
-	        .write(true)
-	        // .append(true)
-	        .open(filename)?;
-	    writeln!(file, "{}", content).unwrap();
-	    Ok(())
-	}
+        info!("write_to_file()");
+        let mut file = fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            // .append(true)
+            .open(filename)?;
+        writeln!(file, "{}", content).unwrap();
+        Ok(())
+    }
 }
 
 impl Client {
@@ -113,7 +112,8 @@ impl Client {
                             return Err(CliError::IcpError("Failed to get redirect url.".into()))
                         }
                     };
-                    let url = Url::parse(&("http://localhost".to_string() + redirect_url))?;
+                    let url = Url::parse(&("http://localhost".to_string() + redirect_url))
+                        .map_err(|_| CliError::IcpError("Failed to parse redirect url.".into()))?;
 
                     let code_pair = match url.query_pairs().find(|pair| {
                         let &(ref key, _) = pair;
@@ -143,7 +143,10 @@ impl Client {
                     message.len(),
                     message
                 );
-                stream.write_all(response.as_bytes()).await?;
+                stream
+                    .write_all(response.as_bytes())
+                    .await
+                    .map_err(|_| CliError::IcpError("Failed to write response.".into()))?;
 
                 debug!("42API returned the following code:\n{}\n", code.secret());
                 debug!("42API returned the following state:\n{}\n", state.secret());
@@ -227,7 +230,6 @@ impl Client {
     }
 }
 
-
 #[derive(Debug, Deserialize)]
 pub struct TokenInfo {
     #[serde(rename = "resource_owner_id")]
@@ -253,25 +255,25 @@ struct Application {
 }
 
 impl TokenInfo {
-	pub async fn token_info(token: Option<&str>) -> Result<Option<TokenInfo>, CliError> {
-	    let url = "https://api.intra.42.fr/oauth/token/info";
-	    let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
-	    let resp = reqwest::get(url).await?;
-	    match resp.status() {
-	        reqwest::StatusCode::OK => {
-	            let token_info: TokenInfo = resp.json().await?;
-	            Ok(Some(token_info))
-	        }
-	        reqwest::StatusCode::UNAUTHORIZED => Ok(None),
-	        _ => Err(CliError::IcpError(
-	            "Something unexpected happened while getting token info.".to_string(),
-	        )),
-	    }
-	}
+    pub async fn token_info(token: Option<&str>) -> Result<Option<TokenInfo>, CliError> {
+        let url = "https://api.intra.42.fr/oauth/token/info";
+        let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
+        let resp = reqwest::get(url).await?;
+        match resp.status() {
+            reqwest::StatusCode::OK => {
+                let token_info: TokenInfo = resp.json().await?;
+                Ok(Some(token_info))
+            }
+            reqwest::StatusCode::UNAUTHORIZED => Ok(None),
+            _ => Err(CliError::IcpError(
+                "Something unexpected happened while getting token info.".to_string(),
+            )),
+        }
+    }
 
-	#[allow(dead_code)]
-	pub async fn check_token_valide(token: Option<&str>) -> Result<bool, CliError> {
-	    let token_info = TokenInfo::token_info(token).await?;
-	    Ok(token_info.is_some())
-	}
+    #[allow(dead_code)]
+    pub async fn check_token_valide(token: Option<&str>) -> Result<bool, CliError> {
+        let token_info = TokenInfo::token_info(token).await?;
+        Ok(token_info.is_some())
+    }
 }
