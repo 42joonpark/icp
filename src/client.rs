@@ -240,7 +240,7 @@ pub struct TokenInfo {
     pub expires_in_seconds: Option<i64>,
 
     #[serde(rename = "application")]
-    application: Option<Application>,
+    _application: Option<Application>,
 
     #[serde(rename = "created_at")]
     pub created_at: Option<i64>,
@@ -249,7 +249,7 @@ pub struct TokenInfo {
 #[derive(Debug, Deserialize)]
 struct Application {
     #[serde(rename = "uid")]
-    uid: Option<String>,
+    _uid: Option<String>,
 }
 
 impl TokenInfo {
