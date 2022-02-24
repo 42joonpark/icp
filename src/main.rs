@@ -1,6 +1,3 @@
-// TODO:
-// remove #[allow(dead_code)] if used.
-
 mod cli;
 mod error;
 mod program;

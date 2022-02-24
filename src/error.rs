@@ -31,7 +31,7 @@ pub enum CliError {
     UserNotFound(String),
     #[error("Error: Configure file not found")]
     ConfigFileNotFound,
-    #[error("Error: BaseDirs::new() returned None")]
+    #[error("Error: File does not exist")]
     BaseDirsNewError,
 }
 
