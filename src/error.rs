@@ -9,8 +9,11 @@ pub enum CliError {
     ParseUrlError(#[from] url::ParseError),
     #[error(transparent)]
     ChoronoParseError(#[from] chrono::ParseError),
+
     #[error(transparent)]
-    TomlError(#[from] toml::de::Error),
+    TomlDeError(#[from] toml::de::Error),
+    #[error(transparent)]
+    TomlSerError(#[from] toml::ser::Error),
 
     #[error(transparent)]
     ReqwestError(#[from] reqwest::Error),
@@ -52,4 +55,6 @@ pub enum TokenError {
     NoAccessToken,
     #[error("Error: Not valide token Error")]
     TokenNotValid,
+    #[error("Error: Invalid refresh token")]
+    InvalidRefreshToken,
 }
