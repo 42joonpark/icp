@@ -17,7 +17,7 @@ use url::Url;
 async fn wrapped_main() -> Result<(), CliError> {
     let c = Client::new().await?;
     println!("{:#?}", c);
-    check_token_valide(c.access_token()).await?;
+    // check_token_valide(c.access_token()).await?;
     Ok(())
 }
 
@@ -50,6 +50,10 @@ impl Client {
             client.to_file()?;
         } else {
             // check if token is valid
+            if !check_token_valide(client.access_token()).await? {
+                client.refresh().await?;
+                client.to_file()?;
+            }
         }
         Ok(client)
     }
@@ -266,12 +270,20 @@ struct Application {
     uid: Option<String>,
 }
 #[allow(dead_code)]
-pub async fn token_info(token: Option<&str>) -> Result<TokenInfo, CliError> {
+pub async fn token_info(token: Option<&str>) -> Result<Option<TokenInfo>, CliError> {
     let url = "https://api.intra.42.fr/oauth/token/info";
     let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
     let resp = reqwest::get(url).await?;
-    let token_info = resp.json::<TokenInfo>().await?;
-    Ok(token_info)
+    match resp.status() {
+        reqwest::StatusCode::OK => {
+            let token_info: TokenInfo = resp.json().await?;
+            Ok(Some(token_info))
+        }
+        reqwest::StatusCode::UNAUTHORIZED => Ok(None),
+        _ => Err(CliError::IcpError(
+            "Something unexpected happened while getting token info.".to_string(),
+        )),
+    }
 }
 
 // Check if the token is valid.
@@ -283,6 +295,5 @@ pub async fn token_info(token: Option<&str>) -> Result<TokenInfo, CliError> {
 #[allow(dead_code)]
 pub async fn check_token_valide(token: Option<&str>) -> Result<bool, CliError> {
     let token_info = token_info(token).await?;
-    println!("{:#?}", token_info);
-    Ok(token_info.expires_in_seconds.is_some())
+    Ok(token_info.is_some())
 }
