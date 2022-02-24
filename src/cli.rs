@@ -3,21 +3,20 @@ use clap::{crate_description, crate_name, crate_version, App, Arg};
 
 #[derive(Clone, Debug)]
 pub struct Cli {
-    _command: String,
-    _page: Option<u32>,
-    // _commands: Vec<String>,
-    _user: Option<String>,
-    _detail: bool,
-    _me: bool,
-    _id: bool,
-    _grade: bool,
-    _level: bool,
-    _login: bool,
-    _point: bool,
-    _wallet: bool,
-    _location: bool,
-    _blackhole: bool,
-    _run: bool,
+    pub _command: String,
+    pub _page: Option<u32>,
+    pub _user: Option<String>,
+    pub _detail: bool,
+    pub _me: bool,
+    pub _id: bool,
+    pub _grade: bool,
+    pub _level: bool,
+    pub _login: bool,
+    pub _point: bool,
+    pub _wallet: bool,
+    pub _location: bool,
+    pub _blackhole: bool,
+    pub _run: bool,
 }
 
 impl Cli {

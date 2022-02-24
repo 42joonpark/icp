@@ -8,7 +8,7 @@
 // - Paste Json as Code vscode extension을 사용했습니다.
 
 extern crate serde_json;
-use super::super::Cli;
+use super::super::cli::Cli;
 use super::super::CliError;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
@@ -569,39 +569,39 @@ impl Default for Status {
 }
 
 impl Me {
-    pub async fn me(&mut self, config: &Cli) -> Result<(), CliError> {
-        if config.me {
+    pub async fn me(&self, config: &Cli) -> Result<(), CliError> {
+        if config._me {
             self.print_pretty_name();
             self.wallet();
             self.correction_point();
             self.cursus();
             self.grade();
             self.level();
-            self.blackhole(config.detail)?;
+            self.blackhole(config._detail)?;
             self.location();
         } else {
-            if config.id {
+            if config._id {
                 self.id();
             }
-            if config.login {
+            if config._login {
                 self.login();
             }
-            if config.wallet {
+            if config._wallet {
                 self.wallet();
             }
-            if config.point {
+            if config._point {
                 self.correction_point();
             }
-            if config.grade {
+            if config._grade {
                 self.grade();
             }
-            if config.level {
+            if config._level {
                 self.level();
             }
-            if config.blackhole {
-                self.blackhole(config.detail)?;
+            if config._blackhole {
+                self.blackhole(config._detail)?;
             }
-            if config.location {
+            if config._location {
                 self.location();
             }
         }
@@ -612,7 +612,7 @@ impl Me {
 // TODO:
 // - Add a functions detail if needed. for --details option.
 impl Me {
-    fn print_pretty_name(&mut self) {
+    fn print_pretty_name(&self) {
         let title = if self.titles.is_empty() {
             ""
         } else {
@@ -641,11 +641,11 @@ impl Me {
         println!("{:20}{}", "Login", self.login);
     }
 
-    fn correction_point(&mut self) {
+    fn correction_point(&self) {
         println!("{:20}{}", "Correction point", self.correction_point);
     }
 
-    fn blackhole(&mut self, detail: bool) -> Result<(), CliError> {
+    fn blackhole(&self, detail: bool) -> Result<(), CliError> {
         if self.cursus_users[self.cursus_users.len() - 1]
             .blackholed_at
             .is_none()
@@ -672,7 +672,7 @@ impl Me {
         Ok(())
     }
 
-    fn grade(&mut self) {
+    fn grade(&self) {
         println!(
             "{:20}{}",
             "Grade",
@@ -683,7 +683,7 @@ impl Me {
         );
     }
 
-    fn location(&mut self) {
+    fn location(&self) {
         if let Some(loc) = &self.location {
             println!("{:20}{}", "Location", loc);
         } else {
@@ -691,7 +691,7 @@ impl Me {
         }
     }
 
-    fn level(&mut self) {
+    fn level(&self) {
         println!(
             "{:20}{}",
             "Level",
@@ -699,7 +699,7 @@ impl Me {
         );
     }
 
-    pub fn email(&mut self) {
+    pub fn email(&self) {
         println!("{:20}{}", "Email", self.email);
     }
 }

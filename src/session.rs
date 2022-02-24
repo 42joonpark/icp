@@ -3,7 +3,7 @@ use crate::CliError;
 use log::{self, debug, warn};
 use reqwest::header::AUTHORIZATION;
 
-async fn call(access_token: Option<&str>, client_id: &str, uri: &str) -> Result<String, CliError> {
+pub async fn call(access_token: Option<&str>, client_id: &str, uri: &str) -> Result<String, CliError> {
     let ac_token = access_token.ok_or(CliError::TokenError(TokenError::NoAccessToken))?;
     let client = reqwest::Client::new();
     let params = [("client_id", client_id)];

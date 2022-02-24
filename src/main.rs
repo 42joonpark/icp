@@ -1,18 +1,25 @@
 mod cli;
 mod client;
 mod error;
+mod session;
+mod program;
+mod results;
 
 use client::Client;
 use error::CliError;
+use program::Program;
+
 #[allow(unused_imports)]
 use log::{self, debug, info};
 
 async fn wrapped_main() -> Result<(), CliError> {
-    let config = cli::Cli::new()?;
-    if config.run() {
+    let cli = cli::Cli::new()?;
+    if !cli.run() {
         return Ok(());
     }
-    let c = Client::new().await?;
+    let client = Client::new().await?;
+    let program = Program::new(client, cli);
+    program.me().await?;
     Ok(())
 }
 
