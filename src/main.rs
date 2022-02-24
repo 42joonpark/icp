@@ -17,6 +17,7 @@ use url::Url;
 async fn wrapped_main() -> Result<(), CliError> {
     let c = Client::new().await?;
     println!("{:#?}", c);
+    check_token_valide(c.access_token()).await?;
     Ok(())
 }
 
@@ -239,4 +240,49 @@ fn write_to_file(filename: &Path, content: String) -> Result<(), CliError> {
         .open(filename)?;
     writeln!(file, "{}", content).unwrap();
     Ok(())
+}
+
+#[derive(Debug, Deserialize)]
+pub struct TokenInfo {
+    #[serde(rename = "resource_owner_id")]
+    pub resource_owner_id: Option<i64>,
+
+    #[serde(rename = "scopes")]
+    pub scopes: Option<Vec<String>>,
+
+    #[serde(rename = "expires_in_seconds")]
+    pub expires_in_seconds: Option<i64>,
+
+    #[serde(rename = "application")]
+    application: Option<Application>,
+
+    #[serde(rename = "created_at")]
+    pub created_at: Option<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Application {
+    #[serde(rename = "uid")]
+    uid: Option<String>,
+}
+#[allow(dead_code)]
+pub async fn token_info(token: Option<&str>) -> Result<TokenInfo, CliError> {
+    let url = "https://api.intra.42.fr/oauth/token/info";
+    let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
+    let resp = reqwest::get(url).await?;
+    let token_info = resp.json::<TokenInfo>().await?;
+    Ok(token_info)
+}
+
+// Check if the token is valid.
+//
+// # Example
+// ```
+// let res = check_token_valide(Some("Some Token".to_string())).await?;
+// ```
+#[allow(dead_code)]
+pub async fn check_token_valide(token: Option<&str>) -> Result<bool, CliError> {
+    let token_info = token_info(token).await?;
+    println!("{:#?}", token_info);
+    Ok(token_info.expires_in_seconds.is_some())
 }
