@@ -32,7 +32,7 @@ impl Client {
             client.generate_token().await?;
             client.to_file()?;
         } else {
-            if !check_token_valide(client.access_token()).await? {
+            if !TokenInfo::check_token_valide(client.access_token()).await? {
                 client.refresh().await?;
                 client.to_file()?;
             }
@@ -44,7 +44,7 @@ impl Client {
         let content = toml::to_string(&self)?;
         let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
         let path = dir.config_dir().join("config.toml");
-        write_to_file(path.as_path(), content)?;
+        self.write_to_file(path.as_path(), content)?;
         Ok(())
     }
 
@@ -60,6 +60,18 @@ impl Client {
     pub fn refresh_token(&self) -> Option<&str> {
         self.refresh_token.as_ref().map(|s| s.as_str())
     }
+	fn write_to_file(&self, filename: &Path, content: String) -> Result<(), CliError> {
+	    use std::io::Write;
+
+	    info!("write_to_file()");
+	    let mut file = fs::OpenOptions::new()
+	        .create(true)
+	        .write(true)
+	        // .append(true)
+	        .open(filename)?;
+	    writeln!(file, "{}", content).unwrap();
+	    Ok(())
+	}
 }
 
 impl Client {
@@ -215,18 +227,6 @@ impl Client {
     }
 }
 
-fn write_to_file(filename: &Path, content: String) -> Result<(), CliError> {
-    use std::io::Write;
-
-    info!("write_to_file()");
-    let mut file = fs::OpenOptions::new()
-        .create(true)
-        .write(true)
-        // .append(true)
-        .open(filename)?;
-    writeln!(file, "{}", content).unwrap();
-    Ok(())
-}
 
 #[derive(Debug, Deserialize)]
 pub struct TokenInfo {
@@ -251,31 +251,27 @@ struct Application {
     #[serde(rename = "uid")]
     uid: Option<String>,
 }
-#[allow(dead_code)]
-pub async fn token_info(token: Option<&str>) -> Result<Option<TokenInfo>, CliError> {
-    let url = "https://api.intra.42.fr/oauth/token/info";
-    let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
-    let resp = reqwest::get(url).await?;
-    match resp.status() {
-        reqwest::StatusCode::OK => {
-            let token_info: TokenInfo = resp.json().await?;
-            Ok(Some(token_info))
-        }
-        reqwest::StatusCode::UNAUTHORIZED => Ok(None),
-        _ => Err(CliError::IcpError(
-            "Something unexpected happened while getting token info.".to_string(),
-        )),
-    }
-}
 
-// Check if the token is valid.
-//
-// # Example
-// ```
-// let res = check_token_valide(Some("Some Token".to_string())).await?;
-// ```
-#[allow(dead_code)]
-pub async fn check_token_valide(token: Option<&str>) -> Result<bool, CliError> {
-    let token_info = token_info(token).await?;
-    Ok(token_info.is_some())
+impl TokenInfo {
+	pub async fn token_info(token: Option<&str>) -> Result<Option<TokenInfo>, CliError> {
+	    let url = "https://api.intra.42.fr/oauth/token/info";
+	    let url = Url::parse_with_params(url, &[("access_token", token.unwrap_or_default())])?;
+	    let resp = reqwest::get(url).await?;
+	    match resp.status() {
+	        reqwest::StatusCode::OK => {
+	            let token_info: TokenInfo = resp.json().await?;
+	            Ok(Some(token_info))
+	        }
+	        reqwest::StatusCode::UNAUTHORIZED => Ok(None),
+	        _ => Err(CliError::IcpError(
+	            "Something unexpected happened while getting token info.".to_string(),
+	        )),
+	    }
+	}
+
+	#[allow(dead_code)]
+	pub async fn check_token_valide(token: Option<&str>) -> Result<bool, CliError> {
+	    let token_info = TokenInfo::token_info(token).await?;
+	    Ok(token_info.is_some())
+	}
 }
