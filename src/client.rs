@@ -30,11 +30,9 @@ impl Client {
         if client.access_token().is_none() {
             client.generate_token().await?;
             client.to_file()?;
-        } else {
-            if !TokenInfo::check_token_valide(client.access_token()).await? {
-                client.refresh().await?;
-                client.to_file()?;
-            }
+        } else if !TokenInfo::check_token_valide(client.access_token()).await? {
+            client.refresh().await?;
+            client.to_file()?;
         }
         Ok(client)
     }
@@ -54,10 +52,10 @@ impl Client {
         self.client_secret.as_str()
     }
     pub fn access_token(&self) -> Option<&str> {
-        self.access_token.as_ref().map(|s| s.as_str())
+        self.access_token.as_deref()
     }
     pub fn refresh_token(&self) -> Option<&str> {
-        self.refresh_token.as_ref().map(|s| s.as_str())
+        self.refresh_token.as_deref()
     }
     fn write_to_file(&self, filename: &Path, content: String) -> Result<(), CliError> {
         use std::io::Write;
@@ -164,8 +162,7 @@ impl Client {
                 let scopes = if let Some(scopes_vec) = token.scopes() {
                     scopes_vec
                         .iter()
-                        .map(|comma_separated| comma_separated.split(','))
-                        .flatten()
+                        .flat_map(|comma_separated| comma_separated.split(','))
                         .collect::<Vec<_>>()
                 } else {
                     Vec::new()
@@ -174,7 +171,7 @@ impl Client {
                 self.refresh_token = Some(
                     token
                         .refresh_token()
-                        .ok_or(CliError::IcpError("refresh token not found.".to_string()))?
+                        .ok_or_else(|| CliError::IcpError("refresh token not found.".to_string()))?
                         .secret()
                         .to_owned(),
                 );
@@ -215,8 +212,7 @@ impl Client {
         let scopes = if let Some(scopes_vec) = token.scopes() {
             scopes_vec
                 .iter()
-                .map(|comma_separated| comma_separated.split(','))
-                .flatten()
+                .flat_map(|comma_separated| comma_separated.split(','))
                 .collect::<Vec<_>>()
         } else {
             Vec::new()

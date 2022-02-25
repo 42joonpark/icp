@@ -5,7 +5,7 @@ use clap::{crate_description, crate_name, crate_version, App, Arg};
 pub struct Cli {
     pub _command: String,
     pub _page: Option<u32>,
-    pub _user: Option<String>,
+    _user: Option<String>,
     pub _detail: bool,
     pub _me: bool,
     pub _id: bool,
@@ -150,5 +150,9 @@ impl Cli {
 impl Cli {
     pub fn run(&self) -> bool {
         self._run
+    }
+
+    pub fn user(&self) -> String {
+        self._user.clone().unwrap_or_else(|| String::from(""))
     }
 }

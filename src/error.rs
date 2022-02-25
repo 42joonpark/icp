@@ -30,10 +30,8 @@ pub enum CliError {
     #[error("Error: {0}")]
     IcpError(String),
 
-    #[error("Error: User not found.")]
+    #[error("Error: User {0} not found.")]
     UserNotFound(String),
-    #[error("Error: Configure file not found")]
-    ConfigFileNotFound,
     #[error("Error: File does not exist")]
     BaseDirsNewError,
 }
