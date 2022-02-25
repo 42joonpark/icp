@@ -318,7 +318,7 @@ pub struct Skill {
     level: f64,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct UserElement {
     #[serde(rename = "id")]
     pub id: i64,
