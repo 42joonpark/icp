@@ -1,9 +1,9 @@
 mod cli;
 mod client;
 mod error;
-mod session;
 mod program;
 mod results;
+mod session;
 
 use client::Client;
 use error::CliError;
