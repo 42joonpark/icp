@@ -9,14 +9,10 @@ https://profile.intra.42.fr/oauth/applications/new  \
 2. create `config.toml` file under user config directory and put your intra login, client_id, client_secret.\
 	(Mac: $HOME/Library/Application Support) \
 	
-	login="Your intra login"\
-	[session] \
 	client_id="your client_id" \
 	client_secret="your client_secret" \
 
 	example) \
-	login="joonpark" \
-	[session] \
 	client_id="abcdefghijklmnopqrstuvwxyz" \
 	client_secret="42seoul42seoul42seoul42seoul" \
 	
