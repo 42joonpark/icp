@@ -9,8 +9,11 @@ pub enum CliError {
     ParseUrlError(#[from] url::ParseError),
     #[error(transparent)]
     ChoronoParseError(#[from] chrono::ParseError),
+
     #[error(transparent)]
-    TomlError(#[from] toml::de::Error),
+    TomlDeError(#[from] toml::de::Error),
+    #[error(transparent)]
+    TomlSerError(#[from] toml::ser::Error),
 
     #[error(transparent)]
     ReqwestError(#[from] reqwest::Error),
@@ -27,11 +30,9 @@ pub enum CliError {
     #[error("Error: {0}")]
     IcpError(String),
 
-    #[error("Error: User not found.")]
+    #[error("Error: User {0} not found.")]
     UserNotFound(String),
-    #[error("Error: Configure file not found")]
-    ConfigFileNotFound,
-    #[error("Error: BaseDirs::new() returned None")]
+    #[error("Error: File does not exist")]
     BaseDirsNewError,
 }
 
@@ -52,4 +53,6 @@ pub enum TokenError {
     NoAccessToken,
     #[error("Error: Not valide token Error")]
     TokenNotValid,
+    #[error("Error: Invalid refresh token")]
+    InvalidRefreshToken,
 }

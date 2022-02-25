@@ -1,111 +1,120 @@
-use std::io::Write;
-
 use crate::cli::Cli;
-use crate::results::*;
-use crate::session::{Mode, Session, SysConfig};
-use crate::token::TokenInfo;
-use crate::CliError;
+use crate::client::Client;
+use crate::error::CliError;
+use crate::results::campus_event;
+use crate::results::me::Me;
+use crate::results::me::User;
+use crate::results::me::UserElement;
+use crate::session;
+
 use chrono::{DateTime, Local};
-use directories::BaseDirs;
 use url::Url;
 
-pub enum Command {
-    Email,
-    Event,
-    Me,
-}
-
-#[derive(Debug)]
 pub struct Program {
-    pub session: Session,
-    pub token: Option<TokenInfo>,
-    pub config: Cli,
-    login: String,
-    pub grant_mode: Mode,
+    _client: Client,
+    _config: Cli,
 }
 
 impl Program {
-    pub async fn new(config: Cli) -> Result<Self, CliError> {
-        if !(Program::check_if_config_file_exists()) {
-            Program::create_config_toml()?;
-            if let Ok(result) = Program::check_config_toml() {
-                if !result {
-                    return Err(CliError::ConfigFileNotFound);
-                }
-            }
-        }
-        let name = config.user.clone();
-        let sys_config = SysConfig::new()?;
-        let session = Session::new(Mode::Credentials, &sys_config).await?;
-        let program = Program {
-            session,
-            token: None,
-            config,
-            login: name.unwrap_or_else(|| sys_config.login()),
-            grant_mode: Mode::Credentials,
-        };
-        Ok(program)
+    pub fn new(_client: Client, _config: Cli) -> Self {
+        Self { _client, _config }
     }
 
-    pub async fn call(&mut self, url: &str) -> Result<String, CliError> {
-        let res = self.session.call(url).await?;
-        Ok(res)
+    pub fn config(&self) -> &Cli {
+        &self._config
     }
 
-    pub async fn run_program(&mut self, command: Command) -> Result<(), CliError> {
-        let tmp = self.get_user_with_login().await?;
-        let mut user = self.get_user_info_with_id(tmp.id).await?;
-        match command {
-            Command::Me => user.me(&self.config).await?,
-            Command::Email => user.email(),
-            Command::Event => self.event(&user).await?,
+    pub async fn run(&self) -> Result<(), CliError> {
+        let command = self._config._command.trim().to_lowercase();
+        match command.as_str() {
+            "me" => self.me().await?,
+            "event" => self.event().await?,
+            "email" => self.email().await?,
+            _ => println!("{} is not a valid command", command),
         }
         Ok(())
     }
-}
 
-impl Program {
-    // FIXME:
-    // - can be used when code grant is implemented.
-    #[allow(dead_code)]
-    async fn get_me(&mut self) -> Result<me::Me, CliError> {
-        let url = "https://api.intra.42.fr/v2/me";
-        let url = Url::parse_with_params(url, &[("client_id", self.session.client_id())])?;
-        let res = self.call(url.as_str()).await?;
+    async fn get_user(&self) -> Result<Me, CliError> {
+        if self._config.user().is_empty() {
+            Ok(self.get_me().await?)
+        } else {
+            Ok(self.get_user_with_id().await?)
+        }
+    }
+
+    async fn get_me(&self) -> Result<Me, CliError> {
+        let uri = "https://api.intra.42.fr/v2/me";
+        let uri = Url::parse_with_params(uri, &[("client_id", self._client.client_id())])?;
+        let res = session::call(
+            self._client.access_token(),
+            self._client.client_id(),
+            uri.as_str(),
+        )
+        .await?;
         Ok(serde_json::from_str(res.as_str())?)
     }
-    async fn get_user_with_login(&mut self) -> Result<user::UserElement, CliError> {
-        let url = "https://api.intra.42.fr/v2/users";
-        let url = Url::parse_with_params(
-            url,
+
+    async fn get_user_with_login(&self) -> Result<UserElement, CliError> {
+        let uri = "https://api.intra.42.fr/v2/users";
+        let uri = Url::parse_with_params(
+            uri,
             &[
-                ("client_id", self.session.client_id()),
-                ("filter[login]", &self.login),
+                ("client_id", self._client.client_id()),
+                ("filter[login]", &self._config.user()),
             ],
         )?;
-
-        let res = self.call(url.as_str()).await?;
-        let user: user::User = serde_json::from_str(res.as_str())?;
+        let res = session::call(
+            self._client.access_token(),
+            self._client.client_id(),
+            uri.as_str(),
+        )
+        .await?;
+        let user: User = serde_json::from_str(res.as_str())?;
         if user.is_empty() {
-            return Err(CliError::UserNotFound(self.login.clone()));
+            return Err(CliError::UserNotFound(self._config.user()));
         }
         Ok(user[0].clone())
     }
 
-    async fn get_user_info_with_id(&mut self, id: i64) -> Result<me::Me, CliError> {
-        let url = format!("https://api.intra.42.fr/v2/users/{}", id);
-        let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
+    async fn get_user_with_id(&self) -> Result<Me, CliError> {
+        let user = self.get_user_with_login().await?;
+        let uri = format!("https://api.intra.42.fr/v2/users/{}", user.id);
+        let uri = Url::parse_with_params(&uri, &[("client_id", self._client.client_id())])?;
+        let res = session::call(
+            self._client.access_token(),
+            self._client.client_id(),
+            uri.as_str(),
+        )
+        .await?;
+        Ok(serde_json::from_str(res.as_str())?)
+    }
+}
 
-        let res = self.call(url.as_str()).await?;
-        let me: me::Me = serde_json::from_str(res.as_str())?;
-        Ok(me)
+impl Program {
+    async fn me(&self) -> Result<(), CliError> {
+        let me = self.get_user().await?;
+        me.me(self.config()).await?;
+        Ok(())
     }
 
-    async fn event(&mut self, user: &me::Me) -> Result<(), CliError> {
+    async fn email(&self) -> Result<(), CliError> {
+        let me = self.get_user().await?;
+        me.email();
+        Ok(())
+    }
+
+    async fn event(&self) -> Result<(), CliError> {
+        let user = self.get_user().await?;
         let campus_id = user.campus[0].id;
         let url = format!("https://api.intra.42.fr/v2/campus/{}/events", campus_id);
-        let url = Url::parse_with_params(&url, &[("client_id", self.session.client_id())])?;
-        let res = self.call(url.as_str()).await?;
+        let url = Url::parse_with_params(&url, &[("client_id", self._client.client_id())])?;
+        let res = session::call(
+            self._client.access_token(),
+            self._client.client_id(),
+            url.as_str(),
+        )
+        .await?;
         let events: campus_event::CampusEvent = serde_json::from_str(res.as_str())?;
 
         let local = Local::now();
@@ -116,92 +125,11 @@ impl Program {
                 println!("🌈 🌈 🌈 {} 🌈 🌈 🌈\n", event.name);
                 println!("⏰{:24}{}", "Begin at", begin);
                 println!("⏰{:24}{}\n", "End at", end);
-                if self.config.detail {
+                if self._config._detail {
                     println!("{}\n", event.description);
                 }
             }
         }
         Ok(())
-    }
-
-    fn check_if_config_file_exists() -> bool {
-        if let Some(dir) = BaseDirs::new() {
-            return dir.config_dir().join("config.toml").exists();
-        }
-        false
-    }
-
-    fn create_config_toml() -> Result<(), CliError> {
-        use std::fs::File;
-        use std::io::stdin;
-
-        println!("Browse to: https://profile.intra.42.fr/oauth/applications/new");
-        println!("Create new Application");
-        println!("Set redirect_url to \"http://localhost:8080\"");
-
-        let dir = BaseDirs::new().ok_or(CliError::BaseDirsNewError)?;
-        let path = dir.config_dir().join("config.toml");
-        let mut file = File::create(path)?;
-        let stdin = stdin();
-        let mut line = String::new();
-
-        println!("Enter intra login: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "login=\"{}\"", line.trim())?;
-        line.clear();
-        writeln!(&mut file, "[session]")?;
-        line.clear();
-        println!("Enter client id: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "client_id=\"{}\"", line.trim())?;
-        line.clear();
-        println!("Enter client secret: ");
-        stdin.read_line(&mut line)?;
-        writeln!(&mut file, "client_secret=\"{}\"", line.trim())?;
-        Ok(())
-    }
-
-    fn check_config_toml() -> Result<bool, CliError> {
-        use std::io::ErrorKind;
-
-        if let Some(dir) = BaseDirs::new() {
-            let path = dir.config_dir().join("config.toml");
-            let tmp = std::fs::read_to_string(path);
-            match tmp {
-                Ok(content) => {
-                    let config: Session = toml::from_str(&content)?;
-                    if !(Program::check_client(&config)) {
-                        return Ok(false);
-                    }
-                }
-                Err(e) => match e.kind() {
-                    ErrorKind::NotFound => {
-                        eprintln!("config.toml not found");
-                        return Ok(false);
-                    }
-                    ErrorKind::PermissionDenied => {
-                        eprintln!("config.toml not readable");
-                        return Ok(false);
-                    }
-                    _ => {
-                        eprintln!("config.toml error.");
-                        eprintln!("something went wrong.");
-                    }
-                },
-            }
-        }
-        Ok(true)
-    }
-
-    fn check_client(session: &Session) -> bool {
-        let client_id = session.client_id();
-        let client_secret = session.client_secret();
-        if client_id.is_empty() || client_secret.is_empty() {
-            return false;
-        }
-        if client_id.len() > 256 || client_secret.len() > 256 {
-            return false;
-        }
-        true
     }
 }

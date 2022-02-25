@@ -3,20 +3,20 @@ use clap::{crate_description, crate_name, crate_version, App, Arg};
 
 #[derive(Clone, Debug)]
 pub struct Cli {
-    pub command: String,
-    pub page: Option<u32>,
-    commands: Vec<String>,
-    pub user: Option<String>,
-    pub detail: bool,
-    pub me: bool,
-    pub id: bool,
-    pub grade: bool,
-    pub level: bool,
-    pub login: bool,
-    pub point: bool,
-    pub wallet: bool,
-    pub location: bool,
-    pub blackhole: bool,
+    pub _command: String,
+    pub _page: Option<u32>,
+    _user: Option<String>,
+    pub _detail: bool,
+    pub _me: bool,
+    pub _id: bool,
+    pub _grade: bool,
+    pub _level: bool,
+    pub _login: bool,
+    pub _point: bool,
+    pub _wallet: bool,
+    pub _location: bool,
+    pub _blackhole: bool,
+    pub _run: bool,
 }
 
 impl Cli {
@@ -27,16 +27,10 @@ impl Cli {
             .possible_values(["command", "me", "event", "email"].iter())
             .takes_value(true)
             .help("Command to execute");
-        let mut commands: Vec<String> = Vec::new();
-        if let Some(val) = arg_command.get_possible_values() {
-            for v in val {
-                commands.push(v.get_name().to_string());
-            }
-        }
         let matches = App::new(crate_name!())
             .version(crate_version!())
             .about(crate_description!())
-            .arg(arg_command)
+            .arg(&arg_command)
             .arg(
                 Arg::new("user")
                     .short('u')
@@ -109,40 +103,56 @@ impl Cli {
             )
             .get_matches();
 
-        let command = matches.value_of("command").unwrap_or("me");
-        let page = None;
-        let user = matches.value_of("user").map(|u| u.to_string());
-        let detail = matches.is_present("detail");
-        let id = matches.is_present("id");
-        let login = matches.is_present("login");
-        let point = matches.is_present("point");
-        let level = matches.is_present("level");
-        let location = matches.is_present("location");
-        let wallet = matches.is_present("wallet");
-        let grade = matches.is_present("grade");
-        let blackhole = matches.is_present("blackhole");
+        let _command = matches.value_of("command").unwrap_or("me");
+        let _page = None;
+        let _user = matches.value_of("user").map(|u| u.to_string());
+        let _detail = matches.is_present("detail");
+        let _id = matches.is_present("id");
+        let _login = matches.is_present("login");
+        let _point = matches.is_present("point");
+        let _level = matches.is_present("level");
+        let _location = matches.is_present("location");
+        let _wallet = matches.is_present("wallet");
+        let _grade = matches.is_present("grade");
+        let _blackhole = matches.is_present("blackhole");
+        let mut _run = true;
+
+        if _command == "command" {
+            println!("--- Available Commands ---");
+            let mut _commands: Vec<String> = Vec::new();
+            if let Some(val) = arg_command.get_possible_values() {
+                for v in val {
+                    println!("{}", v.get_name());
+                }
+            }
+            _run = false;
+        }
         Ok(Cli {
-            command: String::from(command),
-            page,
-            user,
-            detail,
-            commands,
-            me: !(id || login || point || level || location || wallet || blackhole),
-            id,
-            login,
-            point,
-            level,
-            location,
-            wallet,
-            grade,
-            blackhole,
+            _command: String::from(_command),
+            _page,
+            _user,
+            _detail,
+            // _commands,
+            _me: !(_id || _login || _point || _level || _location || _wallet || _blackhole),
+            _id,
+            _login,
+            _point,
+            _level,
+            _location,
+            _wallet,
+            _grade,
+            _blackhole,
+            _run,
         })
     }
+}
 
-    pub fn list_available_commands(&self) {
-        println!("Available commands:");
-        for command in &self.commands {
-            println!("\t{}", command);
-        }
+impl Cli {
+    pub fn run(&self) -> bool {
+        self._run
+    }
+
+    pub fn user(&self) -> String {
+        self._user.clone().unwrap_or_else(|| String::from(""))
     }
 }
