@@ -30,6 +30,7 @@ impl Program {
             "me" => self.me().await?,
             "event" => self.event().await?,
             "email" => self.email().await?,
+            "projects" => self.projects().await?,
             _ => println!("{} is not a valid command", command),
         }
         Ok(())
@@ -101,6 +102,12 @@ impl Program {
     async fn email(&self) -> Result<(), CliError> {
         let me = self.get_user().await?;
         me.email();
+        Ok(())
+    }
+
+    async fn projects(&self) -> Result<(), CliError> {
+        let me = self.get_user().await?;
+        me.projects();
         Ok(())
     }
 

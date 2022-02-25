@@ -704,4 +704,16 @@ impl Me {
     pub fn email(&self) {
         println!("{:20}{}", "Email", self.email);
     }
+
+    pub fn projects(&self) {
+        println!("-- Projects --");
+        for project in &self.projects_users {
+            match project.status {
+                Status::InProgress | Status::WaitingForCorrection => {
+                    println!("{}", project.project.name);
+                }
+                _ => {}
+            }
+        }
+    }
 }

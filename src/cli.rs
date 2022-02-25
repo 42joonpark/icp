@@ -24,7 +24,7 @@ impl Cli {
         let arg_command = Arg::new("command")
             .default_value("command")
             .index(1)
-            .possible_values(["command", "me", "event", "email"].iter())
+            .possible_values(["command", "me", "event", "email", "projects"].iter())
             .takes_value(true)
             .help("Command to execute");
         let matches = App::new(crate_name!())
