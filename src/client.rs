@@ -86,6 +86,11 @@ impl Client {
         let (auth_url, _) = client
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new("public".to_string()))
+            .add_scope(Scope::new("projects".to_string()))
+            .add_scope(Scope::new("profile".to_string()))
+            .add_scope(Scope::new("elearning".to_string()))
+            .add_scope(Scope::new("tig".to_string()))
+            .add_scope(Scope::new("forum".to_string()))
             .url();
         println!("Browse to: {}", auth_url);
 
