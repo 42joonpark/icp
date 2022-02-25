@@ -13,6 +13,8 @@ use super::super::CliError;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
+pub type User = Vec<UserElement>;
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Me {
     #[serde(rename = "id")]
@@ -280,7 +282,7 @@ pub struct CursusUser {
     updated_at: String,
 
     #[serde(rename = "user")]
-    user: User,
+    user: UserElement,
 
     #[serde(rename = "cursus")]
     cursus: Cursus,
@@ -317,9 +319,9 @@ pub struct Skill {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
-pub struct User {
+pub struct UserElement {
     #[serde(rename = "id")]
-    id: i64,
+    pub id: i64,
 
     #[serde(rename = "email")]
     email: String,
