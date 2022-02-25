@@ -19,7 +19,7 @@ async fn wrapped_main() -> Result<(), CliError> {
     }
     let client = Client::new().await?;
     let program = Program::new(client, cli);
-    program.me().await?;
+    program.run().await?;
     Ok(())
 }
 
