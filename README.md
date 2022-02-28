@@ -51,7 +51,7 @@ Print detail information about the result
 Print user blackhole
 ### -g, --grade
 Print user grade
-### -h, --help
+### --help
 Print help information
 ### -i, --id
 Print user intra id(number)
