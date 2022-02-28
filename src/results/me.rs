@@ -753,12 +753,10 @@ impl Me {
             } else {
                 println!("{}", loc);
             }
+        } else if _human {
+            println!("{:20} Unknown", "Location");
         } else {
-            if _human {
-                println!("{:20}{}", "Location", "Unknown");
-            } else {
-                println!("{}", "Unknown");
-            }
+            println!("Unknown");
         }
     }
 
