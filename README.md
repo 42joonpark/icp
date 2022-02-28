@@ -19,7 +19,7 @@ https://profile.intra.42.fr/oauth/applications/new  \
 3. `./icp --help` for help.
 4. `./icp command` to see available commands.
 5. `./icp [options] [command]` to run command.
-
+6. By default --human is set to false.
 ### Log
 to see log \
 use `RUST_LOG=info` before `cargo run`\
@@ -42,10 +42,13 @@ Print campus events
 
 
 ## Options
-### -b, --blackhole
-Print user blackhole
+### -h, --human
+Print human readable information
+By default --human is set to false.
 ### -d, --detail
 Print detail information about the result
+### -b, --blackhole
+Print user blackhole
 ### -g, --grade
 Print user grade
 ### -h, --help
