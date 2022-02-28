@@ -42,6 +42,8 @@ Print campus events
 
 
 ## Options
+### --help
+Print help information
 ### -h, --human
 Print human readable information
 By default --human is set to false.
@@ -51,8 +53,6 @@ Print detail information about the result
 Print user blackhole
 ### -g, --grade
 Print user grade
-### --help
-Print help information
 ### -i, --id
 Print user intra id(number)
 ### -l, --login
