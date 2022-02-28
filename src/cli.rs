@@ -7,6 +7,7 @@ pub struct Cli {
     pub _page: Option<u32>,
     _user: Option<String>,
     pub _detail: bool,
+    pub _human: bool,
     pub _me: bool,
     pub _id: bool,
     pub _grade: bool,
@@ -44,6 +45,13 @@ impl Cli {
                     .long("detail")
                     .takes_value(false)
                     .help("Print more information about the result"),
+            )
+            .arg(
+                Arg::new("human")
+                    .short('h')
+                    .long("human")
+                    .takes_value(false)
+                    .help("Print human readable output"),
             )
             .arg(
                 Arg::new("id")
@@ -103,10 +111,12 @@ impl Cli {
             )
             .get_matches();
 
+        let _detail = matches.is_present("detail");
+        let _human = matches.is_present("human");
+
         let _command = matches.value_of("command").unwrap_or("me");
         let _page = None;
         let _user = matches.value_of("user").map(|u| u.to_string());
-        let _detail = matches.is_present("detail");
         let _id = matches.is_present("id");
         let _login = matches.is_present("login");
         let _point = matches.is_present("point");
@@ -132,7 +142,7 @@ impl Cli {
             _page,
             _user,
             _detail,
-            // _commands,
+            _human,
             _me: !(_id || _login || _point || _level || _location || _wallet || _blackhole),
             _id,
             _login,

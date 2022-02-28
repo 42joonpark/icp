@@ -573,48 +573,50 @@ impl Default for Status {
 impl Me {
     pub async fn me(&self, config: &Cli) -> Result<(), CliError> {
         if config._me {
-            self.print_pretty_name();
-            self.wallet();
-            self.correction_point();
-            self.cursus();
-            self.grade();
-            self.level();
-            self.blackhole(config._detail)?;
-            self.location();
+            self.print_pretty_name(config._detail, config._human);
+            self.wallet(config._detail, config._human);
+            self.correction_point(config._detail, config._human);
+            self.cursus(config._detail, config._human);
+            self.grade(config._detail, config._human);
+            self.level(config._detail, config._human);
+            self.blackhole(config._detail, config._human)?;
+            self.location(config._detail, config._human);
         } else {
             if config._id {
-                self.id();
+                self.id(config._detail, config._human);
             }
             if config._login {
-                self.login();
+                self.login(config._detail, config._human);
             }
             if config._wallet {
-                self.wallet();
+                self.wallet(config._detail, config._human);
             }
             if config._point {
-                self.correction_point();
+                self.correction_point(config._detail, config._human);
             }
             if config._grade {
-                self.grade();
+                self.grade(config._detail, config._human);
             }
             if config._level {
-                self.level();
+                self.level(config._detail, config._human);
             }
             if config._blackhole {
-                self.blackhole(config._detail)?;
+                self.blackhole(config._detail, config._human)?;
             }
             if config._location {
-                self.location();
+                self.location(config._detail, config._human);
             }
         }
         Ok(())
     }
 }
 
-// TODO:
-// - Add a functions detail if needed. for --details option.
 impl Me {
-    fn print_pretty_name(&self) {
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    // TODO:
+    // - add human readable description
+    fn print_pretty_name(&self, _detail: bool, _human: bool) {
         let title = if self.titles.is_empty() {
             ""
         } else {
@@ -623,31 +625,68 @@ impl Me {
         println!("{} | {} {}", self.displayname, title, self.login);
     }
 
-    fn wallet(&self) {
-        println!("{:20}{}", "Wallet", self.wallet);
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn wallet(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!("{:20}{}", "Wallet", self.wallet);
+        } else {
+            println!("{}", self.wallet);
+        }
     }
 
-    fn id(&self) {
-        println!("{:20}{}", "ID", self.id);
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn id(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!("{:20}{}", "ID", self.id);
+        } else {
+            println!("{}", self.id);
+        }
     }
 
-    fn cursus(&self) {
-        println!(
-            "{:20}{}",
-            "Cursus",
-            self.cursus_users[self.cursus_users.len() - 1].cursus.name
-        );
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn cursus(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!(
+                "{:20}{}",
+                "Cursus",
+                self.cursus_users[self.cursus_users.len() - 1].cursus.name
+            );
+        } else {
+            println!(
+                "{}",
+                self.cursus_users[self.cursus_users.len() - 1].cursus.name
+            );
+        }
     }
 
-    fn login(&self) {
-        println!("{:20}{}", "Login", self.login);
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn login(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!("{:20}{}", "Login", self.login);
+        } else {
+            println!("{}", self.login);
+        }
     }
 
-    fn correction_point(&self) {
-        println!("{:20}{}", "Correction point", self.correction_point);
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn correction_point(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!("{:20}{}", "Correction Point", self.correction_point);
+        } else {
+            println!("{}", self.correction_point);
+        }
     }
 
-    fn blackhole(&self, detail: bool) -> Result<(), CliError> {
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    // TODO:
+    // - fix _detail if _human is false.
+    fn blackhole(&self, _detail: bool, _human: bool) -> Result<(), CliError> {
         if self.cursus_users[self.cursus_users.len() - 1]
             .blackholed_at
             .is_none()
@@ -662,51 +701,99 @@ impl Me {
             .parse::<DateTime<Local>>()?;
 
         let remaining_days = local2.signed_duration_since(local).num_days();
-        print!("{:20}{}", "Blackhole", remaining_days);
-        match remaining_days {
-            1..=30 => println!(" 😱"),
-            31..=60 => println!(" 😡"),
-            _ => println!(" 🤪"),
+        if _human {
+            print!(
+                "{:20}{}",
+                "Blackhole",
+                format!("{} day(s) remaining", remaining_days)
+            );
+            match remaining_days {
+                1..=30 => println!(" 😱"),
+                31..=60 => println!(" 😡"),
+                _ => println!(" 🤪"),
+            }
+        } else {
+            println!("{}", remaining_days);
         }
-        if detail {
+        if _detail {
             println!("{:19}{}\n", "⏰End at", local2);
         }
         Ok(())
     }
 
-    fn grade(&self) {
-        println!(
-            "{:20}{}",
-            "Grade",
-            self.cursus_users[self.cursus_users.len() - 1]
-                .grade
-                .as_ref()
-                .unwrap_or(&"".to_string())
-        );
-    }
-
-    fn location(&self) {
-        if let Some(loc) = &self.location {
-            println!("{:20}{}", "Location", loc);
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn grade(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!(
+                "{:20}{}",
+                "Grade",
+                self.cursus_users[self.cursus_users.len() - 1]
+                    .grade
+                    .as_ref()
+                    .unwrap_or(&"".to_string())
+            );
         } else {
-            println!("{:20}", "Location");
+            println!(
+                "{}",
+                self.cursus_users[self.cursus_users.len() - 1]
+                    .grade
+                    .as_ref()
+                    .unwrap_or(&"".to_string())
+            )
         }
     }
 
-    fn level(&self) {
-        println!(
-            "{:20}{}",
-            "Level",
-            self.cursus_users[self.cursus_users.len() - 1].level
-        );
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn location(&self, _detail: bool, _human: bool) {
+        if let Some(loc) = &self.location {
+            if _human {
+                println!("{:20}{}", "Location", loc);
+            } else {
+                println!("{}", loc);
+            }
+        } else {
+            if _human {
+                println!("{:20}{}", "Location", "Unknown");
+            } else {
+                println!("{}", "Unknown");
+            }
+        }
     }
 
-    pub fn email(&self) {
-        println!("{:20}{}", "Email", self.email);
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    fn level(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!(
+                "{:20}{}",
+                "Level",
+                self.cursus_users[self.cursus_users.len() - 1].level
+            );
+        } else {
+            println!("{}", self.cursus_users[self.cursus_users.len() - 1].level);
+        }
     }
 
-    pub fn projects(&self) {
-        println!("-- Projects --");
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    pub fn email(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!("{:20}{}", "Email", self.email);
+        } else {
+            println!("{}", self.email);
+        }
+    }
+
+    // TODO:
+    // - Add a functions detail if needed. for --details option.
+    // TODO:
+    // - add human readable description
+    pub fn projects(&self, _detail: bool, _human: bool) {
+        if _human {
+            println!("-- Projects --");
+        }
         for project in &self.projects_users {
             match project.status {
                 Status::InProgress | Status::WaitingForCorrection => {

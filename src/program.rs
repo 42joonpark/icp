@@ -101,13 +101,13 @@ impl Program {
 
     async fn email(&self) -> Result<(), CliError> {
         let me = self.get_user().await?;
-        me.email();
+        me.email(self._config._detail, self._config._human);
         Ok(())
     }
 
     async fn projects(&self) -> Result<(), CliError> {
         let me = self.get_user().await?;
-        me.projects();
+        me.projects(self._config._detail, self._config._human);
         Ok(())
     }
 
