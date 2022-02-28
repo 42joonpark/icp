@@ -702,11 +702,7 @@ impl Me {
 
         let remaining_days = local2.signed_duration_since(local).num_days();
         if _human {
-            print!(
-                "{:20}{}",
-                "Blackhole",
-                format!("{} day(s) remaining", remaining_days)
-            );
+            print!("{:20}{} day(s) remaining", "Blackhole", remaining_days);
             match remaining_days {
                 1..=30 => println!(" 😱"),
                 31..=60 => println!(" 😡"),
