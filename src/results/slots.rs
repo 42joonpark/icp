@@ -23,7 +23,12 @@ pub struct Slot {
 }
 
 impl Slot {
-
+	pub fn begin_at(&self) -> String {
+		self.begin_at.clone()
+	}
+	pub fn end_at(&self) -> String {
+		self.end_at.clone()
+	}
 }
 
 #[derive(Debug, Serialize, Deserialize)]
