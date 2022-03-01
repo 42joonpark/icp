@@ -5,6 +5,7 @@ use crate::results::campus_event;
 use crate::results::me::Me;
 use crate::results::me::User;
 use crate::results::me::UserElement;
+use crate::results::slots::Slots;
 use crate::session;
 
 use chrono::{DateTime, Local};
@@ -31,11 +32,15 @@ impl Program {
             "event" => self.event().await?,
             "email" => self.email().await?,
             "projects" => self.projects().await?,
+            "slot" => self.print_slots().await?,
             _ => println!("{} is not a valid command", command),
         }
         Ok(())
     }
+}
 
+// functions for the "me" command
+impl Program {
     async fn get_user(&self) -> Result<Me, CliError> {
         if self._config.user().is_empty() {
             Ok(self.get_me().await?)
@@ -89,6 +94,32 @@ impl Program {
         )
         .await?;
         Ok(serde_json::from_str(res.as_str())?)
+    }
+}
+
+// functions for the slot command
+impl Program {
+    async fn get_slots(&self) -> Result<Slots, CliError> {
+        let uri = "https://api.intra.42.fr/v2/me/slots";
+        let uri = Url::parse_with_params(uri, &[("client_id", self._client.client_id())])?;
+        let res = session::call(
+            self._client.access_token(),
+            self._client.client_id(),
+            uri.as_str(),
+        )
+        .await?;
+        Ok(serde_json::from_str(res.as_str())?)
+    }
+
+    // TODO:
+    // change slot time to local timezone.
+    async fn print_slots(&self) -> Result<(), CliError> {
+        let slots = self.get_slots().await?;
+        let local = Local::now();
+        for slot in slots.iter() {
+            println!("{:#?}", slot);
+        }
+        Ok(())
     }
 }
 

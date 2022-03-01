@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 pub type Slots = Vec<Slot>;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Slot {
     #[serde(rename = "id")]
     id: i64,
@@ -22,7 +22,11 @@ pub struct Slot {
     user: Option<UserElement>,
 }
 
-#[derive(Serialize, Deserialize)]
+impl Slot {
+
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ScaleTeam {
     #[serde(rename = "id")]
     id: i64,
@@ -67,7 +71,7 @@ pub struct ScaleTeam {
     questions_with_answers: Vec<Option<serde_json::Value>>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Correct {
     #[serde(rename = "id")]
     id: i64,
@@ -79,7 +83,7 @@ pub struct Correct {
     url: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Flag {
     #[serde(rename = "id")]
     id: i64,
@@ -100,11 +104,11 @@ pub struct Flag {
     updated_at: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Truant {
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserElement {
     #[serde(rename = "id")]
     id: i64,
