@@ -1,0 +1,127 @@
+[
+    {
+        "id": 55174728,
+        "begin_at": "2022-03-01T09:30:00.000Z",
+        "end_at": "2022-03-01T09:45:00.000Z",
+        "scale_team": null,
+        "user": {
+            "id": 86792,
+            "email": "joonpark@student.42seoul.kr",
+            "login": "joonpark",
+            "first_name": "Joonsoo",
+            "last_name": "Park",
+            "usual_full_name": "Joonsoo Park",
+            "usual_first_name": null,
+            "url": "https://api.intra.42.fr/v2/users/joonpark",
+            "phone": "hidden",
+            "displayname": "Joonsoo Park",
+            "image_url": "https://cdn.intra.42.fr/users/joonpark.jpg",
+            "new_image_url": "https://profile.intra.42.fr/users/joonpark/photo",
+            "staff?": false,
+            "correction_point": 9,
+            "pool_month": "april",
+            "pool_year": "2021",
+            "location": null,
+            "wallet": 146,
+            "anonymize_date": "2023-03-02T00:00:00.000+09:00",
+            "created_at": "2021-03-22T01:29:18.523Z",
+            "updated_at": "2022-03-01T07:48:37.437Z",
+            "alumni": false,
+            "is_launched?": false
+        }
+    },
+    {
+        "id": 54578331,
+        "begin_at": "2022-02-17T07:45:00.000Z",
+        "end_at": "2022-02-17T08:00:00.000Z",
+        "scale_team": {
+            "id": 3934452,
+            "scale_id": 10083,
+            "comment": "something something comments come here",
+            "created_at": "2022-02-17T06:55:57.675Z",
+            "updated_at": "2022-02-17T08:41:46.817Z",
+            "feedback": "and feedback comes here",
+            "final_mark": 80,
+            "flag": {
+                "id": 1,
+                "name": "Ok",
+                "positive": true,
+                "icon": "check-4",
+                "created_at": "2015-09-14T23:06:52.000Z",
+                "updated_at": "2015-09-14T23:06:52.000Z"
+            },
+            "begin_at": "2022-02-17T07:30:00.000Z",
+            "correcteds": [
+                {
+                    "id": 86811,
+                    "login": "sshin",
+                    "url": "https://api.intra.42.fr/v2/users/sshin"
+                }
+            ],
+            "corrector": {
+                "id": 86792,
+                "login": "joonpark",
+                "url": "https://api.intra.42.fr/v2/users/joonpark"
+            },
+            "truant": {},
+            "filled_at": "2022-02-17T07:48:38.912Z",
+            "questions_with_answers": []
+        },
+        "user": {
+            "id": 86792,
+            "email": "joonpark@student.42seoul.kr",
+            "login": "joonpark",
+            "first_name": "Joonsoo",
+            "last_name": "Park",
+            "usual_full_name": "Joonsoo Park",
+            "usual_first_name": null,
+            "url": "https://api.intra.42.fr/v2/users/joonpark",
+            "phone": "hidden",
+            "displayname": "Joonsoo Park",
+            "image_url": "https://cdn.intra.42.fr/users/joonpark.jpg",
+            "new_image_url": "https://profile.intra.42.fr/users/joonpark/photo",
+            "staff?": false,
+            "correction_point": 9,
+            "pool_month": "april",
+            "pool_year": "2021",
+            "location": null,
+            "wallet": 146,
+            "anonymize_date": "2023-03-02T00:00:00.000+09:00",
+            "created_at": "2021-03-22T01:29:18.523Z",
+            "updated_at": "2022-03-01T07:48:37.437Z",
+            "alumni": false,
+            "is_launched?": false
+        }
+    },
+    {
+        "id": 54453656,
+        "begin_at": "2022-02-15T08:30:00.000Z",
+        "end_at": "2022-02-15T08:45:00.000Z",
+        "scale_team": null,
+        "user": {
+            "id": 86792,
+            "email": "joonpark@student.42seoul.kr",
+            "login": "joonpark",
+            "first_name": "Joonsoo",
+            "last_name": "Park",
+            "usual_full_name": "Joonsoo Park",
+            "usual_first_name": null,
+            "url": "https://api.intra.42.fr/v2/users/joonpark",
+            "phone": "hidden",
+            "displayname": "Joonsoo Park",
+            "image_url": "https://cdn.intra.42.fr/users/joonpark.jpg",
+            "new_image_url": "https://profile.intra.42.fr/users/joonpark/photo",
+            "staff?": false,
+            "correction_point": 9,
+            "pool_month": "april",
+            "pool_year": "2021",
+            "location": null,
+            "wallet": 146,
+            "anonymize_date": "2023-03-02T00:00:00.000+09:00",
+            "created_at": "2021-03-22T01:29:18.523Z",
+            "updated_at": "2022-03-01T07:48:37.437Z",
+            "alumni": false,
+            "is_launched?": false
+        }
+    }
+]
