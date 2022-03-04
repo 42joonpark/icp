@@ -39,6 +39,8 @@ Print user information
 Print user email
 ### event
 Print campus events
+### slot
+Print all opened slots
 
 
 ## Options
