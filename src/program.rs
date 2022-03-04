@@ -8,7 +8,7 @@ use crate::results::me::UserElement;
 use crate::results::slots::Slots;
 use crate::session;
 
-use chrono::{DateTime, Local, Utc, TimeZone, FixedOffset};
+use chrono::{DateTime, Duration, Local, Utc};
 use url::Url;
 
 pub struct Program {
@@ -108,6 +108,7 @@ impl Program {
             uri.as_str(),
         )
         .await?;
+        // println!("{:#?}", res);
         Ok(serde_json::from_str(res.as_str())?)
     }
 
@@ -119,7 +120,8 @@ impl Program {
     // show only booked slots.
     async fn print_slots(&self) -> Result<(), CliError> {
         let slots = self.get_slots().await?;
-        let local = Local::now();
+        let local = Local::now() + Duration::minutes(30);
+        // let n: NaiveTime  = local.time().overflowing_add_signed(Duration::minutes(30)).0;
         for slot in slots.iter().rev() {
             let begin = slot.begin_at().parse::<DateTime<Utc>>()?;
             let end = slot.end_at().parse::<DateTime<Utc>>()?;
