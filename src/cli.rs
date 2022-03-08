@@ -20,6 +20,14 @@ pub struct Cli {
     pub _run: bool,
 }
 
+// TODO:
+// - make command: email to option
+// TODO:
+// - add command: seat? 
+// this command will get value from user as option
+// use this value to get location user
+// ex) icp seat c8r2s3
+// c8r2s3 is location. and find the user who is using c8r2s3
 impl Cli {
     pub fn new() -> Result<Self, CliError> {
         let arg_command = Arg::new("command")
